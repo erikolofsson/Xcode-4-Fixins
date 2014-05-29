@@ -1,6 +1,6 @@
 ### Description
 
-This fixin checks out files controlled by Perforce when trying to delete a read only file.
+This fixin checks out files controlled by Perforce when trying to edit a read only file.
 
 **Prerequisites**
 

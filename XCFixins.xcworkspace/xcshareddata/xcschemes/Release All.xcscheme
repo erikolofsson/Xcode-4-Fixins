@@ -15,20 +15,6 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "OMMiniXcode.xcplugin"
-               BlueprintName = "OMMiniXcode"
-               ReferencedContainer = "container:MiniXcode/OMMiniXcode.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
                BuildableName = "XCFixin_CurrentLineHighlighter.xcplugin"
                BlueprintName = "XCFixin_CurrentLineHighlighter"
                ReferencedContainer = "container:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
@@ -158,6 +144,20 @@
                BuildableName = "XCFixin_UserScripts.xcplugin"
                BlueprintName = "XCFixin_UserScripts"
                ReferencedContainer = "container:XCFixin_UserScripts/XCFixin_UserScripts.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "XCFixin_MiniXcode.xcplugin"
+               BlueprintName = "XCFixin_MiniXcode"
+               ReferencedContainer = "container:MiniXcode/XCFixin_MiniXcode.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

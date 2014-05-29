@@ -15,20 +15,6 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "OMMiniXcode.xcplugin"
-               BlueprintName = "OMMiniXcode"
-               ReferencedContainer = "container:MiniXcode/OMMiniXcode.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
                BuildableName = "XCFixin_CurrentLineHighlighter.xcplugin"
                BlueprintName = "XCFixin_CurrentLineHighlighter"
                ReferencedContainer = "container:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
@@ -99,9 +85,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_beginning_of_line.xcplugin"
-               BlueprintName = "XCFixin_beginning_of_line"
-               ReferencedContainer = "container:XCFixin_beginning_of_line/XCFixin_beginning_of_line.xcodeproj">
+               BuildableName = "XCFixin_P4Unlock.xcplugin"
+               BlueprintName = "XCFixin_P4Unlock"
+               ReferencedContainer = "container:XCFixin_P4Unlock/XCFixin_P4Unlock.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -113,9 +99,23 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_P4Unlock.xcplugin"
-               BlueprintName = "XCFixin_P4Unlock"
-               ReferencedContainer = "container:XCFixin_P4Unlock/XCFixin_P4Unlock.xcodeproj">
+               BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
+               BlueprintName = "XCFixin_EmulateVisualStudio"
+               ReferencedContainer = "container:XCFixin_EmulateVisualStudio/XCFixin_EmulateVisualStudio.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "XCFixin_MiniXcode.xcplugin"
+               BlueprintName = "XCFixin_MiniXcode"
+               ReferencedContainer = "container:MiniXcode/XCFixin_MiniXcode.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

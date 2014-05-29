@@ -116,8 +116,8 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 
 	/* Zoom our window after hiding the toolbar. */
 
-	if (!NSEqualRects([activeWindow frame], [[activeWindow screen] visibleFrame]))
-		[activeWindow setFrame: [[activeWindow screen] visibleFrame] display: YES];
+//	if (!NSEqualRects([activeWindow frame], [[activeWindow screen] visibleFrame]))
+//		[activeWindow setFrame: [[activeWindow screen] visibleFrame] display: YES];
 
 	/* Perform the rest of our menu items now that the toolbar's taken care of. */
 
@@ -150,7 +150,7 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 	/* Perform the rest of our menu items now that the toolbar's taken care of. */
 
 	[self clickMenuItem: [self menuItemWithPath: @"View > Navigators > Show Navigator"]];
-	[self clickMenuItem: [self menuItemWithPath: @"View > Utilities > Show Utilities"]];
+//	[self clickMenuItem: [self menuItemWithPath: @"View > Utilities > Show Utilities"]];
 	[self clickMenuItem: [self menuItemWithPath: @"Editor > Issues > Show All Issues"]];
 
 	if (NSClassFromString(kDisableAnimationsClassName))

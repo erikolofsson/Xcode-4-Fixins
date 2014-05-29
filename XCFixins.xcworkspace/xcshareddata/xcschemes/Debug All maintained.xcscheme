@@ -115,7 +115,7 @@
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
                BuildableName = "XCFixin_MiniXcode.xcplugin"
                BlueprintName = "XCFixin_MiniXcode"
-               ReferencedContainer = "container:MiniXcode/XCFixin_MiniXcode.xcodeproj">
+               ReferencedContainer = "container:XCFixin_MiniXcode/XCFixin_MiniXcode.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

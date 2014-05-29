@@ -1,10 +1,16 @@
 ### Description
 
-Unfortunately the `HOME` (`fn←` and `⌘←` on a Mac keyboard) key in XCode acts in a dumb way - it jumps to the first, usually whitespace, line character, so you cannot instantly jump to the first code character. Visual Studio implements this feature in a right way, jumping to the leftmost non-whitespace character on a first key press and to the beginning of line on a second, cycling between these positions on futher strokes. This plugin implements this smart behavior in XCode 4.
+This fixin checks out files controlled by Perforce when trying to delete a read only file.
+
+**Prerequisites**
+
+* p4 executable in path
+* Perforce configured to use P4CONFIG files
+* A $P4CONFIG (usually .p4config) file in any parent directories of file being checked out
 
 ### Installation
 
-Download and compile the project (the plugin will be installed during build process) or download the binary and unzip it to `~/Library/Application Support/Developer/Shared/Xcode/Plug-ins/`
+Download and compile the project (the plugin will be installed in `~/Library/Application Support/Developer/Shared/Xcode/Plug-ins/` during build process)
 
 ### Credits
 

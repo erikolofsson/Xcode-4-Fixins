@@ -56,7 +56,7 @@
   if (self) {
     sourceEditorViewClass = Nil;    
     highlightColorAttributes = nil;
-	  pColor = nil;
+    pColor = nil;
 
     NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
 
@@ -105,7 +105,7 @@
 
   if ( colorAsData != nil ) {
     NSColor* color = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
-	  pColor = color;
+    pColor = color;
 
     highlightColorAttributes = 
         [NSMutableDictionary dictionaryWithObjectsAndKeys: color,
@@ -120,7 +120,7 @@
   NSData* colorAsData = [NSKeyedArchiver archivedDataWithRootObject:color];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:colorAsData forKey:[self highlightColorDefaultsKeyName]];
-	pColor = color;
+  pColor = color;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -135,15 +135,15 @@
       @throw exception;
     }
   }
-	
+  
 }
 
 //-----------------------------------------------------------------------------------------------
 - (void) removeHighlightFromLineInView:(id)view containingRange:(NSRange)range {
 //-----------------------------------------------------------------------------------------------
 @try {
-	[[view layoutManager] removeTemporaryAttribute: NSBackgroundColorAttributeName 
-									 forCharacterRange: [[view string] lineRangeForRange:range]];
+  [[view layoutManager] removeTemporaryAttribute: NSBackgroundColorAttributeName 
+                   forCharacterRange: [[view string] lineRangeForRange:range]];
   }
   @catch ( NSException* exception ) {
   if ( [[exception name] isNotEqualTo:NSRangeException] ) {
@@ -216,7 +216,7 @@
   XCFixinLog(@"%s: editor menu: %p.\n",__FUNCTION__, editorMenu);
 
   if ( editorMenu != nil) {
-	  if ([editorMenu itemWithTitle:[self highlightColorMenuItemTitle]] == nil) {
+    if ([editorMenu itemWithTitle:[self highlightColorMenuItemTitle]] == nil) {
       XCFixinLog(@"%s: editor menu added.\n",__FUNCTION__);
 
       NSMenuItem* newItem = [NSMenuItem new];
@@ -227,8 +227,8 @@
       [newItem setEnabled:YES];
 
       [editorMenu insertItem:newItem atIndex:[editorMenu numberOfItems]];
-	  }
-	  else
+    }
+    else
         XCFixinLog(@"%s: editor menu already added.\n",__FUNCTION__);
   }
   else
@@ -248,7 +248,7 @@
   id view = [notification object];
 
   XCFixinLog(@"%s: frameChanged.\n",__FUNCTION__);
-	
+  
   if ([view isMemberOfClass: sourceEditorViewClass]) {
 
     [self addItemToApplicationMenu];
@@ -278,18 +278,18 @@
 + (void) pluginDidLoad: (NSBundle*)plugin
 //-----------------------------------------------------------------------------------------------
 {
-    // Singleton instance
-    static id highlighter = nil;
+  // Singleton instance
+  static id highlighter = nil;
 
-    XCFixinPreflight();
+  XCFixinPreflight();
 
-    highlighter = [[XCFixin_XCodeCurrentLineHighlighter alloc] init];            
+  highlighter = [[XCFixin_XCodeCurrentLineHighlighter alloc] init];            
 
-    if (!highlighter) {
-      XCFixinLog(@"%s: highlighter init failed.\n",__FUNCTION__);
-    }
+  if (!highlighter) {
+    XCFixinLog(@"%s: highlighter init failed.\n",__FUNCTION__);
+  }
 
-    XCFixinPostflight();
+  XCFixinPostflight();
 }
 
 @end

@@ -232,10 +232,10 @@ static id overrideRecentsMenu(id self, SEL _cmd)
 
 + (void)pluginDidLoad: (NSBundle *)plugin
 {
-    XCFixinPreflight();
-    
-    /* Override -(void)[DVTFindBar viewDidInstall] */
-    gOriginalViewDidInstall = XCFixinOverrideMethodString(@"DVTFindBar", @selector(viewDidInstall), (IMP)&overrideViewDidInstall);
+	XCFixinPreflight();
+
+	/* Override -(void)[DVTFindBar viewDidInstall] */
+	gOriginalViewDidInstall = XCFixinOverrideMethodString(@"DVTFindBar", @selector(viewDidInstall), (IMP)&overrideViewDidInstall);
 	XCFixinAssertOrPerform(gOriginalViewDidInstall, goto failed);
 	
 	gOriginalSetFinderMode = XCFixinOverrideMethodString(@"DVTFindBar", @selector(setFinderMode:), (IMP)&overrideSetFinderMode);
@@ -289,7 +289,7 @@ static id overrideRecentsMenu(id self, SEL _cmd)
 	
 	//NSLog(@"gIsXcode5 = %d.", (int)gIsXcode5);
     
-    XCFixinPostflight();
+	XCFixinPostflight();
 }
 
 @end

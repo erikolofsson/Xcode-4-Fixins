@@ -17,13 +17,13 @@ static void overrideInsertUsefulPrefix(id self, SEL _cmd)
 
 + (void)pluginDidLoad: (NSBundle *)plugin
 {
-    XCFixinPreflight();
-    
-    /* Override -[DVTTextCompletionSession insertUsefulPrefix] */
-    gOriginalInsertUsefulPrefix = XCFixinOverrideMethodString(@"DVTTextCompletionSession", @selector(insertUsefulPrefix), (IMP)&overrideInsertUsefulPrefix);
-        XCFixinAssertOrPerform(gOriginalInsertUsefulPrefix, goto failed);
-    
-    XCFixinPostflight();
+	XCFixinPreflight();
+
+	/* Override -[DVTTextCompletionSession insertUsefulPrefix] */
+	gOriginalInsertUsefulPrefix = XCFixinOverrideMethodString(@"DVTTextCompletionSession", @selector(insertUsefulPrefix), (IMP)&overrideInsertUsefulPrefix);
+	XCFixinAssertOrPerform(gOriginalInsertUsefulPrefix, goto failed);
+
+	XCFixinPostflight();
 }
 
 @end

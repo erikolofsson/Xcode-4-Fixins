@@ -83,44 +83,44 @@ IMP XCFixinOverrideMethod(Class class, SEL selector, IMP newImplementation)
 
 NSTextView *XCFixinFindIDETextView(BOOL log)
 {
-	NSWindow *mainWindow=[[NSApplication sharedApplication] mainWindow];
-	if(!mainWindow)
-	{
-		if(log)
-			NSLog(@"Can't find IDE text view - no main window.\n");
-		
-		return nil;
-	}
-	
-	Class DVTCompletingTextView=objc_getClass("DVTCompletingTextView");
-	if(!DVTCompletingTextView)
-	{
-		if(log)
-			NSLog(@"Can't find IDE text view - DVTCompletingTextView class unavailable.\n");
-		
-		return nil;
-	}
-	
-	id textView=nil;
-	
-	for(NSResponder *responder=[mainWindow firstResponder];responder;responder=[responder nextResponder])
-	{
-		if([responder isKindOfClass:DVTCompletingTextView])
-		{
-			textView=responder;
-			break;
-		}
-	}
-	
-	if(!textView)
-	{
-		if(log)
-			NSLog(@"Can't find IDE text view - no DVTCompletingTextView in the responder chain.\n");
-		
-		return nil;
-	}
-	
-	return textView;
+  NSWindow *mainWindow=[[NSApplication sharedApplication] mainWindow];
+  if(!mainWindow)
+  {
+    if(log)
+      NSLog(@"Can't find IDE text view - no main window.\n");
+    
+    return nil;
+  }
+  
+  Class DVTCompletingTextView=objc_getClass("DVTCompletingTextView");
+  if(!DVTCompletingTextView)
+  {
+    if(log)
+      NSLog(@"Can't find IDE text view - DVTCompletingTextView class unavailable.\n");
+    
+    return nil;
+  }
+  
+  id textView=nil;
+  
+  for(NSResponder *responder=[mainWindow firstResponder];responder;responder=[responder nextResponder])
+  {
+    if([responder isKindOfClass:DVTCompletingTextView])
+    {
+      textView=responder;
+      break;
+    }
+  }
+  
+  if(!textView)
+  {
+    if(log)
+      NSLog(@"Can't find IDE text view - no DVTCompletingTextView in the responder chain.\n");
+    
+    return nil;
+  }
+  
+  return textView;
 }
 
 IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation)
@@ -128,20 +128,20 @@ IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation
     Method *classMethods = nil;
     IMP result = nil;
     
-	XCFixinAssertOrPerform(class, goto cleanup);
-	XCFixinAssertOrPerform(selector, goto cleanup);
-	XCFixinAssertOrPerform(newImplementation, goto cleanup);
+  XCFixinAssertOrPerform(class, goto cleanup);
+  XCFixinAssertOrPerform(selector, goto cleanup);
+  XCFixinAssertOrPerform(newImplementation, goto cleanup);
     
     Method originalMethod = class_getClassMethod(class, selector);
-	XCFixinAssertOrPerform(originalMethod, goto cleanup);
+  XCFixinAssertOrPerform(originalMethod, goto cleanup);
     
     IMP originalImplementation = method_getImplementation(originalMethod);
     unsigned int classMethodsCount = 0;
     classMethods = class_copyMethodList(class, &classMethodsCount);
-	XCFixinAssertOrPerform(classMethods, goto cleanup);
+  XCFixinAssertOrPerform(classMethods, goto cleanup);
     
     IMP setImplementationResult = method_setImplementation(originalMethod, newImplementation);
-	XCFixinAssertOrPerform(setImplementationResult, goto cleanup);
+  XCFixinAssertOrPerform(setImplementationResult, goto cleanup);
     
     result = originalImplementation;
     

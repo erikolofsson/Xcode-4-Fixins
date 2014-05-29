@@ -79,7 +79,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 
 + (void)pluginDidLoad: (NSBundle *)plugin{
 	
-    XCFixinPreflight();
+	XCFixinPreflight();
 	float lineAlpha = 0.30;	//whole line
 	float topAlpha = 0.6;	//the right-hand label
 	float bottomAlpha = 0.6;
@@ -87,18 +87,18 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	//define gradient for warning text highlight
 	NSColor * warningColor = [NSColor colorWithDeviceRed:0.5 green:0.5 blue:0 alpha: lineAlpha];
 	NSGradient * gWarning = [[NSGradient alloc] initWithStartingColor: [warningColor colorWithAlphaComponent: topAlpha]
-														  endingColor: [warningColor colorWithAlphaComponent: bottomAlpha]];
+															endingColor: [warningColor colorWithAlphaComponent: bottomAlpha]];
 	//define warning text highlight theme
 	warningTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: warningColor 
 											borderTopColor: [NSColor clearColor]
 										 borderBottomColor: [NSColor clearColor]
-										   overlayGradient: nil
+											 overlayGradient: nil
 									 overlayTintedGradient: nil
-								  messageBubbleBorderColor: [NSColor clearColor] 
+									messageBubbleBorderColor: [NSColor clearColor] 
 									 messageBubbleGradient: gWarning
 												caretColor: [NSColor yellowColor]  
-							   highlightedRangeBorderColor: [NSColor clearColor] 
+								 highlightedRangeBorderColor: [NSColor clearColor] 
 	 ];
 
 	//define gradient for error text highlight
@@ -110,49 +110,49 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: errorColor 
 											borderTopColor: [NSColor clearColor]
 										 borderBottomColor: [NSColor clearColor]
-										   overlayGradient: nil
+											 overlayGradient: nil
 									 overlayTintedGradient: nil
-								  messageBubbleBorderColor: [NSColor clearColor] 
+									messageBubbleBorderColor: [NSColor clearColor] 
 									 messageBubbleGradient: gError
 												caretColor: [NSColor redColor]  
-							   highlightedRangeBorderColor: [NSColor clearColor] 
+								 highlightedRangeBorderColor: [NSColor clearColor] 
 	];
-	
+
 
 	//define gradient for static Analyzer text highlight
 	NSColor * analyzerColor = [NSColor colorWithDeviceRed:0.25 green:0.25 blue:0.5 alpha: lineAlpha];
 	NSGradient * gAnalyzer = [[NSGradient alloc] initWithStartingColor: [analyzerColor colorWithAlphaComponent: topAlpha]
-														   endingColor: [analyzerColor colorWithAlphaComponent: bottomAlpha]];
+															 endingColor: [analyzerColor colorWithAlphaComponent: bottomAlpha]];
 	//define static Analyzer text highlight theme
 	analyzerTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: analyzerColor 
 											borderTopColor: [NSColor clearColor]
 										 borderBottomColor: [NSColor clearColor]
-										   overlayGradient: nil
+											 overlayGradient: nil
 									 overlayTintedGradient: nil
-								  messageBubbleBorderColor: [NSColor clearColor] 
+									messageBubbleBorderColor: [NSColor clearColor] 
 									 messageBubbleGradient: gAnalyzer
 												caretColor: [NSColor blueColor]  
-							   highlightedRangeBorderColor: [NSColor clearColor] 
+								 highlightedRangeBorderColor: [NSColor clearColor] 
 	 ];
-	
+
 	//define gradient for debugger text highlight
 	NSColor * debuggerColor = [NSColor colorWithDeviceRed:0.4 green:0.5 blue:0.4 alpha: 0.6];
 	NSGradient * gDebugger = [[NSGradient alloc] initWithStartingColor: [debuggerColor colorWithAlphaComponent: 0.8]
-														   endingColor: [debuggerColor colorWithAlphaComponent: 0.8]];
+															 endingColor: [debuggerColor colorWithAlphaComponent: 0.8]];
 	//define static debugger text highlight theme
 	debuggerTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: debuggerColor 
 											borderTopColor: [NSColor clearColor]
 										 borderBottomColor: [NSColor clearColor]
-										   overlayGradient: nil
+											 overlayGradient: nil
 									 overlayTintedGradient: nil
-								  messageBubbleBorderColor: [NSColor clearColor] 
+									messageBubbleBorderColor: [NSColor clearColor] 
 									 messageBubbleGradient: gDebugger
 												caretColor: [NSColor greenColor]  
-							   highlightedRangeBorderColor: [NSColor clearColor] 
+								 highlightedRangeBorderColor: [NSColor clearColor] 
 	 ];
-	
+
 
 	//define gradient for Notice text highlight
 	NSColor * noticeColor = [NSColor colorWithDeviceRed:0.15 green:0.15 blue:0.15 alpha: lineAlpha];
@@ -163,24 +163,24 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: noticeColor 
 											borderTopColor: [NSColor clearColor]
 										 borderBottomColor: [NSColor clearColor]
-										   overlayGradient: nil
+											 overlayGradient: nil
 									 overlayTintedGradient: nil
-								  messageBubbleBorderColor: [NSColor clearColor] 
+									messageBubbleBorderColor: [NSColor clearColor] 
 									 messageBubbleGradient: gNotice
 												caretColor: [NSColor grayColor]  
-							   highlightedRangeBorderColor: [NSColor clearColor] 
+								 highlightedRangeBorderColor: [NSColor clearColor] 
 	 ];
-	
-//	pAnnotationFont = [NSFont fontWithName:@"Lucida Grande" size:7.5];
+
+	//	pAnnotationFont = [NSFont fontWithName:@"Lucida Grande" size:7.5];
 
 	gOriginalnewMessageAttributesForFont = XCFixinOverrideMethodString(@"DVTTextAnnotation", @selector(setTheme:forState:), (IMP)&overridenewMessageAttributesForFont);
-		XCFixinAssertOrPerform(gOriginalnewMessageAttributesForFont, goto failed);
-	
+	XCFixinAssertOrPerform(gOriginalnewMessageAttributesForFont, goto failed);
+
 	gOriginal_defaultMessageFontSize = XCFixinOverrideStaticMethodString(@"DVTMessageBubbleView", @selector(_defaultMessageFontSize), (IMP)&override_defaultMessageFontSize);
 	XCFixinAssertOrPerform(gOriginal_defaultMessageFontSize, goto failed);
-	
-	
-    XCFixinPostflight();
+
+
+	XCFixinPostflight();
 }
 
 @end

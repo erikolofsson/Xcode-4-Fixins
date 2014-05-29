@@ -14,9 +14,9 @@
     static NSUInteger loadAttempt = 0;             \
     loadAttempt++;                                 \
     XCFixinLog(@"%@ initialization attempt %ju/%ju...", \
-		  NSStringFromClass([self class]),         \
-		  (uintmax_t)loadAttempt,                  \
-		  (uintmax_t)XCFixinMaxLoadAttempts);
+      NSStringFromClass([self class]),         \
+      (uintmax_t)loadAttempt,                  \
+      (uintmax_t)XCFixinMaxLoadAttempts);
 
 #define XCFixinPostflight()                                                                                 \
     XCFixinLog(@"%@ initialization successful!", NSStringFromClass([self class]));                               \

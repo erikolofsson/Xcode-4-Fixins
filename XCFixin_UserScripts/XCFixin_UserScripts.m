@@ -891,7 +891,7 @@ static BOOL GetClasses(const char *name0,...)
 
 + (void)pluginDidLoad: (NSBundle *)plugin
 {
-    XCFixinPreflight();
+	XCFixinPreflight();
     
 	XCFixin_ScriptsHandler *handler=[[XCFixin_ScriptsHandler alloc] init];
 	if(!handler)
@@ -907,7 +907,7 @@ static BOOL GetClasses(const char *name0,...)
 		Log(@"%s: handler installed: %s\n",__FUNCTION__,goodInstall?"YES":"NO");
 	}
     
-    XCFixinPostflight();
+	XCFixinPostflight();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

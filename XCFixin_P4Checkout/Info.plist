@@ -29,7 +29,7 @@
 		<string>A2E4D43F-41F4-4FB9-BB94-7177011C9AED</string>
 	</array>
 	<key>NSPrincipalClass</key>
-	<string>XCFixin_P4Unlock</string>
+	<string>XCFixin_P4Checkout</string>
 	<key>XC4Compatible</key>
 	<true/>
 	<key>XCGCReady</key>

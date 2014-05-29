@@ -32,6 +32,6 @@
       location = "group:XCFixin_MiniXcode/XCFixin_MiniXcode.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:XCFixin_P4Unlock/XCFixin_P4Unlock.xcodeproj">
+      location = "group:XCFixin_P4Checkout/XCFixin_P4Checkout.xcodeproj">
    </FileRef>
 </Workspace>

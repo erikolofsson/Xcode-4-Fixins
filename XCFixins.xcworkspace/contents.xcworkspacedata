@@ -2,10 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Shared Code/XCFixin_BuildAllFixins.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
+      location = "group:XCFixin_EmulateVisualStudio/XCFixin_EmulateVisualStudio.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
@@ -26,6 +23,15 @@
       location = "group:XCFixin_TabAcceptsCompletions/XCFixin_TabAcceptsCompletions.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:XCFixin_UserScripts/XCFixin_UserScripts.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MiniXcode/OMMiniXcode.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:XCFixin_P4Unlock/XCFixin_P4Unlock.xcodeproj">
    </FileRef>
 </Workspace>

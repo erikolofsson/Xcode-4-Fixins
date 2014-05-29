@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "0500"
+   version = "1.3">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "OMMiniXcode.xcplugin"
+               BlueprintName = "OMMiniXcode"
+               ReferencedContainer = "container:MiniXcode/OMMiniXcode.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "XCFixin_CurrentLineHighlighter.xcplugin"
+               BlueprintName = "XCFixin_CurrentLineHighlighter"
+               ReferencedContainer = "container:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
+               BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
+               ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "XCFixin_DisableAnimations.xcplugin"
+               BlueprintName = "XCFixin_DisableAnimations"
+               ReferencedContainer = "container:XCFixin_DisableAnimations/XCFixin_DisableAnimations.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "XCFixin_HideDistractions.xcplugin"
+               BlueprintName = "XCFixin_HideDistractions"
+               ReferencedContainer = "container:XCFixin_HideDistractions/XCFixin_HideDistractions.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+               BuildableName = "XCFixin_InhibitTabNextPlaceholder.xcplugin"
+               BlueprintName = "XCFixin_InhibitTabNextPlaceholder"
+               ReferencedContainer = "container:XCFixin_InhibitTabNextPlaceholder/XCFixin_InhibitTabNextPlaceholder.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "435E247113A8E4A20052479A"
+               BuildableName = "XCFixin_P4Unlock.xcplugin"
+               BlueprintName = "XCFixin_P4Unlock"
+               ReferencedContainer = "container:XCFixin_P4Unlock/XCFixin_P4Unlock.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "435E247113A8E4A20052479A"
+               BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
+               BlueprintName = "XCFixin_EmulateVisualStudio"
+               ReferencedContainer = "container:XCFixin_EmulateVisualStudio/XCFixin_EmulateVisualStudio.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      buildConfiguration = "Debug">
+      <Testables>
+      </Testables>
+   </TestAction>
+   <LaunchAction
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Release"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      allowLocationSimulation = "YES">
+      <PathRunnable
+         FilePath = "/Applications/Xcode5-DP3.app">
+      </PathRunnable>
+      <AdditionalOptions>
+      </AdditionalOptions>
+   </LaunchAction>
+   <ProfileAction
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Release"
+      debugDocumentVersioning = "YES">
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
+</Scheme>

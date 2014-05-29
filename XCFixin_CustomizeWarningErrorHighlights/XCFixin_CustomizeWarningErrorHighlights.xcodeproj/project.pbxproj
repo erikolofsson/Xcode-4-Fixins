@@ -7,20 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		035F8BE81750D17400D22849 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 035F8BE71750D17400D22849 /* AppKit.framework */; };
+		035F8BEA1750D9D400D22849 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 035F8BE91750D9D400D22849 /* QuartzCore.framework */; };
+		0368C2D0176C9F4E006AAFD8 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0368C2CF176C9F4E006AAFD8 /* DVTKit.framework */; };
 		5514A3FA1506CB8F00A8AD77 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 5514A3F91506CB8F00A8AD77 /* XCFixin.m */; };
 		55C015D212B7BC2500354E5C /* XCFixin_CustomizeWarningErrorHighlights.m in Sources */ = {isa = PBXBuildFile; fileRef = 55C015D112B7BC2500354E5C /* XCFixin_CustomizeWarningErrorHighlights.m */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
-		BB3E58C7155582A000EA2050 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB3E58C6155582A000EA2050 /* DVTKit.framework */; };
+		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		035F8BE71750D17400D22849 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		035F8BE91750D9D400D22849 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
+		0368C2CF176C9F4E006AAFD8 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = /Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework; sourceTree = "<absolute>"; };
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		5514A3F91506CB8F00A8AD77 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; };
 		5595EEEB150067CB00A30634 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; };
 		55C015D112B7BC2500354E5C /* XCFixin_CustomizeWarningErrorHighlights.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XCFixin_CustomizeWarningErrorHighlights.m; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* XCFixin_CustomizeWarningErrorHighlights.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_CustomizeWarningErrorHighlights.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BB3E58C6155582A000EA2050 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = /Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,7 +34,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB3E58C7155582A000EA2050 /* DVTKit.framework in Frameworks */,
+				0368C2D0176C9F4E006AAFD8 /* DVTKit.framework in Frameworks */,
+				035F8BEA1750D9D400D22849 /* QuartzCore.framework in Frameworks */,
+				035F8BE81750D17400D22849 /* AppKit.framework in Frameworks */,
+				8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,7 +58,10 @@
 		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				BB3E58C6155582A000EA2050 /* DVTKit.framework */,
+				0368C2CF176C9F4E006AAFD8 /* DVTKit.framework */,
+				035F8BE91750D9D400D22849 /* QuartzCore.framework */,
+				035F8BE71750D17400D22849 /* AppKit.framework */,
+				1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */,
 			);
 			name = "Frameworks and Libraries";
 			sourceTree = "<group>";
@@ -71,6 +83,14 @@
 				55C015D112B7BC2500354E5C /* XCFixin_CustomizeWarningErrorHighlights.m */,
 			);
 			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
 			sourceTree = "<group>";
 		};
 		19C28FB8FE9D52D311CA2CBB /* Products */ = {
@@ -168,8 +188,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = "$(HOME)";
@@ -178,14 +197,9 @@
 					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks\"",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_ENABLE_OBJC_GC = unsupported;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-				);
 				PRODUCT_NAME = XCFixin_CustomizeWarningErrorHighlights;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
@@ -197,8 +211,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
@@ -208,14 +220,9 @@
 					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks\"",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_ENABLE_OBJC_GC = unsupported;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Cocoa,
-				);
 				PRODUCT_NAME = XCFixin_CustomizeWarningErrorHighlights;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
@@ -227,12 +234,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-t",
+				);
+				SDKROOT = macosx10.8;
 			};
 			name = Debug;
 		};
@@ -240,10 +254,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-t",
+				);
+				SDKROOT = macosx10.8;
 			};
 			name = Release;
 		};

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
-               BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
-               ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
+               BuildableName = "XCFixin_TabAcceptsCompletions.xcplugin"
+               BlueprintName = "XCFixin_TabAcceptsCompletions"
+               ReferencedContainer = "container:XCFixin_TabAcceptsCompletions.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">

@@ -29,7 +29,7 @@
       location = "group:XCFixin_UserScripts/XCFixin_UserScripts.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:MiniXcode/XCFixin_MiniXcode.xcodeproj">
+      location = "group:XCFixin_MiniXcode/XCFixin_MiniXcode.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:XCFixin_P4Unlock/XCFixin_P4Unlock.xcodeproj">

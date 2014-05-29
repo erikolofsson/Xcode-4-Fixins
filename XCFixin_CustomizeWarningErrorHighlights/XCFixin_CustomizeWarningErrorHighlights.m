@@ -1,18 +1,22 @@
 #import <Cocoa/Cocoa.h>
 #import <objc/runtime.h>
 #import "XCFixin.h"
-
+//#import "DVTKit.h"
 
 static IMP gOriginalnewMessageAttributesForFont = nil;
+static IMP gOriginal_defaultMessageFontSize = nil;
 
-
-@interface DVTTextAnnotationTheme : NSObject{}
+@interface DVTTextAnnotationTheme : NSObject
+{
+}
 //- (id)initWithHighlightColor:(id)arg1 borderTopColor:(id)arg2 borderBottomColor:(id)arg3 overlayGradient:(id)arg4 messageBubbleBorderColor:(id)arg5 messageBubbleGradient:(id)arg6 caretColor:(id)arg7 highlightedRangeBorderColor:(id)arg8;
 - (id)initWithHighlightColor:(id)arg1 borderTopColor:(id)arg2 borderBottomColor:(id)arg3 overlayGradient:(id)arg4 overlayTintedGradient:(id)arg5 messageBubbleBorderColor:(id)arg6 messageBubbleGradient:(id)arg7 caretColor:(id)arg8 highlightedRangeBorderColor:(id)arg9;
+
 @end
 
 
-@interface XCFixin_CustomizeWarningErrorHighlights : NSObject{
+@interface XCFixin_CustomizeWarningErrorHighlights : NSObject
+{
 }
 
 @end
@@ -23,12 +27,18 @@ static DVTTextAnnotationTheme * analyzerTheme;
 static DVTTextAnnotationTheme * debuggerTheme;
 static DVTTextAnnotationTheme * grayTheme;
 
-
 @implementation XCFixin_CustomizeWarningErrorHighlights
 
-static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnotationTheme* arg1, id arg2){
-	
-	const char* className = class_getName([self class]);	
+static double override_defaultMessageFontSize(SEL _cmd)
+{	
+	//double Return = ((double (*)(SEL))gOriginal_defaultMessageFontSize)(_cmd );
+	return 7.0;
+}
+
+
+static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnotationTheme* arg1, id arg2)
+{
+	const char* className = class_getName([self class]);
 	DVTTextAnnotationTheme * newTheme  = arg1;
 	
 	if ( strcmp(className, "IDEBuildIssueStaticAnalyzerResultAnnotation") == 0 ||
@@ -59,7 +69,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 		//on top of the source code for those ones
 	}else{
 		/// what the heck is it then?
-		NSLog(@">>> %s\n", className);
+		XCFixinLog(@">>> %s\n", className);
 	}
 
     ((void (*)(id, SEL, DVTTextAnnotationTheme*, id))gOriginalnewMessageAttributesForFont)(self, _cmd , newTheme, arg2);
@@ -70,12 +80,12 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 + (void)pluginDidLoad: (NSBundle *)plugin{
 	
     XCFixinPreflight();
-	float lineAlpha = 0.20;	//whole line
-	float topAlpha = 0.4;	//the right-hand label
-	float bottomAlpha = 0.4;
+	float lineAlpha = 0.30;	//whole line
+	float topAlpha = 0.6;	//the right-hand label
+	float bottomAlpha = 0.6;
 
 	//define gradient for warning text highlight
-	NSColor * warningColor = [NSColor colorWithDeviceRed:1 green:1 blue:0 alpha: lineAlpha];
+	NSColor * warningColor = [NSColor colorWithDeviceRed:0.5 green:0.5 blue:0 alpha: lineAlpha];
 	NSGradient * gWarning = [[NSGradient alloc] initWithStartingColor: [warningColor colorWithAlphaComponent: topAlpha]
 														  endingColor: [warningColor colorWithAlphaComponent: bottomAlpha]];
 	//define warning text highlight theme
@@ -90,9 +100,9 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 												caretColor: [NSColor yellowColor]  
 							   highlightedRangeBorderColor: [NSColor clearColor] 
 	 ];
-	
+
 	//define gradient for error text highlight
-	NSColor * errorColor = [NSColor colorWithDeviceRed:1 green:0 blue:0 alpha: lineAlpha];
+	NSColor * errorColor = [NSColor colorWithDeviceRed:0.5 green:0 blue:0 alpha: lineAlpha];
 	NSGradient * gError = [[NSGradient alloc] initWithStartingColor: [errorColor colorWithAlphaComponent: topAlpha]
 														endingColor: [errorColor colorWithAlphaComponent: bottomAlpha]];
 	//define error text highlight theme
@@ -110,7 +120,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	
 
 	//define gradient for static Analyzer text highlight
-	NSColor * analyzerColor = [NSColor colorWithDeviceRed:0.5 green:0.5 blue:1 alpha: lineAlpha];
+	NSColor * analyzerColor = [NSColor colorWithDeviceRed:0.25 green:0.25 blue:0.5 alpha: lineAlpha];
 	NSGradient * gAnalyzer = [[NSGradient alloc] initWithStartingColor: [analyzerColor colorWithAlphaComponent: topAlpha]
 														   endingColor: [analyzerColor colorWithAlphaComponent: bottomAlpha]];
 	//define static Analyzer text highlight theme
@@ -125,12 +135,11 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 												caretColor: [NSColor blueColor]  
 							   highlightedRangeBorderColor: [NSColor clearColor] 
 	 ];
-
 	
 	//define gradient for debugger text highlight
-	NSColor * debuggerColor = [NSColor colorWithDeviceRed:0.0 green:1 blue:0.5 alpha: lineAlpha];
-	NSGradient * gDebugger = [[NSGradient alloc] initWithStartingColor: [debuggerColor colorWithAlphaComponent: topAlpha]
-														   endingColor: [debuggerColor colorWithAlphaComponent: bottomAlpha]];
+	NSColor * debuggerColor = [NSColor colorWithDeviceRed:0.4 green:0.5 blue:0.4 alpha: 0.6];
+	NSGradient * gDebugger = [[NSGradient alloc] initWithStartingColor: [debuggerColor colorWithAlphaComponent: 0.8]
+														   endingColor: [debuggerColor colorWithAlphaComponent: 0.8]];
 	//define static debugger text highlight theme
 	debuggerTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: debuggerColor 
@@ -146,7 +155,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	
 
 	//define gradient for Notice text highlight
-	NSColor * noticeColor = [NSColor colorWithDeviceRed:0.25 green:0.25 blue:0.25 alpha: lineAlpha];
+	NSColor * noticeColor = [NSColor colorWithDeviceRed:0.15 green:0.15 blue:0.15 alpha: lineAlpha];
 	NSGradient * gNotice = [[NSGradient alloc] initWithStartingColor: [noticeColor colorWithAlphaComponent: topAlpha]
 														 endingColor: [noticeColor colorWithAlphaComponent: bottomAlpha]];
 	//define Notice text highlight theme
@@ -161,9 +170,16 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 												caretColor: [NSColor grayColor]  
 							   highlightedRangeBorderColor: [NSColor clearColor] 
 	 ];
+	
+//	pAnnotationFont = [NSFont fontWithName:@"Lucida Grande" size:7.5];
 
 	gOriginalnewMessageAttributesForFont = XCFixinOverrideMethodString(@"DVTTextAnnotation", @selector(setTheme:forState:), (IMP)&overridenewMessageAttributesForFont);
 		XCFixinAssertOrPerform(gOriginalnewMessageAttributesForFont, goto failed);
+	
+	gOriginal_defaultMessageFontSize = XCFixinOverrideStaticMethodString(@"DVTMessageBubbleView", @selector(_defaultMessageFontSize), (IMP)&override_defaultMessageFontSize);
+	XCFixinAssertOrPerform(gOriginal_defaultMessageFontSize, goto failed);
+	
+	
     XCFixinPostflight();
 }
 

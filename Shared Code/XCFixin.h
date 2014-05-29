@@ -1,22 +1,29 @@
 #import <Foundation/Foundation.h>
 
+
+#ifdef _DEBUG
+#define XCFixinLog(...) NSLog(__VA_ARGS__)
+#else
+#define XCFixinLog(...) ((void)0)
+#endif
+
 #define XCFixinPreflight()                         \
     if (!XCFixinShouldLoad())                      \
         return;                                    \
                                                    \
     static NSUInteger loadAttempt = 0;             \
     loadAttempt++;                                 \
-    NSLog(@"%@ initialization attempt %ju/%ju...", \
+    XCFixinLog(@"%@ initialization attempt %ju/%ju...", \
 		  NSStringFromClass([self class]),         \
 		  (uintmax_t)loadAttempt,                  \
 		  (uintmax_t)XCFixinMaxLoadAttempts);
 
 #define XCFixinPostflight()                                                                                 \
-    NSLog(@"%@ initialization successful!", NSStringFromClass([self class]));                               \
+    XCFixinLog(@"%@ initialization successful!", NSStringFromClass([self class]));                               \
     return;                                                                                                 \
     failed:                                                                                                 \
     {                                                                                                       \
-        NSLog(@"%@ initialization failed.", NSStringFromClass([self class]));                               \
+        XCFixinLog(@"%@ initialization failed.", NSStringFromClass([self class]));                               \
                                                                                                             \
         if (loadAttempt < XCFixinMaxLoadAttempts)                                                           \
         {                                                                                                   \
@@ -27,7 +34,7 @@
                 });                                                                                         \
         }                                                                                                   \
                                                                                                             \
-        else NSLog(@"%@ failing permanently. :(", NSStringFromClass([self class]));                         \
+        else XCFixinLog(@"%@ failing permanently. :(", NSStringFromClass([self class]));                         \
     }
 
 #define XCFixinAssertMessageFormat @"Assertion failed (file: %s, function: %s, line: %u): %s\n"
@@ -41,7 +48,7 @@
                                                                                                        \
     if (!__evaluated_condition)                                                                        \
     {                                                                                                  \
-        NSLog(XCFixinAssertMessageFormat, __FILE__, __PRETTY_FUNCTION__, __LINE__, (#condition));      \
+        XCFixinLog(XCFixinAssertMessageFormat, __FILE__, __PRETTY_FUNCTION__, __LINE__, (#condition));      \
         action;                                                                                        \
     }                                                                                                  \
 })
@@ -69,3 +76,6 @@ IMP XCFixinOverrideMethod(Class class, SEL selector, IMP newImplementation);
 
 @class NSTextView;
 NSTextView *XCFixinFindIDETextView(BOOL log);
+IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation);
+#define XCFixinOverrideStaticMethodString(className, selector, newImplementation) XCFixinOverrideStaticMethod(NSClassFromString(className), selector, newImplementation)
+

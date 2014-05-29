@@ -8,19 +8,15 @@ BOOL XCFixinShouldLoad(void)
     
     /* Prevent our plugins from loading in non-IDE processes, like xcodebuild. */
     NSString *processName = [[NSProcessInfo processInfo] processName];
-        XCFixinConfirmOrPerform([processName caseInsensitiveCompare: @"xcode"] == NSOrderedSame, goto cleanup);
+        XCFixinConfirmOrPerform([processName caseInsensitiveCompare: @"xcode"] == NSOrderedSame, return NO);
     
     /* Prevent our plugins from loading in Xcode versions < 4. */
-	{
-		NSArray *versionComponents = [[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"] componentsSeparatedByString: @"."];
-        XCFixinConfirmOrPerform(versionComponents && [versionComponents count], goto cleanup);
-		NSInteger xcodeMajorVersion = [[versionComponents objectAtIndex: 0] integerValue];
-        XCFixinConfirmOrPerform(xcodeMajorVersion >= 4, goto cleanup);
-    }
-	
-    result = YES;
+    NSArray *versionComponents = [[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"] componentsSeparatedByString: @"."];
+        XCFixinConfirmOrPerform(versionComponents && [versionComponents count], return NO);
+    NSInteger xcodeMajorVersion = [[versionComponents objectAtIndex: 0] integerValue];
+        XCFixinConfirmOrPerform(xcodeMajorVersion >= 4, return NO);
     
-    cleanup:
+    result = YES;
     
     return result;
 }
@@ -127,3 +123,34 @@ NSTextView *XCFixinFindIDETextView(BOOL log)
 	return textView;
 }
 
+IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation)
+{
+    Method *classMethods = nil;
+    IMP result = nil;
+    
+	XCFixinAssertOrPerform(class, goto cleanup);
+	XCFixinAssertOrPerform(selector, goto cleanup);
+	XCFixinAssertOrPerform(newImplementation, goto cleanup);
+    
+    Method originalMethod = class_getClassMethod(class, selector);
+	XCFixinAssertOrPerform(originalMethod, goto cleanup);
+    
+    IMP originalImplementation = method_getImplementation(originalMethod);
+    unsigned int classMethodsCount = 0;
+    classMethods = class_copyMethodList(class, &classMethodsCount);
+	XCFixinAssertOrPerform(classMethods, goto cleanup);
+    
+    IMP setImplementationResult = method_setImplementation(originalMethod, newImplementation);
+	XCFixinAssertOrPerform(setImplementationResult, goto cleanup);
+    
+    result = originalImplementation;
+    
+cleanup:
+    {
+        if (classMethods)
+            free(classMethods),
+            classMethods = nil;
+    }
+    
+    return result;
+}

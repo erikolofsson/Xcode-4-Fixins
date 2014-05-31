@@ -379,7 +379,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 						else if (MatchOtherPrefix(pIdentifier, @"fspr_"))
 							pColor = pMemberStaticFunctionPrivate; // pMemberStaticFunctionProtected
 					}
-					if (Length >= 5)
+					if (!pColor && Length >= 5)
 					{
 						if (MatchOtherPrefix(pIdentifier, @"tf_C") || MatchOtherPrefix(pIdentifier, @"tf_F"))
 							pColor = pFunctionTemplateTypeParam;
@@ -402,7 +402,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 						else if (MatchVariablePrefix(pIdentifier, @"mcp_"))
 							pColor = pMemberConstantPrivate; // pMemberConstantProtected
 					}
-					if (Length >= 4)
+					if (!pColor && Length >= 4)
 					{
 						if (MatchOtherPrefix(pIdentifier, @"t_C") || MatchOtherPrefix(pIdentifier, @"t_F"))
 							pColor = pTemplateTypeParam;
@@ -431,37 +431,40 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 						else if (MatchVariablePrefix(pIdentifier, @"gc_"))
 							pColor = pGlobalConstant; // pGlobalStaticConstant;
 					}
-
-					if (MatchOtherPrefix(pIdentifier, @"TC"))
-						pColor = pTemplateType;
-					else if (MatchOtherPrefix(pIdentifier, @"f_"))
-						pColor = pMemberFunctionPublic;
-					else if (MatchOtherPrefix(pIdentifier, @"t_"))
-						pColor = pTemplateNonTypeParam;
-					else if (MatchOtherPrefix(pIdentifier, @"d_"))
-						pColor = pMacroParameter;
-					else if (MatchVariablePrefix(pIdentifier, @"m_"))
-						pColor = pMemberVariablePublic;
-					else if (MatchVariablePrefix(pIdentifier, @"g_"))
-						pColor = pGlobalVariable;
-					else if (MatchOtherPrefix(pIdentifier, @"IC") || MatchOtherPrefix(pIdentifier, @"PF"))
-						pColor = pType;
-					else if (MatchOtherPrefix(pIdentifier, @"C") || MatchOtherPrefix(pIdentifier, @"F"))
-						pColor = pType;
-					else if (MatchOtherPrefix(pIdentifier, @"N"))
-						pColor = pNamespace;
-					else if (MatchOtherPrefix(pIdentifier, @"E"))
+					if (!pColor)
 					{
-						// XCFixinLog(@"Enum(%@): %@\n", pIdentifier, [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
-						if (NodeType == TypeIdentifier)
-							pColor = pEnum;
-						else
-							pColor = pEnumerator;
+
+						if (MatchOtherPrefix(pIdentifier, @"TC"))
+							pColor = pTemplateType;
+						else if (MatchOtherPrefix(pIdentifier, @"f_"))
+							pColor = pMemberFunctionPublic;
+						else if (MatchOtherPrefix(pIdentifier, @"t_"))
+							pColor = pTemplateNonTypeParam;
+						else if (MatchOtherPrefix(pIdentifier, @"d_"))
+							pColor = pMacroParameter;
+						else if (MatchVariablePrefix(pIdentifier, @"m_"))
+							pColor = pMemberVariablePublic;
+						else if (MatchVariablePrefix(pIdentifier, @"g_"))
+							pColor = pGlobalVariable;
+						else if (MatchOtherPrefix(pIdentifier, @"IC") || MatchOtherPrefix(pIdentifier, @"PF"))
+							pColor = pType;
+						else if (MatchOtherPrefix(pIdentifier, @"C") || MatchOtherPrefix(pIdentifier, @"F"))
+							pColor = pType;
+						else if (MatchOtherPrefix(pIdentifier, @"N"))
+							pColor = pNamespace;
+						else if (MatchOtherPrefix(pIdentifier, @"E"))
+						{
+							// XCFixinLog(@"Enum(%@): %@\n", pIdentifier, [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
+							if (NodeType == TypeIdentifier)
+								pColor = pEnum;
+							else
+								pColor = pEnumerator;
+						}
+						else if (MatchOtherPrefix(pIdentifier, @"D"))
+							pColor = pMacro;
+						else if (MatchVariablePrefix(pIdentifier, @"_"))
+							pColor = pFunctionParameter;
 					}
-					else if (MatchOtherPrefix(pIdentifier, @"D"))
-						pColor = pMacro;
-					else if (MatchVariablePrefix(pIdentifier, @"_"))
-						pColor = pFunctionParameter;
 				}
 
 				if (pColor)

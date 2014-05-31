@@ -78,4 +78,5 @@ IMP XCFixinOverrideMethod(Class class, SEL selector, IMP newImplementation);
 NSTextView *XCFixinFindIDETextView(BOOL log);
 IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation);
 #define XCFixinOverrideStaticMethodString(className, selector, newImplementation) XCFixinOverrideStaticMethod(NSClassFromString(className), selector, newImplementation)
-
+@class NSLayoutManager;
+void XCFixinUpdateTempAttributes(NSLayoutManager *layoutManager, NSRange range);

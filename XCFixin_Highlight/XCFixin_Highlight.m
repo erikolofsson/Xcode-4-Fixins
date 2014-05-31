@@ -18,6 +18,8 @@ static IMP original_colorAtCharacterIndex = nil;
 
 @implementation XCFixin_Highlight
 
+static NSString* pAttributeName = @"XCFixinTempAttribute00";
+
 //-----------------------------------------------------------------------------------------------
 - (id) init {
 //-----------------------------------------------------------------------------------------------
@@ -121,6 +123,37 @@ static BOOL MatchOtherPrefix(NSString* _pIdentifier, NSString* _pToMatch)
 	return false;
 }
 
+static NSLayoutManager* pLastLayoutManager = nil;
+static NSMutableIndexSet* pIndexSet = nil;
+static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment)
+{
+	if (_pLayoutManager != pLastLayoutManager)
+	{
+		pLastLayoutManager = _pLayoutManager;
+		pIndexSet = [[NSMutableIndexSet alloc] init];
+	}
+	if (_bComment)
+	{
+		if (![pIndexSet containsIndexesInRange:_Range])
+		{
+			[pIndexSet addIndexesInRange:_Range];
+			[_pLayoutManager addTemporaryAttribute: pAttributeName value: pCommentBackground forCharacterRange: _Range];
+			XCFixinUpdateTempAttributes(_pLayoutManager, _Range);
+		}
+	}
+	else
+	{
+		if ([pIndexSet intersectsIndexesInRange:_Range])
+		{
+			[pIndexSet removeIndexesInRange:_Range];
+			[_pLayoutManager removeTemporaryAttribute: pAttributeName forCharacterRange: _Range];
+			XCFixinUpdateTempAttributes(_pLayoutManager, _Range);
+		}
+	}
+	
+	return _pColor;
+}
+
 static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _Index, struct _NSRange *_pEffectiveRange, NSDictionary* _pContext)
 {
 	DVTTextStorage* textStorage = self_;
@@ -152,7 +185,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
 			return [pTheme colorForNodeType:NodeType];
 		}
-
+		
 		static short CommentNodeType = -1;
 		if (CommentNodeType == -1)
 			CommentNodeType = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.comment"];
@@ -166,15 +199,62 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		if (StringIdentifier == -1)
 			StringIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.string"];
 
-		if (NodeType == CommentNodeType || NodeType == CommentDocNodeType || NodeType == StringIdentifier)
+
+		NSArray* pViews = [textStorage _associatedTextViews];
+		NSLayoutManager* pLayoutManager = nil;
+		if (pViews && [pViews count] > 0)
 		{
-			// Don't color comments or strings
-			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-			return [pTheme colorForNodeType:NodeType];
+			DVTSourceTextView* pTextView = [pViews lastObject];
+			pLayoutManager = [pTextView layoutManager];
 		}
-		
+
  		NSString *pString = [textStorage string];
 		NSUInteger Length = [pString length];
+		
+		if (NodeType == CommentNodeType || NodeType == CommentDocNodeType || NodeType == StringIdentifier)
+		{
+			if (NodeType == CommentNodeType || NodeType == CommentDocNodeType)
+			{
+				// Parse away white space
+				NSUInteger iChar = _pEffectiveRange->location + _pEffectiveRange->length;
+				while (iChar < Length)
+				{
+					unichar Character = [pString characterAtIndex: iChar];
+					if (![pWhitespaceNoNewLineChars characterIsMember:Character])
+						break;
+					++iChar;
+				}
+
+				if (iChar < Length)
+				{
+					unichar Character = [pString characterAtIndex: iChar];
+					if ([pNewLineChars characterIsMember:Character])
+					{
+						// Parse away new line
+						if (Character == '\r')
+						{
+							++iChar;
+							if (iChar < Length)
+								Character = [pString characterAtIndex: iChar];
+						}
+						if (Character == '\n')
+							++iChar;
+						_pEffectiveRange->length = iChar - _pEffectiveRange->location;
+					}
+				}
+				else
+					_pEffectiveRange->length = iChar - _pEffectiveRange->location;
+				
+				return FixupCommentBackground(pLayoutManager, pCommentForeground, *_pEffectiveRange, true);
+			}
+			
+			//[[view layoutManager] addTemporaryAttribute: NSBackgroundColorAttributeName value: pColor forCharacterRange: [[view string] lineRangeForRange:range] ];
+			// Don't color comments or strings
+			
+			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
+			return FixupCommentBackground(pLayoutManager, [pTheme colorForNodeType:NodeType], *_pEffectiveRange, false);
+		}
+		
 		
 		NSUInteger iChar = _Index;
 		unichar Character = [pString characterAtIndex: iChar];
@@ -223,8 +303,24 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				Range.location = iStart;
 				Range.length = iChar - iStart;
 				*_pEffectiveRange = Range;
+
+				/*
+				{
+					NSArray* pViews = [textStorage _associatedTextViews];
+					if (pViews && [pViews count] > 0)
+					{
+						DVTSourceTextView* pTextView = [pViews lastObject];
+						NSRange NewRange = *_pEffectiveRange;
+						++NewRange.length;
+						NSLayoutManager* pLayoutManager = [pTextView layoutManager];
+						[pLayoutManager removeTemporaryAttribute: pAttributeName forCharacterRange: NewRange];
+						XCFixinUpdateTempAttributes(pLayoutManager, NewRange);
+					}
+				}
+				 */
+				
 				DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-				return [pTheme colorForNodeType:NodeType];
+				return FixupCommentBackground(pLayoutManager, [pTheme colorForNodeType:NodeType], *_pEffectiveRange, false);
 			}
 			else if ([pOperatorCharacters characterIsMember:Character])
 			{
@@ -246,7 +342,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				//NSString *pIdentifier = [pString substringWithRange: Range];
 				//XCFixinLog(@"%@: %@\n", pIdentifier, [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
 				
-				return pOperator;
+				return FixupCommentBackground(pLayoutManager, pOperator, *_pEffectiveRange, false);
 			}
 			else if ([pStartIdentifierCharacterSet characterIsMember:Character])
 			{
@@ -271,240 +367,113 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 
 				//XCFixinLog(@"Parsed Identifier (%@): %f ms\n", pIdentifier, (CFAbsoluteTimeGetCurrent() - Time) * 1000.0);
 				
-				if (pColor)
-				{
-					*_pEffectiveRange = Range;
-					return pColor;
-				}
-
 				NSUInteger Length = [pIdentifier length];
-				if (Length >= 3)
+				if (!pColor && Length >= 3)
 				{
 					if (Length >= 6)
 					{
 						if (MatchOtherPrefix(pIdentifier, @"tf_PF"))
-						{
-							*_pEffectiveRange = Range;
-							return pFunctionTemplateTypeParam;
-						}
+							pColor = pFunctionTemplateTypeParam;
 						else if (MatchOtherPrefix(pIdentifier, @"fsgr_"))
-						{
-							*_pEffectiveRange = Range;
-							return pStaticFunction;
-						}
+							pColor = pStaticFunction;
 						else if (MatchOtherPrefix(pIdentifier, @"fspr_"))
-						{
-							// TODO: Figure out function private/protected
-							*_pEffectiveRange = Range;
-							return pMemberStaticFunctionPrivate;
-							// return pMemberStaticFunctionProtected;
-						}
-						
+							pColor = pMemberStaticFunctionPrivate; // pMemberStaticFunctionProtected
 					}
 					if (Length >= 5)
 					{
 						if (MatchOtherPrefix(pIdentifier, @"tf_C") || MatchOtherPrefix(pIdentifier, @"tf_F"))
-						{
-							*_pEffectiveRange = Range;
-							return pFunctionTemplateTypeParam;
-						}
+							pColor = pFunctionTemplateTypeParam;
 						else if (MatchOtherPrefix(pIdentifier, @"tf_T"))
-						{
-							*_pEffectiveRange = Range;
-							return pFunctionTemplateTemplateParam;
-						}
+							pColor = pFunctionTemplateTemplateParam;
 						else if (MatchOtherPrefix(pIdentifier, @"t_PF"))
-						{
-							*_pEffectiveRange = Range;
-							return pTemplateTypeParam;
-						}
+							pColor = pTemplateTypeParam;
 						else if (MatchOtherPrefix(pIdentifier, @"fgr_"))
-						{
-							*_pEffectiveRange = Range;
-							return pFunction;
-						}
+							pColor = pFunction;
 						else if (MatchOtherPrefix(pIdentifier, @"fsg_"))
-						{
-							*_pEffectiveRange = Range;
-							return pStaticFunction;
-						}
+							pColor = pStaticFunction;
 						else if (MatchOtherPrefix(pIdentifier, @"fpr_"))
-						{
-							// TODO: Figure out function private/protected
-							*_pEffectiveRange = Range;
-							return pMemberFunctionPrivate;
-							// return pMemberFunctionProtected;
-						}
+							pColor = pMemberFunctionPrivate; // pMemberFunctionProtected
 						else if (MatchOtherPrefix(pIdentifier, @"fsp_"))
-						{
-							// TODO: Figure out function private/protected
-							*_pEffectiveRange = Range;
-							return pMemberStaticFunctionPrivate;
-							// return pMemberStaticFunctionProtected;
-						}
+							pColor = pMemberStaticFunctionPrivate; // pMemberStaticFunctionProtected
 						else if (MatchOtherPrefix(pIdentifier, @"fsr_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberStaticFunctionPublic;
-						}
+							pColor = pMemberStaticFunctionPublic;
 						else if (MatchVariablePrefix(pIdentifier, @"msp_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberStaticVariablePrivate;
-							// return pMemberStaticVariableProtected;
-						}
+							pColor = pMemberStaticVariablePrivate; // pMemberStaticVariableProtected
 						else if (MatchVariablePrefix(pIdentifier, @"mcp_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberConstantPrivate;
-							// return pMemberConstantProtected;
-						}
+							pColor = pMemberConstantPrivate; // pMemberConstantProtected
 					}
 					if (Length >= 4)
 					{
 						if (MatchOtherPrefix(pIdentifier, @"t_C") || MatchOtherPrefix(pIdentifier, @"t_F"))
-						{
-							*_pEffectiveRange = Range;
-							return pTemplateTypeParam;
-						}
+							pColor = pTemplateTypeParam;
 						else if (MatchOtherPrefix(pIdentifier, @"t_T"))
-						{
-							*_pEffectiveRange = Range;
-							return pTemplateTemplateParam;
-						}
+							pColor = pTemplateTemplateParam;
 						else if (MatchVariablePrefix(pIdentifier, @"tf_"))
-						{
-							*_pEffectiveRange = Range;
-							return pFunctionTemplateNonTypeParam;
-						}
+							pColor = pFunctionTemplateNonTypeParam;
 						else if (MatchOtherPrefix(pIdentifier, @"TIC"))
-						{
-							*_pEffectiveRange = Range;
-							return pTemplateType;
-						}
+							pColor = pTemplateType;
 						else if (MatchOtherPrefix(pIdentifier, @"fg_"))
-						{
-							*_pEffectiveRange = Range;
-							return pFunction;
-						}
+							pColor = pFunction;
 						else if (MatchOtherPrefix(pIdentifier, @"fp_"))
-						{
-							*_pEffectiveRange = Range;
-							// TODO: Figure out function private/protected
-							return pMemberFunctionPrivate;
-							// return pMemberFunctionProtected;
-						}
+							pColor = pMemberFunctionPrivate; // pMemberFunctionProtected
 						else if (MatchOtherPrefix(pIdentifier, @"fr_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberFunctionPublic;
-						}
+							pColor = pMemberFunctionPublic;
 						else if (MatchOtherPrefix(pIdentifier, @"fs_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberStaticFunctionPublic;
-						}
+							pColor = pMemberStaticFunctionPublic;
 						else if (MatchVariablePrefix(pIdentifier, @"mp_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberVariablePrivate;
-							// return pMemberVariableProtected;
-						}
+							pColor = pMemberVariablePrivate; // pMemberVariableProtected
 						else if (MatchVariablePrefix(pIdentifier, @"ms_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberStaticVariablePublic;
-						}
+							pColor = pMemberStaticVariablePublic;
 						else if (MatchVariablePrefix(pIdentifier, @"gs_"))
-						{
-							*_pEffectiveRange = Range;
-							return pGlobalStaticVariable;
-						}
+							pColor = pGlobalStaticVariable;
 						else if (MatchVariablePrefix(pIdentifier, @"mc_"))
-						{
-							*_pEffectiveRange = Range;
-							return pMemberConstantPublic;
-						}
+							pColor = pMemberConstantPublic;
 						else if (MatchVariablePrefix(pIdentifier, @"gc_"))
-						{
-							*_pEffectiveRange = Range;
-							return pGlobalConstant;
-							// return pGlobalStaticConstant;
-						}
+							pColor = pGlobalConstant; // pGlobalStaticConstant;
 					}
 
 					if (MatchOtherPrefix(pIdentifier, @"TC"))
-					{
-						*_pEffectiveRange = Range;
-						return pTemplateType;
-					}
+						pColor = pTemplateType;
 					else if (MatchOtherPrefix(pIdentifier, @"f_"))
-					{
-						*_pEffectiveRange = Range;
-						return pMemberFunctionPublic;
-					}
+						pColor = pMemberFunctionPublic;
 					else if (MatchOtherPrefix(pIdentifier, @"t_"))
-					{
-						*_pEffectiveRange = Range;
-						return pTemplateNonTypeParam;
-					}
+						pColor = pTemplateNonTypeParam;
 					else if (MatchOtherPrefix(pIdentifier, @"d_"))
-					{
-						*_pEffectiveRange = Range;
-						return pMacroParameter;
-					}
+						pColor = pMacroParameter;
 					else if (MatchVariablePrefix(pIdentifier, @"m_"))
-					{
-						*_pEffectiveRange = Range;
-						return pMemberVariablePublic;
-					}
+						pColor = pMemberVariablePublic;
 					else if (MatchVariablePrefix(pIdentifier, @"g_"))
-					{
-						*_pEffectiveRange = Range;
-						return pGlobalVariable;
-					}
+						pColor = pGlobalVariable;
 					else if (MatchOtherPrefix(pIdentifier, @"IC") || MatchOtherPrefix(pIdentifier, @"PF"))
-					{
-						*_pEffectiveRange = Range;
-						return pType;
-					}
+						pColor = pType;
 					else if (MatchOtherPrefix(pIdentifier, @"C") || MatchOtherPrefix(pIdentifier, @"F"))
-					{
-						*_pEffectiveRange = Range;
-						return pType;
-					}
+						pColor = pType;
 					else if (MatchOtherPrefix(pIdentifier, @"N"))
-					{
-						*_pEffectiveRange = Range;
-						return pNamespace;
-					}
+						pColor = pNamespace;
 					else if (MatchOtherPrefix(pIdentifier, @"E"))
 					{
 						// XCFixinLog(@"Enum(%@): %@\n", pIdentifier, [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
-
-						*_pEffectiveRange = Range;
-						
 						if (NodeType == TypeIdentifier)
-							return pEnum;
+							pColor = pEnum;
 						else
-							return pEnumerator;
+							pColor = pEnumerator;
 					}
 					else if (MatchOtherPrefix(pIdentifier, @"D"))
-					{
-						*_pEffectiveRange = Range;
-						return pMacro;
-					}
+						pColor = pMacro;
 					else if (MatchVariablePrefix(pIdentifier, @"_"))
-					{
-						*_pEffectiveRange = Range;
-						return pFunctionParameter;
-					}
-					
+						pColor = pFunctionParameter;
+				}
+
+				if (pColor)
+				{
+					*_pEffectiveRange = Range;
+					return FixupCommentBackground(pLayoutManager, pColor, *_pEffectiveRange, false);
 				}
 			}
 		}
 		
-		//XCFixinLog(@"ParseTime: %f ms\n", (CFAbsoluteTimeGetCurrent() - Time) * 1000.0);
+		DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
+		return FixupCommentBackground(pLayoutManager, [pTheme colorForNodeType:NodeType], *_pEffectiveRange, false);
 	}
 
 	DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
@@ -549,6 +518,8 @@ static NSColor* pFunction = nil;
 static NSColor* pEnum = nil;
 static NSColor* pMacro = nil;
 static NSColor* pOperator = nil;
+static NSColor* pCommentBackground = nil;
+static NSColor* pCommentForeground = nil;
 
 static void AddDefaultKeyword(NSString* _pKeyword, NSColor* _pColor)
 {
@@ -601,6 +572,8 @@ static void AddDefaultKeywords()
 	pEnum = CreateColor(0x00FF9DA7);
 	pMacro = CreateColor(0x00097DFF);
 	pOperator = CreateColor(0x00FFFFFF);
+	pCommentForeground = CreateColor(0x003B9FFF);
+	pCommentBackground = CreateColor(0x00373700);
 	
 	NSColor* pKeywordBulitInTypes = CreateColor(0x006659FF);
 	NSColor* pKeywordBulitInCharacterTypes = CreateColor(0x006659FF);
@@ -997,6 +970,8 @@ static NSMutableCharacterSet *pValidConceptCharacters = nil;
 static NSMutableCharacterSet *pOperatorCharacters = nil;
 static NSCharacterSet *pUpperCaseChars = nil;
 static NSCharacterSet *pWhitespaceChars = nil;
+static NSCharacterSet *pWhitespaceNoNewLineChars = nil;
+static NSCharacterSet *pNewLineChars = nil;
 static NSMutableDictionary *pDefaultKeywords = nil;
 
 //-----------------------------------------------------------------------------------------------
@@ -1010,6 +985,8 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 	{
 		pUpperCaseChars = [NSCharacterSet uppercaseLetterCharacterSet];
 		pWhitespaceChars = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+		pWhitespaceNoNewLineChars = [NSCharacterSet whitespaceCharacterSet];
+		pNewLineChars = [NSCharacterSet newlineCharacterSet];
 	}
 	{
 		pStartIdentifierCharacterSet = [[NSMutableCharacterSet alloc] init];

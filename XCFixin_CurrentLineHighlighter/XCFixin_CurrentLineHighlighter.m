@@ -48,6 +48,7 @@
 
 @implementation XCFixin_XCodeCurrentLineHighlighter
 
+static NSString* pAttributeName = @"XCFixinTempAttribute10";
 
 //-----------------------------------------------------------------------------------------------
 - (id) init {
@@ -128,7 +129,12 @@
 //-----------------------------------------------------------------------------------------------
   @try {
     if (pColor)
-      [[view layoutManager] addTemporaryAttribute: NSBackgroundColorAttributeName value: pColor forCharacterRange: [[view string] lineRangeForRange:range] ];
+    {
+      NSRange LineRange = [[view string] lineRangeForRange:range];
+      NSLayoutManager *layoutManager = [view layoutManager];
+      [layoutManager addTemporaryAttribute: pAttributeName value: pColor forCharacterRange: LineRange];
+      XCFixinUpdateTempAttributes(layoutManager, LineRange);
+    }    
   }
   @catch ( NSException* exception ) {
     if ( [[exception name] isNotEqualTo:NSRangeException] ) {
@@ -141,9 +147,11 @@
 //-----------------------------------------------------------------------------------------------
 - (void) removeHighlightFromLineInView:(id)view containingRange:(NSRange)range {
 //-----------------------------------------------------------------------------------------------
-@try {
-  [[view layoutManager] removeTemporaryAttribute: NSBackgroundColorAttributeName 
-                   forCharacterRange: [[view string] lineRangeForRange:range]];
+  @try {
+    NSRange LineRange = [[view string] lineRangeForRange:range];
+    NSLayoutManager *layoutManager = [view layoutManager];
+    [[view layoutManager] removeTemporaryAttribute: pAttributeName forCharacterRange: LineRange];
+    XCFixinUpdateTempAttributes(layoutManager, LineRange);
   }
   @catch ( NSException* exception ) {
   if ( [[exception name] isNotEqualTo:NSRangeException] ) {
@@ -247,7 +255,7 @@
 //----------------------------------------------------------------------------------------------- 
   id view = [notification object];
 
-  XCFixinLog(@"%s: frameChanged.\n",__FUNCTION__);
+  //XCFixinLog(@"%s: frameChanged.\n",__FUNCTION__);
   
   if ([view isMemberOfClass: sourceEditorViewClass]) {
 

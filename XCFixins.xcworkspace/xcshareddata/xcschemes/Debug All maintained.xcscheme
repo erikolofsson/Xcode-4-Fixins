@@ -118,6 +118,20 @@
                ReferencedContainer = "container:XCFixin_P4Checkout/XCFixin_P4Checkout.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "435E247113A8E4A20052479A"
+               BuildableName = "XCFixin_Highlight.xcplugin"
+               BlueprintName = "XCFixin_Highlight"
+               ReferencedContainer = "container:XCFixin_Highlight/XCFixin_Highlight.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -138,7 +152,7 @@
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
       <PathRunnable
-         FilePath = "/Applications/Xcode5-DP3.app">
+         FilePath = "/Applications/Xcode.app">
       </PathRunnable>
       <AdditionalOptions>
       </AdditionalOptions>

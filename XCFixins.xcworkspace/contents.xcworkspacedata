@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:XCFixin_Highlight/XCFixin_Highlight.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:XCFixin_EmulateVisualStudio/XCFixin_EmulateVisualStudio.xcodeproj">
    </FileRef>
    <FileRef

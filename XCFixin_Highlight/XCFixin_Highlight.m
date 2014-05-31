@@ -186,6 +186,14 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			{
 				iChar = _pEffectiveRange->location;
 				Character = [pString characterAtIndex: iChar];
+				while (iChar < Length)
+				{
+					Character = [pString characterAtIndex: iChar];
+					if ([pStartIdentifierCharacterSet characterIsMember:Character])
+						break;
+					++iChar;
+				}
+//				XCFixinLog(@"%@: %d\n", [DVTSourceNodeTypes nodeTypeNameForId:NodeType], Character);
 			}
 		}
 /*		

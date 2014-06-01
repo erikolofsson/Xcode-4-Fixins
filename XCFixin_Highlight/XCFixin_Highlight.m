@@ -170,14 +170,17 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		
 		BOOL bSupportedLanguage = false;
 
-		if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.C-Plus-Plus"] == 0)
+		if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage."])
+			bSupportedLanguage = true;
+
+/*		if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.C-Plus-Plus"] == 0)
 			bSupportedLanguage = true;
 		else if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.C"] == 0)
 			bSupportedLanguage = true;
 		else if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.Objective-C-Plus-Plus"] == 0)
 			bSupportedLanguage = true;
 		else if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.Objective-C"] == 0)
-			bSupportedLanguage = true;
+			bSupportedLanguage = true;*/
 		
 		if (!bSupportedLanguage)
 		{
@@ -198,6 +201,12 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		static short StringIdentifier = -1;
 		if (StringIdentifier == -1)
 			StringIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.string"];
+		static short CharacterIdentifier = -1;
+		if (CharacterIdentifier == -1)
+			CharacterIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.character"];
+		static short NumberIdentifier = -1;
+		if (NumberIdentifier == -1)
+			NumberIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.number"];
 
 
 		NSArray* pViews = [textStorage _associatedTextViews];
@@ -211,7 +220,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
  		NSString *pString = [textStorage string];
 		NSUInteger Length = [pString length];
 		
-		if (NodeType == CommentNodeType || NodeType == CommentDocNodeType || NodeType == StringIdentifier)
+		if (NodeType == CommentNodeType || NodeType == CommentDocNodeType || NodeType == StringIdentifier || NodeType == NumberIdentifier || NodeType == CharacterIdentifier)
 		{
 			if (NodeType == CommentNodeType || NodeType == CommentDocNodeType)
 			{
@@ -255,23 +264,24 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			return FixupCommentBackground(pLayoutManager, [pTheme colorForNodeType:NodeType], *_pEffectiveRange, false);
 		}
 		
-		
 		NSUInteger iChar = _Index;
 		unichar Character = [pString characterAtIndex: iChar];
 		
 		if (_pEffectiveRange->location > 0 && _pEffectiveRange->location < iChar)
 		{
-
 			if ([pIdentifierCharacterSet characterIsMember:Character])
 			{
-				iChar = _pEffectiveRange->location;
-				Character = [pString characterAtIndex: iChar];
-				while (iChar < Length)
+				// Walk backwords finding start of identifier
+				while (iChar > _pEffectiveRange->location)
 				{
+					--iChar;
 					Character = [pString characterAtIndex: iChar];
-					if ([pStartIdentifierCharacterSet characterIsMember:Character])
+					if (![pIdentifierCharacterSet characterIsMember:Character])
+					{
+						++iChar;
+						Character = [pString characterAtIndex: iChar];
 						break;
-					++iChar;
+					}
 				}
 //				XCFixinLog(@"%@: %d\n", [DVTSourceNodeTypes nodeTypeNameForId:NodeType], Character);
 			}

@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 #import <objc/runtime.h>
 #include "../Shared Code/XCFixin.h"
 #import "../Shared Code/Xcode5/DVTKit/DVTSourceTextView.h"
@@ -9,6 +10,8 @@
 #import "../Shared Code/Xcode5/DVTFoundation/DVTSourceCodeLanguage.h"
 #import "../Shared Code/Xcode5/DVTFoundation/DVTLanguageSpecification.h"
 #import "../Shared Code/Xcode5/Plugins/IDESourceEditor/IDESourceCodeEditor.h"
+#import "../Shared Code/Xcode5/Plugins/IDESourceEditor/IDESourceCodeEditor.h"
+#import "../Shared Code/Xcode5/IDEFoundation/IDEIndex.h"
 
 
 static IMP original_colorAtCharacterIndex = nil;
@@ -42,6 +45,13 @@ static NSString* pAttributeName = @"XCFixinTempAttribute00";
                            selector: @selector( selectionChanged: )
                                name: NSTextViewDidChangeSelectionNotification
                              object: nil];
+	  
+    [notificationCenter addObserver: self
+                           selector: @selector( boundsChanged: )
+                               name: NSViewBoundsDidChangeNotification
+                             object: nil];
+
+	  
   }
   return self;
 }
@@ -55,34 +65,132 @@ static NSString* pAttributeName = @"XCFixinTempAttribute00";
 //static DVTTextStorage *textStorage;
 //static NSTextView *textView;
 
-- (void) updateTextView {
-/*	textView = XCFixinFindIDETextView(NO);
-
-	if (textView)
+static void parseAwayWhitespace(NSString *_pString, NSUInteger _Length, NSRange *_pRange)
+{
+	// Parse away white space
+	NSUInteger iChar = _pRange->location + _pRange->length;
+	while (iChar < _Length)
 	{
-		//DVTSourceTextView *dvtTextView = (DVTSourceTextView *)textView;
-		//NSLog(@"%s: textView = %@", __FUNCTION__, dvtTextView);
-		textStorage = (DVTTextStorage *)[textView textStorage];
-		//NSLog(@"%s: textStorage = %@", __FUNCTION__, textStorage);
+		unichar Character = [_pString characterAtIndex: iChar];
+		if (![pWhitespaceNoNewLineChars characterIsMember:Character])
+			break;
+		++iChar;
+	}
+
+	if (iChar < _Length)
+	{
+		unichar Character = [_pString characterAtIndex: iChar];
+		if ([pNewLineChars characterIsMember:Character])
+		{
+			// Parse away new line
+			if (Character == '\r')
+			{
+				++iChar;
+				if (iChar < _Length)
+					Character = [_pString characterAtIndex: iChar];
+			}
+			if (Character == '\n')
+				++iChar;
+			_pRange->length = iChar - _pRange->location;
+		}
 	}
 	else
-		textStorage = nil;*/
+		_pRange->length = iChar - _pRange->location;
+}
+
+static void updateTextView(DVTSourceTextView *_pTextView)
+{
+	NSRange Bounds = [_pTextView visibleCharacterRange];
+	
+	DVTTextStorage* textStorage = [_pTextView textStorage];
+	DVTSourceCodeLanguage* pLanguage = [textStorage language];
+	IDESourceCodeEditor* pSourceCodeEditor = (IDESourceCodeEditor*)[_pTextView delegate];
+	NSLayoutManager* pLayoutManager = [_pTextView layoutManager];
+	if (pLanguage && pSourceCodeEditor && pLayoutManager)
+	{
+
+		NSString* pIdentifier = [pLanguage identifier];
+		
+		BOOL bSupportedLanguage = false;
+
+		if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage."])
+			bSupportedLanguage = true;
+		
+		if (!bSupportedLanguage)
+			return;
+
+		NSMutableIndexSet *pNewIndexSet = [[NSMutableIndexSet alloc] init];
+		
+		unsigned long long iCharacter = Bounds.location;
+		unsigned long long iCharacterEnd = Bounds.location + Bounds.length;
+		
+		while (iCharacter < iCharacterEnd)
+		{
+			NSRange EffectiveRange;
+			long long NodeType = [textStorage nodeTypeAtCharacterIndex:iCharacter effectiveRange:&EffectiveRange context:nil];
+			
+			if (NodeType == CommentDocNodeType || NodeType == CommentNodeType)
+				[pNewIndexSet addIndexesInRange:NSIntersectionRange(EffectiveRange, Bounds)];
+			
+			iCharacter = EffectiveRange.location + EffectiveRange.length;
+		}
+
+		if (
+				[pIndexSet countOfIndexesInRange:Bounds] != [pNewIndexSet countOfIndexesInRange:Bounds]
+				|| ![pIndexSet containsIndexes:pNewIndexSet]
+			)
+		{
+			[pIndexSet removeIndexesInRange:Bounds];
+			[pIndexSet addIndexes:pNewIndexSet];
+			[pLayoutManager removeTemporaryAttribute: pAttributeName forCharacterRange: Bounds];
+			
+			[
+				pNewIndexSet enumerateRangesInRange:Bounds options:0 usingBlock:^(NSRange _Range, BOOL *_pbStop) 
+				{
+					[pLayoutManager addTemporaryAttribute: pAttributeName value: pCommentBackground forCharacterRange: _Range];
+				}
+			];
+			XCFixinUpdateTempAttributes(pLayoutManager, Bounds);
+		}
+		
+		
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 - (void) applicationReady:(NSNotification*)notification {
-	[self updateTextView];
 }
 
 //-----------------------------------------------------------------------------------------------
 - (void) frameChanged:(NSNotification*)notification {
-	[self updateTextView];
+	if ([notification.object isKindOfClass:[NSClipView class]])
+	{
+		NSClipView *pClipView = (NSClipView *)notification.object;
+		DVTSourceTextView *pTextView = (DVTSourceTextView *)[pClipView documentView];
+		if ([pTextView isKindOfClass: [DVTSourceTextView class]])
+		{
+			updateTextView(pTextView);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+- (void) boundsChanged:(NSNotification*)notification {
+	
+	if ([notification.object isKindOfClass:[NSClipView class]])
+	{
+		NSClipView *pClipView = (NSClipView *)notification.object;
+		DVTSourceTextView *pTextView = (DVTSourceTextView *)[pClipView documentView];
+		if ([pTextView isKindOfClass: [DVTSourceTextView class]])
+		{
+			updateTextView(pTextView);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
 - (void) selectionChanged:(NSNotification*)notification {
-	[self updateTextView];
 }
 
 static id highlighter = nil;
@@ -125,7 +233,71 @@ static BOOL MatchOtherPrefix(NSString* _pIdentifier, NSString* _pToMatch)
 
 static NSLayoutManager* pLastLayoutManager = nil;
 static NSMutableIndexSet* pIndexSet = nil;
-static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment)
+static NSColor* FixupCommentBackground2(DVTSourceTextView* _pTextView, NSColor* _pColor, NSRange _Range, bool _bComment)
+{
+	if (_Range.length == 0)
+		return _pColor;
+	bool bChanged = false;
+	NSColor* pReturn = FixupCommentBackground([_pTextView layoutManager], _pColor, _Range, _bComment, &bChanged);
+	
+	if (bChanged)
+		updateTextView(_pTextView);
+	
+	return pReturn;
+}
+bool MakeSureOfAttributes(NSLayoutManager* _pLayoutManager, NSRange _Range)
+{
+	NSUInteger iLocation = _Range.location;
+	NSUInteger iEndLocation = _Range.location + _Range.length;
+  
+	Class nsStringClass = [NSString class];
+	
+	NSRange ChangedRange;
+	ChangedRange.location = 0;
+	ChangedRange.length = 0;
+
+	bool bChanged = false;
+	while (iLocation < iEndLocation)
+	{
+		NSRange EffectiveRange;
+		NSRange ThisRange;
+		ThisRange.location = iLocation;
+		ThisRange.length = iEndLocation - iLocation;
+		NSDictionary *pCurrentAttributes = [_pLayoutManager temporaryAttributesAtCharacterIndex:iLocation longestEffectiveRange:&EffectiveRange inRange:ThisRange];
+		NSEnumerator *keyEnumerator = [pCurrentAttributes keyEnumerator];
+		bool bFound = false;
+		for (id key = [keyEnumerator nextObject]; key != nil; key = [keyEnumerator nextObject])
+		{
+			if ([key isKindOfClass: nsStringClass] && [((NSString *)key) compare:pAttributeName] == NSOrderedSame)
+			{
+				bFound = true;
+				break;
+			}
+		}
+		
+		if (!bFound)
+		{
+			if (ChangedRange.length == 0)
+				ChangedRange = EffectiveRange;
+			else
+				ChangedRange = NSUnionRange(ChangedRange, EffectiveRange);
+			//XCFixinLog(@"AddForRange: %@\n", [[[_pLayoutManager textStorage] string] substringWithRange:EffectiveRange]);
+			[_pLayoutManager addTemporaryAttribute:pAttributeName value:pCommentBackground forCharacterRange:EffectiveRange];
+			bChanged = true;
+		}
+		
+		iLocation = EffectiveRange.location + EffectiveRange.length;
+	}
+	
+	if (bChanged)
+	{
+		//XCFixinLog(@"Changed: %@\n", [[[_pLayoutManager textStorage] string] substringWithRange:ChangedRange]);
+		XCFixinUpdateTempAttributes(_pLayoutManager, ChangedRange);
+	}
+	return bChanged;
+}
+
+static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment, bool *_pChanged)
 {
 	if (_pLayoutManager != pLastLayoutManager)
 	{
@@ -139,6 +311,11 @@ static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor
 			[pIndexSet addIndexesInRange:_Range];
 			[_pLayoutManager addTemporaryAttribute: pAttributeName value: pCommentBackground forCharacterRange: _Range];
 			XCFixinUpdateTempAttributes(_pLayoutManager, _Range);
+			*_pChanged = true;
+		}
+		else
+		{
+			MakeSureOfAttributes(_pLayoutManager, _Range);
 		}
 	}
 	else
@@ -148,11 +325,21 @@ static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor
 			[pIndexSet removeIndexesInRange:_Range];
 			[_pLayoutManager removeTemporaryAttribute: pAttributeName forCharacterRange: _Range];
 			XCFixinUpdateTempAttributes(_pLayoutManager, _Range);
+			*_pChanged = true;
 		}
 	}
 	
 	return _pColor;
 }
+
+static short CommentNodeType = -1;
+static short CommentDocNodeType = -1;
+static short TypeIdentifier = -1;
+static short StringIdentifier = -1;
+static short CharacterIdentifier = -1;
+static short NumberIdentifier = -1;
+static short PreprocessorIdentifier = -1;
+
 
 static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _Index, struct _NSRange *_pEffectiveRange, NSDictionary* _pContext)
 {
@@ -160,11 +347,18 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 	DVTSourceCodeLanguage* pLanguage = [textStorage language];
 	
 	long long NodeType = [textStorage nodeTypeAtCharacterIndex:_Index effectiveRange:_pEffectiveRange context:_pContext];
-	
 	//NSColor* Ret = ((NSColor* (*)(id, SEL, unsigned long long, struct _NSRange *, id))original_colorAtCharacterIndex)(self_, _cmd, _Index, _pEffectiveRange, _pContext);
+	
 	if (pLanguage)
 	{
+		//XCFixinLog(@"NodeType: %@\n", [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
 		//double Time = CFAbsoluteTimeGetCurrent();
+		
+		if (NodeType == PreprocessorIdentifier)
+		{
+			int x = 0;
+			++x;
+		}
 
 		NSString* pIdentifier = [pLanguage identifier];
 		
@@ -173,49 +367,27 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage."])
 			bSupportedLanguage = true;
 
-/*		if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.C-Plus-Plus"] == 0)
-			bSupportedLanguage = true;
-		else if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.C"] == 0)
-			bSupportedLanguage = true;
-		else if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.Objective-C-Plus-Plus"] == 0)
-			bSupportedLanguage = true;
-		else if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.Objective-C"] == 0)
-			bSupportedLanguage = true;*/
-		
 		if (!bSupportedLanguage)
 		{
 //			XCFixinLog(@"Language not supported: %@\n", pIdentifier);
 			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
 			return [pTheme colorForNodeType:NodeType];
 		}
-		
-		static short CommentNodeType = -1;
-		if (CommentNodeType == -1)
-			CommentNodeType = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.comment"];
-		static short CommentDocNodeType = -1;
-		if (CommentDocNodeType == -1)
-			CommentDocNodeType = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.comment.doc"];
-		static short TypeIdentifier = -1;
-		if (TypeIdentifier == -1)
-			TypeIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.identifier.type"];
-		static short StringIdentifier = -1;
-		if (StringIdentifier == -1)
-			StringIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.string"];
-		static short CharacterIdentifier = -1;
-		if (CharacterIdentifier == -1)
-			CharacterIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.character"];
-		static short NumberIdentifier = -1;
-		if (NumberIdentifier == -1)
-			NumberIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.number"];
-
 
 		NSArray* pViews = [textStorage _associatedTextViews];
-		NSLayoutManager* pLayoutManager = nil;
+		DVTSourceTextView* pTextView = nil;
 		if (pViews && [pViews count] > 0)
 		{
-			DVTSourceTextView* pTextView = [pViews lastObject];
-			pLayoutManager = [pTextView layoutManager];
+			pTextView = [pViews lastObject];
 		}
+		
+		if (!pTextView)
+		{
+			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
+			return [pTheme colorForNodeType:NodeType];
+		}
+
+		NSRange Bounds = [pTextView visibleCharacterRange];
 
  		NSString *pString = [textStorage string];
 		NSUInteger Length = [pString length];
@@ -224,44 +396,13 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		{
 			if (NodeType == CommentNodeType || NodeType == CommentDocNodeType)
 			{
-				// Parse away white space
-				NSUInteger iChar = _pEffectiveRange->location + _pEffectiveRange->length;
-				while (iChar < Length)
-				{
-					unichar Character = [pString characterAtIndex: iChar];
-					if (![pWhitespaceNoNewLineChars characterIsMember:Character])
-						break;
-					++iChar;
-				}
-
-				if (iChar < Length)
-				{
-					unichar Character = [pString characterAtIndex: iChar];
-					if ([pNewLineChars characterIsMember:Character])
-					{
-						// Parse away new line
-						if (Character == '\r')
-						{
-							++iChar;
-							if (iChar < Length)
-								Character = [pString characterAtIndex: iChar];
-						}
-						if (Character == '\n')
-							++iChar;
-						_pEffectiveRange->length = iChar - _pEffectiveRange->location;
-					}
-				}
-				else
-					_pEffectiveRange->length = iChar - _pEffectiveRange->location;
-				
-				return FixupCommentBackground(pLayoutManager, pCommentForeground, *_pEffectiveRange, true);
+				//parseAwayWhitespace(pString, Length, _pEffectiveRange);
+				return FixupCommentBackground2(pTextView, pCommentForeground, NSIntersectionRange(*_pEffectiveRange, Bounds), true);
 			}
 			
-			//[[view layoutManager] addTemporaryAttribute: NSBackgroundColorAttributeName value: pColor forCharacterRange: [[view string] lineRangeForRange:range] ];
 			// Don't color comments or strings
-			
 			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-			return FixupCommentBackground(pLayoutManager, [pTheme colorForNodeType:NodeType], *_pEffectiveRange, false);
+			return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false);
 		}
 		
 		NSUInteger iChar = _Index;
@@ -283,17 +424,9 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 						break;
 					}
 				}
-//				XCFixinLog(@"%@: %d\n", [DVTSourceNodeTypes nodeTypeNameForId:NodeType], Character);
 			}
 		}
-/*		
-		{
-			NSRange Range = *_pEffectiveRange;
-			NSString *pIdentifier = [pString substringWithRange: Range];
-			XCFixinLog(@"%@: %@\n", [DVTSourceNodeTypes nodeTypeNameForId:NodeType], pIdentifier);
-		}*/
-		
-		
+
 		if (iChar < Length)
 		{
 		
@@ -314,23 +447,8 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				Range.length = iChar - iStart;
 				*_pEffectiveRange = Range;
 
-				/*
-				{
-					NSArray* pViews = [textStorage _associatedTextViews];
-					if (pViews && [pViews count] > 0)
-					{
-						DVTSourceTextView* pTextView = [pViews lastObject];
-						NSRange NewRange = *_pEffectiveRange;
-						++NewRange.length;
-						NSLayoutManager* pLayoutManager = [pTextView layoutManager];
-						[pLayoutManager removeTemporaryAttribute: pAttributeName forCharacterRange: NewRange];
-						XCFixinUpdateTempAttributes(pLayoutManager, NewRange);
-					}
-				}
-				 */
-				
 				DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-				return FixupCommentBackground(pLayoutManager, [pTheme colorForNodeType:NodeType], *_pEffectiveRange, false);
+				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false);
 			}
 			else if ([pOperatorCharacters characterIsMember:Character])
 			{
@@ -349,10 +467,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				Range.length = iChar - iStart;
 				*_pEffectiveRange = Range;
 
-				//NSString *pIdentifier = [pString substringWithRange: Range];
-				//XCFixinLog(@"%@: %@\n", pIdentifier, [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
-				
-				return FixupCommentBackground(pLayoutManager, pOperator, *_pEffectiveRange, false);
+				return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false);
 			}
 			else if ([pStartIdentifierCharacterSet characterIsMember:Character])
 			{
@@ -480,13 +595,13 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				if (pColor)
 				{
 					*_pEffectiveRange = Range;
-					return FixupCommentBackground(pLayoutManager, pColor, *_pEffectiveRange, false);
+					return FixupCommentBackground2(pTextView, pColor, NSIntersectionRange(*_pEffectiveRange, Bounds), false);
 				}
 			}
 		}
 		
 		DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-		return FixupCommentBackground(pLayoutManager, [pTheme colorForNodeType:NodeType], *_pEffectiveRange, false);
+		return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false);
 	}
 
 	DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
@@ -1021,31 +1136,22 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 		[pOperatorCharacters addCharactersInString:@":;+-()[]{}<>!~*&.,/%=^|?"];
 	}
 	
+	CommentNodeType = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.comment"];
+	CommentDocNodeType = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.comment.doc"];
+	TypeIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.identifier.type"];
+	StringIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.string"];
+	CharacterIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.character"];
+	NumberIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.number"];
+	PreprocessorIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.identifier.macro"];
 	
 	AddDefaultKeywords();
-/*	
-	{
-		NSCharacterSet *pAlphaNumericSpace = [NSCharacterSet decimalDigitCharacterSet];
-		pNumberCharacterSet = [[NSMutableCharacterSet alloc] init];
-		[pNumberCharacterSet formUnionWithCharacterSet:pAlphaNumericSpace];
-		[pNumberCharacterSet addCharactersInString:@"_"];
-	}
-	*/
+
 	highlighter = [[XCFixin_Highlight alloc] init];
 
-	if (!highlighter) {
+	if (!highlighter)
+	{
 		XCFixinLog(@"%s: highlighter init failed.\n",__FUNCTION__);
 	}
-	/*
-	unsigned int outCount = 0;
-	Method *pMethods = class_copyMethodList(NSClassFromString(@"DVTTextStorage"), &outCount);
-	
-	for (unsigned int i = 0; i < outCount; ++i)
-	{
-		XCFixinLog(@"Name: %s\n", sel_getName(method_getDescription(pMethods[i])->name));
-	}
-
-	*/
 	
 	original_colorAtCharacterIndex = XCFixinOverrideMethodString(@"DVTTextStorage", @selector(colorAtCharacterIndex: effectiveRange: context:), (IMP)&colorAtCharacterIndex);
 	XCFixinAssertOrPerform(original_colorAtCharacterIndex, goto failed);

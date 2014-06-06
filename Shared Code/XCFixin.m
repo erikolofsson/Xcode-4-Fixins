@@ -166,7 +166,7 @@ static CGFloat XCFixinAddColor(CGFloat color0, CGFloat color1)
   return color;
 }
 
-void XCFixinUpdateTempAttributes(NSLayoutManager *layoutManager, NSRange range)
+void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
 {
   NSUInteger iLocation = range.location;
   NSUInteger iEndLocation = range.location + range.length;
@@ -225,8 +225,11 @@ void XCFixinUpdateTempAttributes(NSLayoutManager *layoutManager, NSRange range)
     
     iLocation = effectiveRange.location + effectiveRange.length;
   }
-  range.location -= MIN(256, range.location);
-  range.length += 512;
-  [layoutManager invalidateDisplayForCharacterRange: range];
+  // range.location -= MIN(256, range.location);
+  //range.length += 512;
+
+  dispatch_async(dispatch_get_main_queue(),  ^(void){
+    [layoutManager invalidateDisplayForCharacterRange: range];
+  });
 }
 

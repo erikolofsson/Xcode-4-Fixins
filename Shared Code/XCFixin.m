@@ -172,6 +172,7 @@ void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
   NSUInteger iEndLocation = range.location + range.length;
   
   Class nsStringClass = [NSString class];
+  NSString *pBestKey = nil;
   
   while (iLocation < iEndLocation)
   {
@@ -188,8 +189,12 @@ void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
         if ([((NSString *)key) hasPrefix:@"XCFixinTempAttribute"])
         {
           NSColor *pColor = [pCurrentAttributes objectForKey:key];
-          if (newColor == nil)
+          if (newColor == nil || [((NSString *)key) compare:pBestKey] > 0)
+          {
+            pBestKey = ((NSString *)key);
             newColor = pColor;
+          }
+          /*
           else
           {
             
@@ -213,7 +218,7 @@ void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
             
             newColor = [NSColor colorWithCalibratedRed:Red green:Green blue:Blue alpha:Alpha];
             //newColor = [newColor blendedColorWithFraction:Alpha*NewAlpha ofColor:pColor];
-          }
+          }*/
         }
       }
     }

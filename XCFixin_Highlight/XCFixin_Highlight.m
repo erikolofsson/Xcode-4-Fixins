@@ -725,7 +725,7 @@ static void AddDefaultKeywords()
 	NSColor* pKeywordTemplate = CreateColor(0x00FFFFFF);
 	NSColor* pKeywordTypedef = CreateColor(0x00FFFFFF);
 	NSColor* pKeywordUsing = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordAuto = CreateColor(0x00FFFFFF);
+	NSColor* pKeywordAuto = CreateColor(255<<16 | 192<<8 | 200);
 	NSColor* pKeywordThis = CreateColor(0x00FFFFFF);
 	NSColor* pKeywordOperator = CreateColor(0x00FFFFFF);
 	NSColor* pKeywordVirtual = CreateColor(0x00FFFFFF);

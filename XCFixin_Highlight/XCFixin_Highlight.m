@@ -119,7 +119,9 @@ static void updateTextView(DVTSourceTextView *_pTextView)
 		if (!bSupportedLanguage)
 			return;
 
-		NSMutableIndexSet *pNewIndexSet = [[NSMutableIndexSet alloc] init];
+		NSMutableIndexSet* pIndexSet = GetIndexSetInLayoutManager(pLayoutManager);
+		
+		NSMutableIndexSet* pNewIndexSet = [[NSMutableIndexSet alloc] init];
 		
 		unsigned long long iCharacter = Bounds.location;
 		unsigned long long iCharacterEnd = Bounds.location + Bounds.length;
@@ -231,8 +233,20 @@ static BOOL MatchOtherPrefix(NSString* _pIdentifier, NSString* _pToMatch)
 	return false;
 }
 
-static NSLayoutManager* pLastLayoutManager = nil;
-static NSMutableIndexSet* pIndexSet = nil;
+#include <objc/runtime.h>
+
+
+static NSMutableIndexSet* GetIndexSetInLayoutManager(NSLayoutManager* _pLayoutManager)
+{
+	char const* pKey = "XCFixinHighlightIndexSet";
+	id pIndexSet = objc_getAssociatedObject(_pLayoutManager, pKey);
+	if (pIndexSet)
+		return pIndexSet;
+	NSMutableIndexSet *pNewIndexSet = [[NSMutableIndexSet alloc] init];
+	objc_setAssociatedObject(_pLayoutManager, pKey, pNewIndexSet, OBJC_ASSOCIATION_RETAIN);
+	return pNewIndexSet;
+}
+
 static NSColor* FixupCommentBackground2(DVTSourceTextView* _pTextView, NSColor* _pColor, NSRange _Range, bool _bComment)
 {
 	if (_Range.length == 0)
@@ -245,7 +259,7 @@ static NSColor* FixupCommentBackground2(DVTSourceTextView* _pTextView, NSColor* 
 	
 	return pReturn;
 }
-bool MakeSureOfAttributes(NSLayoutManager* _pLayoutManager, NSRange _Range)
+static bool MakeSureOfAttributes(NSLayoutManager* _pLayoutManager, NSRange _Range)
 {
 	NSUInteger iLocation = _Range.location;
 	NSUInteger iEndLocation = _Range.location + _Range.length;
@@ -299,11 +313,7 @@ bool MakeSureOfAttributes(NSLayoutManager* _pLayoutManager, NSRange _Range)
 
 static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment, bool *_pChanged)
 {
-	if (_pLayoutManager != pLastLayoutManager)
-	{
-		pLastLayoutManager = _pLayoutManager;
-		pIndexSet = [[NSMutableIndexSet alloc] init];
-	}
+	NSMutableIndexSet* pIndexSet = GetIndexSetInLayoutManager(_pLayoutManager);
 	if (_bComment)
 	{
 		if (![pIndexSet containsIndexesInRange:_Range])
@@ -400,7 +410,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				return FixupCommentBackground2(pTextView, pCommentForeground, NSIntersectionRange(*_pEffectiveRange, Bounds), true);
 			}
 			
-			// Don't color comments or strings
+			// Don't color strings, numbers and characters
 			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
 			return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false);
 		}
@@ -448,7 +458,13 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				*_pEffectiveRange = Range;
 
 				DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false);
+				NSRange SafeRange = *_pEffectiveRange;
+				if (NodeType == 0 && SafeRange.location < _Index)
+				{
+					SafeRange.length -= _Index - SafeRange.location;
+					SafeRange.location = _Index;
+				}
+				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(SafeRange, Bounds), false);
 			}
 			else if ([pOperatorCharacters characterIsMember:Character])
 			{
@@ -601,7 +617,14 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		}
 		
 		DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-		return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false);
+		NSRange SafeRange = *_pEffectiveRange;
+		if (NodeType == 0 && SafeRange.location < _Index)
+		{
+			SafeRange.length -= _Index - SafeRange.location;
+			SafeRange.location = _Index;
+		}
+		
+		return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(SafeRange, Bounds), false);
 	}
 
 	DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];

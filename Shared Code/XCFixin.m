@@ -178,9 +178,10 @@ void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
   {
     NSColor* newColor = nil;
     NSRange effectiveRange;
-    range.location = iLocation;
-    range.length = iEndLocation - iLocation;
-    NSDictionary *pCurrentAttributes = [layoutManager temporaryAttributesAtCharacterIndex:iLocation longestEffectiveRange:&effectiveRange inRange:range];
+    NSRange expectedRange;
+    expectedRange.location = iLocation;
+    expectedRange.length = iEndLocation - iLocation;
+    NSDictionary *pCurrentAttributes = [layoutManager temporaryAttributesAtCharacterIndex:iLocation longestEffectiveRange:&effectiveRange inRange:expectedRange];
     NSEnumerator *keyEnumerator = [pCurrentAttributes keyEnumerator];
     for (id key = [keyEnumerator nextObject]; key != nil; key = [keyEnumerator nextObject])
     {
@@ -230,8 +231,6 @@ void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
     
     iLocation = effectiveRange.location + effectiveRange.length;
   }
-  // range.location -= MIN(256, range.location);
-  //range.length += 512;
 
   dispatch_async(dispatch_get_main_queue(),  ^(void){
     [layoutManager invalidateDisplayForCharacterRange: range];

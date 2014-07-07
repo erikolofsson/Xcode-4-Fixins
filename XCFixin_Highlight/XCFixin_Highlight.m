@@ -364,12 +364,6 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		//XCFixinLog(@"NodeType: %@\n", [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
 		//double Time = CFAbsoluteTimeGetCurrent();
 		
-		if (NodeType == PreprocessorIdentifier)
-		{
-			int x = 0;
-			++x;
-		}
-
 		NSString* pIdentifier = [pLanguage identifier];
 		
 		BOOL bSupportedLanguage = false;
@@ -401,6 +395,9 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 
  		NSString *pString = [textStorage string];
 		NSUInteger Length = [pString length];
+		
+		//XCFixinLog(@"%lld: %@\n", NodeType, [pString substringWithRange:*_pEffectiveRange]);
+		
 		
 		if (NodeType == CommentNodeType || NodeType == CommentDocNodeType || NodeType == StringIdentifier || NodeType == NumberIdentifier || NodeType == CharacterIdentifier)
 		{
@@ -485,6 +482,27 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 
 				return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false);
 			}
+ 			else if ([pStartNumberCharacterSet characterIsMember:Character])
+			{
+				NSUInteger iStart = iChar;
+				
+				++iChar;
+				while (iChar < Length)
+				{
+					Character = [pString characterAtIndex: iChar];
+					if (![pNumberCharacterSet characterIsMember:Character])
+						break;
+					++iChar;
+				}
+				
+				NSRange Range;
+				Range.location = iStart;
+				Range.length = iChar - iStart;
+				
+				*_pEffectiveRange = Range;
+				DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
+				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NumberIdentifier], NSIntersectionRange(Range, Bounds), false);
+			}
 			else if ([pStartIdentifierCharacterSet characterIsMember:Character])
 			{
 				NSUInteger iStart = iChar;
@@ -506,7 +524,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				
 				NSColor* pColor = [pDefaultKeywords objectForKey:pIdentifier];
 
-				//XCFixinLog(@"Parsed Identifier (%@): %f ms\n", pIdentifier, (CFAbsoluteTimeGetCurrent() - Time) * 1000.0);
+//				XCFixinLog(@"Parsed Identifier (%@)\n", pIdentifier);
 				
 				NSUInteger Length = [pIdentifier length];
 				if (!pColor && Length >= 3)
@@ -1117,6 +1135,8 @@ static void AddDefaultKeywords()
 
 static NSMutableCharacterSet *pStartIdentifierCharacterSet = nil;
 static NSMutableCharacterSet *pIdentifierCharacterSet = nil;
+static NSMutableCharacterSet *pStartNumberCharacterSet = nil;
+static NSMutableCharacterSet *pNumberCharacterSet = nil;
 static NSMutableCharacterSet *pValidConceptCharacters = nil;
 static NSMutableCharacterSet *pOperatorCharacters = nil;
 static NSCharacterSet *pUpperCaseChars = nil;
@@ -1145,6 +1165,16 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 		[pStartIdentifierCharacterSet removeCharactersInString:@"0123456789"];
 		[pStartIdentifierCharacterSet addCharactersInString:@"_"];
 	}
+	{
+		pStartNumberCharacterSet = [[NSMutableCharacterSet alloc] init];
+		[pStartNumberCharacterSet formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
+	}
+	{
+		pNumberCharacterSet = [[NSMutableCharacterSet alloc] init];
+		[pNumberCharacterSet formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
+		[pNumberCharacterSet addCharactersInString:@".xXeEfF"];
+	}
+	
 	{
 		pIdentifierCharacterSet = [[NSMutableCharacterSet alloc] init];
 		[pIdentifierCharacterSet formUnionWithCharacterSet:[NSCharacterSet alphanumericCharacterSet]];

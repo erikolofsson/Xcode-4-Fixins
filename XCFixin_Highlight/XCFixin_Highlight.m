@@ -14,12 +14,58 @@
 #import "../Shared Code/Xcode5/IDEFoundation/IDEIndex.h"
 
 
+@interface XCFixin_Highlight_ViewState : NSObject
+{
+	NSMutableIndexSet* _m_pIndexSet;
+	NSRange _m_CachedVisibleRange;
+	bool _m_CacheValid;
+}
+@property NSMutableIndexSet* m_pIndexSet;
+@property NSRange m_CachedVisibleRange;
+@property bool m_CachedValid;
+- (NSMutableIndexSet*)getIndexSet;
+@end
+
+@implementation XCFixin_Highlight_ViewState
+- (id) init
+{
+  self = [super init];
+  if (self)
+  {
+	  _m_CacheValid = false;
+	  _m_pIndexSet = NULL;
+  }
+  return self;
+}
+- (NSMutableIndexSet*)getIndexSet
+{
+	if (_m_pIndexSet)
+		return _m_pIndexSet;
+	
+	_m_pIndexSet = [[NSMutableIndexSet alloc] init];
+	return _m_pIndexSet;
+}
+@end
+
 static IMP original_colorAtCharacterIndex = nil;
 
 @interface XCFixin_Highlight : NSObject
 @end
 
 @implementation XCFixin_Highlight
+
+#include <objc/runtime.h>
+
+static XCFixin_Highlight_ViewState* GetViewState(NSLayoutManager* _pLayoutManager)
+{
+	char const* pKey = "XCFixinHighlightViewState";
+	id pViewState = objc_getAssociatedObject(_pLayoutManager, pKey);
+	if (pViewState)
+		return pViewState;
+	XCFixin_Highlight_ViewState *pNewViewState = [[XCFixin_Highlight_ViewState alloc] init];
+	objc_setAssociatedObject(_pLayoutManager, pKey, pNewViewState, OBJC_ASSOCIATION_RETAIN);
+	return pNewViewState;
+}
 
 static NSString* pAttributeName = @"XCFixinTempAttribute00";
 
@@ -50,11 +96,31 @@ static NSString* pAttributeName = @"XCFixinTempAttribute00";
                            selector: @selector( boundsChanged: )
                                name: NSViewBoundsDidChangeNotification
                              object: nil];
-
+	  
+    [notificationCenter addObserver: self
+                           selector: @selector( textStorageWillProcessEditing: )
+                               name: NSTextStorageWillProcessEditingNotification
+                             object: nil];
+	  
 	  
   }
   return self;
 }
+
+- (void)textStorageWillProcessEditing:(NSNotification *)notification
+{
+	if ([notification.object isKindOfClass:[DVTTextStorage class]])
+	{
+		DVTTextStorage* pStorage = (DVTTextStorage*)notification.object;
+		NSArray* pLayoutManagers = [pStorage layoutManagers];
+		if ([pLayoutManagers count] < 1)
+			return;
+		NSLayoutManager* pLayoutManager = (NSLayoutManager *)pLayoutManagers[0];
+		XCFixin_Highlight_ViewState* pViewState = GetViewState(pLayoutManager);
+		pViewState.m_CachedValid = false;
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------
 - (void) dealloc {
@@ -98,9 +164,8 @@ static void parseAwayWhitespace(NSString *_pString, NSUInteger _Length, NSRange 
 		_pRange->length = iChar - _pRange->location;
 }
 
-static void updateTextView(DVTSourceTextView *_pTextView)
+static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_ViewState* _pViewState)
 {
-	NSRange Bounds = [_pTextView visibleCharacterRange];
 	
 	DVTTextStorage* textStorage = [_pTextView textStorage];
 	DVTSourceCodeLanguage* pLanguage = [textStorage language];
@@ -108,6 +173,25 @@ static void updateTextView(DVTSourceTextView *_pTextView)
 	NSLayoutManager* pLayoutManager = [_pTextView layoutManager];
 	if (pLanguage && pSourceCodeEditor && pLayoutManager)
 	{
+		NSRange Bounds;
+		if (!_pViewState)
+		{
+			Bounds = [_pTextView visibleCharacterRange];
+			_pViewState = GetViewState(pLayoutManager);
+			_pViewState.m_CachedValid = true;
+			_pViewState.m_CachedVisibleRange = Bounds;
+		}
+		else
+		{
+			if (!_pViewState.m_CachedValid)
+			{
+				Bounds = [_pTextView visibleCharacterRange];
+				_pViewState.m_CachedValid = true;
+				_pViewState.m_CachedVisibleRange = Bounds;
+			}
+			else
+				Bounds = _pViewState.m_CachedVisibleRange;
+		}
 
 		NSString* pIdentifier = [pLanguage identifier];
 		
@@ -119,7 +203,7 @@ static void updateTextView(DVTSourceTextView *_pTextView)
 		if (!bSupportedLanguage)
 			return;
 
-		NSMutableIndexSet* pIndexSet = GetIndexSetInLayoutManager(pLayoutManager);
+		NSMutableIndexSet* pIndexSet = [_pViewState getIndexSet];
 		
 		NSMutableIndexSet* pNewIndexSet = [[NSMutableIndexSet alloc] init];
 		
@@ -172,7 +256,7 @@ static void updateTextView(DVTSourceTextView *_pTextView)
 		DVTSourceTextView *pTextView = (DVTSourceTextView *)[pClipView documentView];
 		if ([pTextView isKindOfClass: [DVTSourceTextView class]])
 		{
-			updateTextView(pTextView);
+			updateTextView(pTextView, NULL);
 		}
 	}
 }
@@ -186,7 +270,7 @@ static void updateTextView(DVTSourceTextView *_pTextView)
 		DVTSourceTextView *pTextView = (DVTSourceTextView *)[pClipView documentView];
 		if ([pTextView isKindOfClass: [DVTSourceTextView class]])
 		{
-			updateTextView(pTextView);
+			updateTextView(pTextView, NULL);
 		}
 	}
 }
@@ -233,29 +317,15 @@ static BOOL MatchOtherPrefix(NSString* _pIdentifier, NSString* _pToMatch)
 	return false;
 }
 
-#include <objc/runtime.h>
-
-
-static NSMutableIndexSet* GetIndexSetInLayoutManager(NSLayoutManager* _pLayoutManager)
-{
-	char const* pKey = "XCFixinHighlightIndexSet";
-	id pIndexSet = objc_getAssociatedObject(_pLayoutManager, pKey);
-	if (pIndexSet)
-		return pIndexSet;
-	NSMutableIndexSet *pNewIndexSet = [[NSMutableIndexSet alloc] init];
-	objc_setAssociatedObject(_pLayoutManager, pKey, pNewIndexSet, OBJC_ASSOCIATION_RETAIN);
-	return pNewIndexSet;
-}
-
-static NSColor* FixupCommentBackground2(DVTSourceTextView* _pTextView, NSColor* _pColor, NSRange _Range, bool _bComment)
+static NSColor* FixupCommentBackground2(DVTSourceTextView* _pTextView, NSColor* _pColor, NSRange _Range, bool _bComment, XCFixin_Highlight_ViewState* _pViewState)
 {
 	if (_Range.length == 0)
 		return _pColor;
 	bool bChanged = false;
-	NSColor* pReturn = FixupCommentBackground([_pTextView layoutManager], _pColor, _Range, _bComment, &bChanged);
+	NSColor* pReturn = FixupCommentBackground([_pTextView layoutManager], _pColor, _Range, _bComment, &bChanged, _pViewState);
 	
 	if (bChanged)
-		updateTextView(_pTextView);
+		updateTextView(_pTextView, _pViewState);
 	
 	return pReturn;
 }
@@ -311,9 +381,9 @@ static bool MakeSureOfAttributes(NSLayoutManager* _pLayoutManager, NSRange _Rang
 	return bChanged;
 }
 
-static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment, bool *_pChanged)
+static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment, bool *_pChanged, XCFixin_Highlight_ViewState* _pViewState)
 {
-	NSMutableIndexSet* pIndexSet = GetIndexSetInLayoutManager(_pLayoutManager);
+	NSMutableIndexSet* pIndexSet = [_pViewState getIndexSet];
 	if (_bComment)
 	{
 		if (![pIndexSet containsIndexesInRange:_Range])
@@ -390,11 +460,19 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
 			return [pTheme colorForNodeType:NodeType];
 		}
-
-		NSRange Bounds = [pTextView visibleCharacterRange];
+		
+		NSLayoutManager* pLayoutManager = [pTextView layoutManager];
+		XCFixin_Highlight_ViewState* pViewState = GetViewState(pLayoutManager);
+		if (!pViewState.m_CachedValid)
+		{
+			pViewState.m_CachedVisibleRange = [pTextView visibleCharacterRange];
+			pViewState.m_CachedValid = true;
+		}
+		NSRange Bounds = pViewState.m_CachedVisibleRange;
 
  		NSString *pString = [textStorage string];
 		NSUInteger Length = [pString length];
+		
 		
 		//XCFixinLog(@"%lld: %@\n", NodeType, [pString substringWithRange:*_pEffectiveRange]);
 		
@@ -404,12 +482,12 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			if (NodeType == CommentNodeType || NodeType == CommentDocNodeType)
 			{
 				//parseAwayWhitespace(pString, Length, _pEffectiveRange);
-				return FixupCommentBackground2(pTextView, pCommentForeground, NSIntersectionRange(*_pEffectiveRange, Bounds), true);
+				return FixupCommentBackground2(pTextView, pCommentForeground, NSIntersectionRange(*_pEffectiveRange, Bounds), true, pViewState);
 			}
 			
 			// Don't color strings, numbers and characters
 			DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-			return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false);
+			return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
 		}
 		
 		NSUInteger iChar = _Index;
@@ -461,14 +539,14 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 					SafeRange.length -= _Index - SafeRange.location;
 					SafeRange.location = _Index;
 				}
-				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(SafeRange, Bounds), false);
+				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(SafeRange, Bounds), false, pViewState);
 			}
 			else if ([pOperatorCharacters characterIsMember:Character])
 			{
-				
+				NSUInteger iEnd = MIN(_pEffectiveRange->location + _pEffectiveRange->length, Length);
 				NSUInteger iStart = iChar;
 				++iChar;
-				while (iChar < Length)
+				while (iChar < iEnd)
 				{
 					Character = [pString characterAtIndex: iChar];
 					if (![pOperatorCharacters characterIsMember:Character])
@@ -480,7 +558,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				Range.length = iChar - iStart;
 				*_pEffectiveRange = Range;
 
-				return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false);
+				return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
 			}
  			else if ([pStartNumberCharacterSet characterIsMember:Character])
 			{
@@ -501,7 +579,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				
 				*_pEffectiveRange = Range;
 				DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
-				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NumberIdentifier], NSIntersectionRange(Range, Bounds), false);
+				return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NumberIdentifier], NSIntersectionRange(Range, Bounds), false, pViewState);
 			}
 			else if ([pStartIdentifierCharacterSet characterIsMember:Character])
 			{
@@ -629,7 +707,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				if (pColor)
 				{
 					*_pEffectiveRange = Range;
-					return FixupCommentBackground2(pTextView, pColor, NSIntersectionRange(*_pEffectiveRange, Bounds), false);
+					return FixupCommentBackground2(pTextView, pColor, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
 				}
 			}
 		}
@@ -642,7 +720,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			SafeRange.location = _Index;
 		}
 		
-		return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(SafeRange, Bounds), false);
+		return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(SafeRange, Bounds), false, pViewState);
 	}
 
 	DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];

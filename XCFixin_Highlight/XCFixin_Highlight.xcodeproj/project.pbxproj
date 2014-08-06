@@ -11,6 +11,7 @@
 		03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03318EDA1937BC3B00132304 /* Cocoa.framework */; };
 		03329EC81937AA1A000E475B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03329EC71937AA1A000E475B /* README.md */; };
 		03424047193F9ACE0038ACA5 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03424046193F9ACE0038ACA5 /* DVTKit.framework */; };
+		03580362198C284000A2EF45 /* DumpXcode.sh in Resources */ = {isa = PBXBuildFile; fileRef = 03580361198C284000A2EF45 /* DumpXcode.sh */; };
 		0372C85519378E9400364146 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 0372C85419378E9400364146 /* XCFixin.m */; };
 		435E248813A8E5A40052479A /* XCFixin_Highlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 435E248513A8E5A40052479A /* XCFixin_Highlight.m */; };
 		437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 437DCBC314D41E700039CB49 /* InfoPlist.strings */; };
@@ -21,6 +22,7 @@
 		03318EDA1937BC3B00132304 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		03329EC71937AA1A000E475B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		03424046193F9ACE0038ACA5 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = ../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework; sourceTree = "<group>"; };
+		03580361198C284000A2EF45 /* DumpXcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = DumpXcode.sh; path = "../Shared Code/DumpXcode.sh"; sourceTree = "<group>"; };
 		0372C85319378E9400364146 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		0372C85419378E9400364146 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		435E247213A8E4A20052479A /* XCFixin_Highlight.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_Highlight.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,6 +67,7 @@
 		435E248913A8E5B70052479A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				03580361198C284000A2EF45 /* DumpXcode.sh */,
 				03329EC71937AA1A000E475B /* README.md */,
 				0372C85319378E9400364146 /* XCFixin.h */,
 				0372C85419378E9400364146 /* XCFixin.m */,
@@ -128,6 +131,7 @@
 			files = (
 				03329EC81937AA1A000E475B /* README.md in Resources */,
 				437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */,
+				03580362198C284000A2EF45 /* DumpXcode.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

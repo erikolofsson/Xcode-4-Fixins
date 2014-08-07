@@ -8,12 +8,23 @@
 #import "../Shared Code/Xcode5/IDEKit/IDEIssueNavigableItem.h"
 #import "../Shared Code/Xcode5/IDEKit/IDESourceCodeEditorContainerView.h"
 #import "../Shared Code/Xcode5/IDEKit/IDESourceCodeEditor.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEConsoleTextView.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEEditorCoordinator.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEEditorOpenSpecifier.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTDocumentLocation.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTTextDocumentLocation.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceWindow.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceWindowController.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceTabController.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceDocument.h"
+
+
+
 
 static IMP original_doCommandBySelector = nil;
 static IMP original_shouldIndentPastedText = nil;
 static IMP original_didSelectTabViewItem = nil;
-
-
+static IMP original_mouseDownInConsole = nil;
 
 
 @interface NSView (SubtreeDescription)
@@ -54,6 +65,18 @@ static IMP original_didSelectTabViewItem = nil;
 
 @implementation XCFixin_EmulateVisualStudio
 
+static void setEditorFocus(NSWindow* _pWindow)
+{
+	IDESourceCodeEditorContainerView* pView = getSourceCodeEditorView(_pWindow);
+	
+	if (pView)
+	{
+		IDESourceCodeEditor* pEditor = [pView editor];
+		if (pEditor)
+			[pEditor takeFocus];
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 - (id) init {
 //-----------------------------------------------------------------------------------------------
@@ -83,7 +106,7 @@ static IMP original_didSelectTabViewItem = nil;
 			{
 				if (m_pActiveView && [m_pActiveView isValid])
 				{
-					NSWindow* keyWindow = [NSApp keyWindow];
+					NSWindow* pWindow = [m_pActiveView window];
 					bool bSetEditorFocus = false;
 					if (m_pActiveViewControllerBatchFind)
 					{
@@ -111,10 +134,10 @@ static IMP original_didSelectTabViewItem = nil;
 						}
 						NSEvent* pEvent = [
 							NSEvent keyEventWithType:NSKeyDown 
-							location:[keyWindow mouseLocationOutsideOfEventStream] 
+							location:[pWindow mouseLocationOutsideOfEventStream] 
 							modifierFlags:0xa00100
 							timestamp:0.0
-							windowNumber:[keyWindow windowNumber]
+							windowNumber:[pWindow windowNumber]
 							context:nil 
 							characters:pCharacters 
 							charactersIgnoringModifiers:pCharacters
@@ -168,16 +191,7 @@ static IMP original_didSelectTabViewItem = nil;
 						}
 					}
 					if (bSetEditorFocus)
-					{
-						IDESourceCodeEditorContainerView* pView = (IDESourceCodeEditorContainerView*)findSubViewWithClassName([keyWindow contentView], "IDESourceCodeEditorContainerView");
-						
-						if (pView)
-						{
-							IDESourceCodeEditor* pEditor = [pView editor];
-							if (pEditor)
-								[pEditor takeFocus];
-						}
-					}
+						setEditorFocus(pWindow);
 				}
 				return nil;
 			}
@@ -208,16 +222,36 @@ static NSView* findSubViewWithClassName(NSView* _pView, char const* _pClassName)
 	return NULL;
 }
 
+static NSView* findSubViewWithController(NSView* _pView, Class ClassToFind)
+{
+	NSViewController* pViewController = (NSViewController*)[_pView firstAvailableResponderOfClass:ClassToFind];
+	if (pViewController)
+		return _pView;
+	for (NSView * pView in [_pView subviews]) 
+	{
+		
+		NSView * pFound;
+		if ((pFound = findSubViewWithController(pView, ClassToFind)))
+			return pFound;
+	}
+	return NULL;
+}
+
 IDENavigatorOutlineView* m_pActiveView = nil;
 IDEBatchFindResultsOutlineController* m_pActiveViewControllerBatchFind = nil;
 IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
+	
 	NSWindow *window = [notification object];
 	
 	//NSString* pDesc = [[window contentView] _subtreeDescription];
 	//XCFixinLog(@"%@\n", pDesc);
+	g_pLastValidEditorTabItem = nil;
+	g_pLastValidEditorTabView = nil;
+	updateLastValidEditorTab(window);
+	
 	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([window contentView], "IDENavigatorOutlineView"));
 }
 
@@ -360,16 +394,168 @@ static void potentialView(IDENavigatorOutlineView* _pView)
 }
 
 //- (void)tabView:(id)arg1 didSelectTabViewItem:(id)arg2;
-static BOOL didSelectTabViewItem( NSView *self_, SEL _cmd, NSTabView *tabView, NSTabViewItem *_pItem)
+NSTabViewItem* g_pLastValidEditorTabItem = nil;
+NSTabView* g_pLastValidEditorTabView = nil;
+
+static void updateLastValidEditorTab(NSWindow* _pWindow)
 {
-	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([_pItem view], "IDENavigatorOutlineView"));
-	return ((BOOL (*)(id, SEL, id, id))original_didSelectTabViewItem)(self_, _cmd, tabView, _pItem);
+	NSTabView* pTabView = getWorkspaceTabView(_pWindow);
+	if (!pTabView)
+		return;
+	
+	NSTabViewItem* pSelectedItem = [pTabView selectedTabViewItem];
+	
+	if (!pSelectedItem)
+		return;
+	if (getSourceCodeEditorView(_pWindow))
+	{
+		g_pLastValidEditorTabItem = pSelectedItem;
+		g_pLastValidEditorTabView = pTabView;
+	}
 }
 
+static BOOL didSelectTabViewItem( NSView *self_, SEL _cmd, NSTabView *_pTabView, NSTabViewItem *_pItem)
+{
+	updateLastValidEditorTab([_pTabView window]);
+	
+	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([_pItem view], "IDENavigatorOutlineView"));
+	return ((BOOL (*)(id, SEL, id, id))original_didSelectTabViewItem)(self_, _cmd, _pTabView, _pItem);
+}
+
+static IDESourceCodeEditorContainerView* getSourceCodeEditorView(NSWindow *_pWindow)
+{
+	if (_pWindow == nil)
+		_pWindow = [NSApp keyWindow];
+	return (IDESourceCodeEditorContainerView*)findSubViewWithClassName([_pWindow contentView], "IDESourceCodeEditorContainerView");
+}
+static IDEWorkspaceTabController* getWorkspaceTabController(NSWindow *_pWindow)
+{
+	if (_pWindow == nil)
+		_pWindow = [NSApp keyWindow];
+	NSTabView* pView = (NSTabView*)findSubViewWithClassName([_pWindow contentView], "DVTControllerContentView");
+	if (pView)
+	{
+		NSViewController* pViewController = (NSViewController*)[pView firstAvailableResponderOfClass: [	NSViewController class]];
+		if ([pViewController isKindOfClass:NSClassFromString(@"IDEWorkspaceTabController")])
+		{
+			return (IDEWorkspaceTabController*)pViewController;
+		}
+	}
+	return nil;
+}
+static NSTabView* getWorkspaceTabView(NSWindow *_pWindow)
+{
+	if (_pWindow == nil)
+		_pWindow = [NSApp keyWindow];
+	NSTabView* pView = (NSTabView*)findSubViewWithClassName([_pWindow contentView], "NSTabView");
+	return pView;
+}
+
+
+static void mouseDownInConsole(IDEConsoleTextView* self_, SEL _cmd, NSEvent* _pEvent)
+{
+	if ([_pEvent clickCount] >= 2)
+	{
+		// Double click
+		//XCFixinLog(@"%@: mouseDown: %ld\n", [self_ className], [_pEvent clickCount]);
+		
+		NSRange selectedRange = self_.selectedRange;
+		NSString *text = self_.string;
+		NSRange lineRange = [text lineRangeForRange:selectedRange];
+		NSString *line = [text substringWithRange:lineRange];
+		
+		NSArray *matches = [g_pSourceLocationRegex matchesInString:line
+														   options:0
+															 range:NSMakeRange(0, [line length])];
+
+		if (matches.count > 0)
+		{
+			NSTextCheckingResult* pMatch = matches[0];
+			NSUInteger nRanges = [pMatch numberOfRanges];
+			if (nRanges == 4)
+			{
+				NSRange SourceRange = [pMatch rangeAtIndex:1];
+				NSRange LineRange = [pMatch rangeAtIndex:2];
+				NSString* pSource = [line substringWithRange:SourceRange];
+				NSString* pLine = [line substringWithRange:LineRange];
+//				NSString* pInfo = [line substringWithRange:[pMatch rangeAtIndex:3]];
+				
+//				XCFixinLog(@"Source: %@\n", pSource);
+//				XCFixinLog(@"Line: %@\n", pLine);
+				
+				IDESourceCodeEditorContainerView* pView = getSourceCodeEditorView([self_ window]);
+				if (!pView && g_pLastValidEditorTabItem)
+				{
+					NSTabView* pTabView = getWorkspaceTabView([self_ window]);
+					if (pTabView)
+					{
+						bool bValid = false;
+						for (NSTabViewItem* pItem in [pTabView tabViewItems])
+						{
+							if (pItem == g_pLastValidEditorTabItem)
+							{
+								bValid = true;
+								break;
+							}
+						}
+
+						if (bValid)
+						{
+							[g_pLastValidEditorTabView selectTabViewItem:g_pLastValidEditorTabItem];
+							pView = getSourceCodeEditorView([self_ window]);
+						}
+					}
+				}
+				IDEWorkspaceTabController* pTabController = getWorkspaceTabController([self_ window]);
+				
+				if (pView && pTabController)
+				{
+					IDESourceCodeEditor* pEditor = [pView editor];
+					if (pEditor)
+					{
+						//+[IDEEditorCoordinator _doOpenEditorOpenSpecifier:forWorkspaceTabController:editorContext:target:takeFocus:] ()
+						
+						NSNumber* pTimeStamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
+						
+						NSURL* pURL = [NSURL fileURLWithPath:pSource isDirectory: false];
+						DVTTextDocumentLocation *documentLocation = 
+							[
+								[DVTTextDocumentLocation alloc] 
+								initWithDocumentURL:pURL
+								timestamp:pTimeStamp
+								lineRange:NSMakeRange([pLine integerValue], 1)
+							]
+						;
+						
+						IDEWorkspaceDocument *pDocument = [pTabController workspaceDocument];
+						
+						if (pDocument)
+						{
+							NSRange NewRange;
+							NewRange.location = lineRange.location + SourceRange.location;
+							NewRange.length = (LineRange.location + LineRange.length) - SourceRange.location;
+							[self_ setSelectedRange:NewRange];
+							
+							IDEEditorOpenSpecifier *pSpecifier = [IDEEditorOpenSpecifier structureEditorOpenSpecifierForDocumentLocation:documentLocation
+																																inWorkspace:[pDocument workspace]
+																																	  error:nil];
+						
+							[IDEEditorCoordinator _doOpenEditorOpenSpecifier:pSpecifier forWorkspaceTabController:pTabController editorContext:nil target:0 takeFocus:1];
+							setEditorFocus([pView window]);
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+	return ((void (*)(id, SEL, id))original_mouseDownInConsole)(self_, _cmd, _pEvent);
+}
 
 static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 {
 	DVTSourceTextView *self = (DVTSourceTextView *)self_;
+//	updateLastValidEditorTab([self window]);
 	bool bHandled = false;
 	do {
 		//- (BOOL)shouldIndentPastedText:(id)arg1;
@@ -639,6 +825,8 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 
 static id singleton = nil;
 
+NSRegularExpression *g_pSourceLocationRegex;
+
 + (void) pluginDidLoad:(NSBundle *)plugin
 {
 	XCFixinPreflight();
@@ -650,6 +838,11 @@ static id singleton = nil;
 		XCFixinLog(@"%s: Emulate visual studio init failed.\n",__FUNCTION__);
 	}
 	
+	NSError *error = NULL;
+	g_pSourceLocationRegex = [NSRegularExpression regularExpressionWithPattern:@"(.*):([0-9]*):(.*)"
+                                                                       options:NSRegularExpressionCaseInsensitive
+                                                                         error:&error];
+	
 	original_doCommandBySelector = XCFixinOverrideMethodString(@"DVTSourceTextView", @selector(doCommandBySelector:), (IMP)&doCommandBySelector);
 	XCFixinAssertOrPerform(original_doCommandBySelector, goto failed);
 
@@ -658,7 +851,10 @@ static id singleton = nil;
 	
 	original_didSelectTabViewItem = XCFixinOverrideMethodString(@"DVTTabSwitcher", @selector(tabView:didSelectTabViewItem:), (IMP)&didSelectTabViewItem);
 	XCFixinAssertOrPerform(original_didSelectTabViewItem, goto failed);
-	
+
+	original_mouseDownInConsole = XCFixinOverrideMethodString(@"IDEConsoleTextView", @selector(mouseDown:), (IMP)&mouseDownInConsole);
+	XCFixinAssertOrPerform(original_mouseDownInConsole, goto failed);
+
 	XCFixinPostflight();
 }
 @end

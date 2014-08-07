@@ -17,6 +17,7 @@
 @interface IDESourceCodeEditorContainerView : DVTLayoutView_ML <DVTInvalidation>
 {
     IDESourceCodeEditor *_editor;
+	@public
     IDEViewController *_toolbarViewController;
 }
 
@@ -29,6 +30,7 @@
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
+
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end

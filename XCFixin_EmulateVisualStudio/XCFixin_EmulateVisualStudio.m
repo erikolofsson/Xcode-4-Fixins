@@ -6,6 +6,8 @@
 #import "../Shared Code/Xcode5/IDEKit/IDEBatchFindResultsOutlineController.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEIssueNavigator.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEIssueNavigableItem.h"
+#import "../Shared Code/Xcode5/IDEKit/IDESourceCodeEditorContainerView.h"
+#import "../Shared Code/Xcode5/IDEKit/IDESourceCodeEditor.h"
 
 static IMP original_doCommandBySelector = nil;
 static IMP original_shouldIndentPastedText = nil;
@@ -55,116 +57,134 @@ static IMP original_didSelectTabViewItem = nil;
 //-----------------------------------------------------------------------------------------------
 - (id) init {
 //-----------------------------------------------------------------------------------------------
-  self = [super init];
-  if (self) {
-
-    NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
-
-    [notificationCenter addObserver: self
-                           selector: @selector( frameChanged: )
-                               name: NSViewFrameDidChangeNotification
-                             object: nil];
-	  
-    [notificationCenter addObserver: self
-                           selector: @selector( windowDidBecomeKey: )
-                               name: NSWindowDidBecomeKeyNotification
-                             object: nil];
-	  
- 
-	eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^NSEvent *(NSEvent *event) 
+	self = [super init];
+	if (self) 
 	{
-		unsigned short keyCode = [event keyCode];
-		//XCFixinLog(@"%d %@ %@\n", keyCode, [event characters], [event charactersIgnoringModifiers]);
-		NSUInteger ModifierFlags = [event modifierFlags];
-		if ((keyCode == 45) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
+
+		NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
+
+		[notificationCenter addObserver: self
+							   selector: @selector( frameChanged: )
+								   name: NSViewFrameDidChangeNotification
+								 object: nil];
+		  
+		[notificationCenter addObserver: self
+							   selector: @selector( windowDidBecomeKey: )
+								   name: NSWindowDidBecomeKeyNotification
+								 object: nil];
+		  
+
+		eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^NSEvent *(NSEvent *event) 
 		{
-			if (m_pActiveView && [m_pActiveView isValid])
+			unsigned short keyCode = [event keyCode];
+			//XCFixinLog(@"%d %@ %@\n", keyCode, [event characters], [event charactersIgnoringModifiers]);
+			NSUInteger ModifierFlags = [event modifierFlags];
+			if ((keyCode == 45) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
 			{
-				if (m_pActiveViewControllerBatchFind)
+				if (m_pActiveView && [m_pActiveView isValid])
 				{
-					if (ModifierFlags & NSShiftKeyMask)
-						[m_pActiveView doCommandBySelector:@selector(moveUp:)];
-					else
-						[m_pActiveView doCommandBySelector:@selector(moveDown:)];
-				
-					[m_pActiveViewControllerBatchFind openSelectedNavigableItemsKeyAction:m_pActiveView];
-				}
-				else
-				{
-					unsigned short KeyCode = 0;
-					NSString* pCharacters;
-					if (ModifierFlags & NSShiftKeyMask)
-					{
-						KeyCode = 126;
-						pCharacters = @"";
-					}
-					else
-					{
-						KeyCode = 125;
-						pCharacters = @"";
-					}
 					NSWindow* keyWindow = [NSApp keyWindow];
-					NSEvent* pEvent = [
-						NSEvent keyEventWithType:NSKeyDown 
-						location:[keyWindow mouseLocationOutsideOfEventStream] 
-						modifierFlags:0xa00100
-						timestamp:0.0
-						windowNumber:[keyWindow windowNumber]
-						context:nil 
-						characters:pCharacters 
-						charactersIgnoringModifiers:pCharacters
-						isARepeat:false 
-						keyCode:KeyCode
-					];
+					bool bSetEditorFocus = false;
+					if (m_pActiveViewControllerBatchFind)
+					{
+						if (ModifierFlags & NSShiftKeyMask)
+							[m_pActiveView doCommandBySelector:@selector(moveUp:)];
+						else
+							[m_pActiveView doCommandBySelector:@selector(moveDown:)];
 					
-					bool bDoNavigation = false;
-					IDEIssueNavigableItem* pLastSelected = nil;
-					do
-					{
-						NSArray* pSelected = [m_pActiveView selectedItems];
-						if ([pSelected count] <= 0)
-							break;
-						pLastSelected = (IDEIssueNavigableItem*)pSelected[0];
+						[m_pActiveViewControllerBatchFind openSelectedNavigableItemsKeyAction:m_pActiveView];
+						bSetEditorFocus = true;
 					}
-					while (false)
-						;
-					while (true)
+					else
 					{
-						[m_pActiveView keyDown:pEvent];
-						NSArray* pSelected = [m_pActiveView selectedItems];
-						if ([pSelected count] <= 0)
-							break;
-						
-						IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
-						if (pLastSelected == pSelectedItem)
-							break; // No change in selection
-						pLastSelected = pSelectedItem;
-						NSString* pClassName = [pSelectedItem className];
-						//XCFixinLog(@"%@ %d", pClassName, [pSelectedItem isLeaf]);
-						bDoNavigation = false;
-						if ([pClassName compare:@"IDEIssueGroupNavigableItem_AnyIDEIssueGroup"] == NSOrderedSame)
-							continue;
-						else if ([pClassName compare:@"IDEIssueFileGroupNavigableItem_AnyIDEIssueFileGroup"] == NSOrderedSame)
-							continue;
-						else if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+						unsigned short KeyCode = 0;
+						NSString* pCharacters;
+						if (ModifierFlags & NSShiftKeyMask)
 						{
-							bDoNavigation = true;
-							if (![pSelectedItem isLeaf])
-								[m_pActiveView expandItem:pSelectedItem];
+							KeyCode = 126;
+							pCharacters = @"";
 						}
-						break;
+						else
+						{
+							KeyCode = 125;
+							pCharacters = @"";
+						}
+						NSEvent* pEvent = [
+							NSEvent keyEventWithType:NSKeyDown 
+							location:[keyWindow mouseLocationOutsideOfEventStream] 
+							modifierFlags:0xa00100
+							timestamp:0.0
+							windowNumber:[keyWindow windowNumber]
+							context:nil 
+							characters:pCharacters 
+							charactersIgnoringModifiers:pCharacters
+							isARepeat:false 
+							keyCode:KeyCode
+						];
+						
+						bool bDoNavigation = false;
+						IDEIssueNavigableItem* pLastSelected = nil;
+						do
+						{
+							NSArray* pSelected = [m_pActiveView selectedItems];
+							if ([pSelected count] <= 0)
+								break;
+							pLastSelected = (IDEIssueNavigableItem*)pSelected[0];
+						}
+						while (false)
+							;
+						while (true)
+						{
+							[m_pActiveView keyDown:pEvent];
+							NSArray* pSelected = [m_pActiveView selectedItems];
+							if ([pSelected count] <= 0)
+								break;
+							
+							IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
+							if (pLastSelected == pSelectedItem)
+								break; // No change in selection
+							pLastSelected = pSelectedItem;
+							NSString* pClassName = [pSelectedItem className];
+							//XCFixinLog(@"%@ %d", pClassName, [pSelectedItem isLeaf]);
+							bDoNavigation = false;
+							if ([pClassName compare:@"IDEIssueGroupNavigableItem_AnyIDEIssueGroup"] == NSOrderedSame)
+								continue;
+							else if ([pClassName compare:@"IDEIssueFileGroupNavigableItem_AnyIDEIssueFileGroup"] == NSOrderedSame)
+								continue;
+							else if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+							{
+								bDoNavigation = true;
+								if (![pSelectedItem isLeaf])
+									[m_pActiveView expandItem:pSelectedItem];
+							}
+							break;
+						}
+						
+						if (m_pActiveViewControllerIssues && bDoNavigation)
+						{
+							[m_pActiveViewControllerIssues openSelectedNavigableItemsKeyAction:m_pActiveView];
+							bSetEditorFocus = true;
+							
+						}
 					}
-					
-					if (m_pActiveViewControllerIssues && bDoNavigation)
-						[m_pActiveViewControllerIssues openSelectedNavigableItemsKeyAction:m_pActiveView];
-				  }
-			  }
-			  return nil;
-		  }
-		  return event;
-	  }];
-  }
-  return self;
+					if (bSetEditorFocus)
+					{
+						IDESourceCodeEditorContainerView* pView = (IDESourceCodeEditorContainerView*)findSubViewWithClassName([keyWindow contentView], "IDESourceCodeEditorContainerView");
+						
+						if (pView)
+						{
+							IDESourceCodeEditor* pEditor = [pView editor];
+							if (pEditor)
+								[pEditor takeFocus];
+						}
+					}
+				}
+				return nil;
+			}
+			return event;
+		}];
+	}
+	return self;
 }
 
 //-----------------------------------------------------------------------------------------------

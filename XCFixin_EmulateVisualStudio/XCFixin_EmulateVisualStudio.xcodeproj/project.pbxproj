@@ -10,6 +10,7 @@
 		03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03318EDA1937BC3B00132304 /* Cocoa.framework */; };
 		03329EC81937AA1A000E475B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03329EC71937AA1A000E475B /* README.md */; };
 		0372C85519378E9400364146 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 0372C85419378E9400364146 /* XCFixin.m */; };
+		03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A1896E1992C68500F87332 /* IDEKit.framework */; };
 		435E248813A8E5A40052479A /* XCFixin_EmulateVisualStudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */; };
 		437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 437DCBC314D41E700039CB49 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
@@ -19,6 +20,7 @@
 		03329EC71937AA1A000E475B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		0372C85319378E9400364146 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		0372C85419378E9400364146 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
+		03A1896E1992C68500F87332 /* IDEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEKit.framework; path = ../../../Applications/Xcode.app/Contents/Frameworks/IDEKit.framework; sourceTree = "<group>"; };
 		435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_EmulateVisualStudio.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		435E248413A8E5A40052479A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = XCFixin_EmulateVisualStudio.m; sourceTree = "<group>"; tabWidth = 4; };
@@ -30,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */,
 				03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -40,6 +43,7 @@
 		435E246513A8E4510052479A = {
 			isa = PBXGroup;
 			children = (
+				03A1896E1992C68500F87332 /* IDEKit.framework */,
 				03318EDA1937BC3B00132304 /* Cocoa.framework */,
 				435E248913A8E5B70052479A /* Sources */,
 				435E247313A8E4A20052479A /* Products */,
@@ -186,6 +190,10 @@
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = "$(HOME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
@@ -205,6 +213,10 @@
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = "$(HOME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;

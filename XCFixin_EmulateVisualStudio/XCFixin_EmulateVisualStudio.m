@@ -2,15 +2,221 @@
 #import <objc/runtime.h>
 #include "../Shared Code/XCFixin.h"
 #import "../Shared Code/Xcode5/DVTKit/DVTSourceTextView.h"
+#import "../Shared Code/Xcode5/IDEKit/IDENavigatorOutlineView.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEBatchFindResultsOutlineController.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEIssueNavigator.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEIssueNavigableItem.h"
 
 static IMP original_doCommandBySelector = nil;
 static IMP original_shouldIndentPastedText = nil;
+static IMP original_didSelectTabViewItem = nil;
 
+
+
+
+@interface NSView (SubtreeDescription)
+
+- (NSString *)_subtreeDescription;
+
+@end
+
+@interface NSView (FindUIViewController)
+- (NSViewController *) firstAvailableResponderOfClass:(Class)ClassToFind;
+- (id) traverseResponderChainForResponder:(Class)ClassToFind;
+@end
+
+@implementation NSView (FindUIViewController)
+- (NSViewController *) firstAvailableResponderOfClass:(Class)ClassToFind {
+    // convenience function for casting and to "mask" the recursive function
+    return (NSViewController *)[self traverseResponderChainForResponder:ClassToFind];
+}
+
+- (id) traverseResponderChainForResponder:(Class)ClassToFind {
+    id nextResponder = [self nextResponder];
+//	XCFixinLog(@"%@\n", [nextResponder className]);
+    if ([nextResponder isKindOfClass:ClassToFind]) {
+        return nextResponder;
+    } else if ([nextResponder isKindOfClass:[NSView class]]) {
+        return [nextResponder traverseResponderChainForResponder:ClassToFind];
+    } else {
+        return nil;
+    }
+}
+@end
 
 @interface XCFixin_EmulateVisualStudio : NSObject
+{
+	id eventMonitor;
+}
 @end
 
 @implementation XCFixin_EmulateVisualStudio
+
+//-----------------------------------------------------------------------------------------------
+- (id) init {
+//-----------------------------------------------------------------------------------------------
+  self = [super init];
+  if (self) {
+
+    NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
+
+    [notificationCenter addObserver: self
+                           selector: @selector( frameChanged: )
+                               name: NSViewFrameDidChangeNotification
+                             object: nil];
+	  
+    [notificationCenter addObserver: self
+                           selector: @selector( windowDidBecomeKey: )
+                               name: NSWindowDidBecomeKeyNotification
+                             object: nil];
+	  
+ 
+	eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^NSEvent *(NSEvent *event) 
+	{
+		unsigned short keyCode = [event keyCode];
+		//XCFixinLog(@"%d %@ %@\n", keyCode, [event characters], [event charactersIgnoringModifiers]);
+		NSUInteger ModifierFlags = [event modifierFlags];
+		if ((keyCode == 45) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
+		{
+			if (m_pActiveView && [m_pActiveView isValid])
+			{
+				if (m_pActiveViewControllerBatchFind)
+				{
+					if (ModifierFlags & NSShiftKeyMask)
+						[m_pActiveView doCommandBySelector:@selector(moveUp:)];
+					else
+						[m_pActiveView doCommandBySelector:@selector(moveDown:)];
+				
+					[m_pActiveViewControllerBatchFind openSelectedNavigableItemsKeyAction:m_pActiveView];
+				}
+				else
+				{
+					unsigned short KeyCode = 0;
+					NSString* pCharacters;
+					if (ModifierFlags & NSShiftKeyMask)
+					{
+						KeyCode = 126;
+						pCharacters = @"";
+					}
+					else
+					{
+						KeyCode = 125;
+						pCharacters = @"";
+					}
+					NSWindow* keyWindow = [NSApp keyWindow];
+					NSEvent* pEvent = [
+						NSEvent keyEventWithType:NSKeyDown 
+						location:[keyWindow mouseLocationOutsideOfEventStream] 
+						modifierFlags:0xa00100
+						timestamp:0.0
+						windowNumber:[keyWindow windowNumber]
+						context:nil 
+						characters:pCharacters 
+						charactersIgnoringModifiers:pCharacters
+						isARepeat:false 
+						keyCode:KeyCode
+					];
+					
+					bool bDoNavigation = false;
+					IDEIssueNavigableItem* pLastSelected = nil;
+					do
+					{
+						NSArray* pSelected = [m_pActiveView selectedItems];
+						if ([pSelected count] <= 0)
+							break;
+						pLastSelected = (IDEIssueNavigableItem*)pSelected[0];
+					}
+					while (false)
+						;
+					while (true)
+					{
+						[m_pActiveView keyDown:pEvent];
+						NSArray* pSelected = [m_pActiveView selectedItems];
+						if ([pSelected count] <= 0)
+							break;
+						
+						IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
+						if (pLastSelected == pSelectedItem)
+							break; // No change in selection
+						pLastSelected = pSelectedItem;
+						NSString* pClassName = [pSelectedItem className];
+						//XCFixinLog(@"%@ %d", pClassName, [pSelectedItem isLeaf]);
+						bDoNavigation = false;
+						if ([pClassName compare:@"IDEIssueGroupNavigableItem_AnyIDEIssueGroup"] == NSOrderedSame)
+							continue;
+						else if ([pClassName compare:@"IDEIssueFileGroupNavigableItem_AnyIDEIssueFileGroup"] == NSOrderedSame)
+							continue;
+						else if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+						{
+							bDoNavigation = true;
+							if (![pSelectedItem isLeaf])
+								[m_pActiveView expandItem:pSelectedItem];
+						}
+						break;
+					}
+					
+					if (m_pActiveViewControllerIssues && bDoNavigation)
+						[m_pActiveViewControllerIssues openSelectedNavigableItemsKeyAction:m_pActiveView];
+				  }
+			  }
+			  return nil;
+		  }
+		  return event;
+	  }];
+  }
+  return self;
+}
+
+//-----------------------------------------------------------------------------------------------
+- (void) dealloc {
+//-----------------------------------------------------------------------------------------------
+	[NSEvent removeMonitor:eventMonitor];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+static NSView* findSubViewWithClassName(NSView* _pView, char const* _pClassName)
+{
+	char const* pClassName = object_getClassName([_pView class]);
+	if (strcmp(pClassName, _pClassName) == 0)
+		return _pView;
+	for (NSView * pView in [_pView subviews]) 
+	{
+		NSView * pFound;
+		if ((pFound = findSubViewWithClassName(pView, _pClassName)))
+			return pFound;
+	}
+	return NULL;
+}
+
+IDENavigatorOutlineView* m_pActiveView = nil;
+IDEBatchFindResultsOutlineController* m_pActiveViewControllerBatchFind = nil;
+IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+	NSWindow *window = [notification object];
+	
+	//NSString* pDesc = [[window contentView] _subtreeDescription];
+	//XCFixinLog(@"%@\n", pDesc);
+	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([window contentView], "IDENavigatorOutlineView"));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+- (void) frameChanged:(NSNotification*)notification {
+	
+	if ([[notification.object className] compare:@"IDENavigatorOutlineView"] == NSOrderedSame)
+	{
+		NSWindow *keyWindow = [NSApp keyWindow];
+		IDENavigatorOutlineView* pOutlineView = (IDENavigatorOutlineView*)notification.object;
+		if (pOutlineView && [pOutlineView window] == keyWindow)
+		{
+			NSViewController* pActiveViewController = (NSViewController*)[pOutlineView firstAvailableResponderOfClass: [NSViewController class]];
+			if (pActiveViewController)
+				potentialView(pOutlineView);
+		}
+	}
+}
 
 static int clearSelection(id self_)
 {
@@ -98,6 +304,49 @@ static bool stringRangeContainsCharacters(NSString *text, NSRange range, NSChara
 	return codeStartRange.location != NSNotFound;
 }
 
+
+static void potentialView(IDENavigatorOutlineView* _pView)
+{
+//	IDEBatchFindResultsOutlineController
+	NSViewController* pViewController = (NSViewController*)[_pView firstAvailableResponderOfClass: [	NSViewController class]];
+	if (pViewController)
+	{
+		
+		if ([pViewController isKindOfClass:[IDEBatchFindResultsOutlineController class]])
+		{
+			m_pActiveView = _pView;
+			m_pActiveViewControllerBatchFind = (IDEBatchFindResultsOutlineController*)pViewController;
+			m_pActiveViewControllerIssues = nil;
+		}
+		else if ([pViewController isKindOfClass:[IDEIssueNavigator class]])
+		{
+			m_pActiveView = _pView;
+			m_pActiveViewControllerIssues = (IDEIssueNavigator*)pViewController;
+			m_pActiveViewControllerBatchFind = nil;
+		}
+		else
+		{
+			m_pActiveView = nil;
+			m_pActiveViewControllerIssues = nil;
+			m_pActiveViewControllerBatchFind = nil;
+ 		}
+	}
+	else
+	{
+		m_pActiveView = nil;
+		m_pActiveViewControllerIssues = nil;
+		m_pActiveViewControllerBatchFind = nil;
+	}
+}
+
+//- (void)tabView:(id)arg1 didSelectTabViewItem:(id)arg2;
+static BOOL didSelectTabViewItem( NSView *self_, SEL _cmd, NSTabView *tabView, NSTabViewItem *_pItem)
+{
+	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([_pItem view], "IDENavigatorOutlineView"));
+	return ((BOOL (*)(id, SEL, id, id))original_didSelectTabViewItem)(self_, _cmd, tabView, _pItem);
+}
+
+
 static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 {
 	DVTSourceTextView *self = (DVTSourceTextView *)self_;
@@ -105,7 +354,7 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 	do {
 		//- (BOOL)shouldIndentPastedText:(id)arg1;
 		
-		//XCFixinLog(@"Selector: %@", NSStringFromSelector(selector));
+//		XCFixinLog(@"Selector: %@\n", NSStringFromSelector(selector));
 		
 		if (selector == @selector(insertTab:))
 		{
@@ -368,17 +617,28 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 	return;
 }
 
+static id singleton = nil;
 
 + (void) pluginDidLoad:(NSBundle *)plugin
 {
-  XCFixinPreflight();
+	XCFixinPreflight();
 
-  original_doCommandBySelector = XCFixinOverrideMethodString(@"DVTSourceTextView", @selector(doCommandBySelector:), (IMP)&doCommandBySelector);
-  XCFixinAssertOrPerform(original_doCommandBySelector, goto failed);
+	singleton = [[XCFixin_EmulateVisualStudio alloc] init];
 
-  original_shouldIndentPastedText = XCFixinOverrideMethodString(@"DVTSourceTextView", @selector(shouldIndentPastedText:), (IMP)&shouldIndentPastedText);
-  XCFixinAssertOrPerform(original_shouldIndentPastedText, goto failed);
-  
-  XCFixinPostflight();
+	if (!singleton)
+	{
+		XCFixinLog(@"%s: Emulate visual studio init failed.\n",__FUNCTION__);
+	}
+	
+	original_doCommandBySelector = XCFixinOverrideMethodString(@"DVTSourceTextView", @selector(doCommandBySelector:), (IMP)&doCommandBySelector);
+	XCFixinAssertOrPerform(original_doCommandBySelector, goto failed);
+
+	original_shouldIndentPastedText = XCFixinOverrideMethodString(@"DVTSourceTextView", @selector(shouldIndentPastedText:), (IMP)&shouldIndentPastedText);
+	XCFixinAssertOrPerform(original_shouldIndentPastedText, goto failed);
+	
+	original_didSelectTabViewItem = XCFixinOverrideMethodString(@"DVTTabSwitcher", @selector(tabView:didSelectTabViewItem:), (IMP)&didSelectTabViewItem);
+	XCFixinAssertOrPerform(original_didSelectTabViewItem, goto failed);
+	
+	XCFixinPostflight();
 }
 @end

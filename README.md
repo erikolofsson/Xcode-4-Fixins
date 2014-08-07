@@ -1,7 +1,4 @@
-__This is the WIP Xcode 5.1 branch. These plugins are known to be
-compatible with Xcode 5.1, and may work with Xcode 5.01.__
-
-__For Xcode 4.6.2 and Xcode 5.01, see the master branch.__
+__These plugins are only maintained for the latest version of Xcode (currently 5.1)__
 
 __===== DESCRIPTION =====__
 
@@ -15,7 +12,7 @@ Despite the name, the Xcode 4 Fixins are compatible with Xcode 5.
 To install the fixins:
 
 1. Open the XCFixins workspace
-2. Change the scheme to Build All Fixins
+2. Change the scheme to "Release All maintained"
 3. Build the fixins
 
 The fixins will automatically be installed as a part of the build
@@ -23,28 +20,39 @@ process. Xcode must be relaunched for the fixins to take effect.
 
 Fixins are installed into ~/Library/Application Support/Developer/Shared/Xcode/Plug-ins/.
 
-__===== THE FIXINS =====__
+__===== MAINTAINED FIXINS =====__
+
+__EmulateVisualStudio__:
+This fixin aims to emulate the editor behavior of the Visual Studio editor. The following features are implemented
+
++ `HOME` (`fn←` and `⌘←` on a Mac keyboard) jumps to first non-white space character and then cycles between start of line and first non-white space character
++ Text is not automatically indented when pasted
++ Insert tab indents selection instead of deleting it
++ Insert back tab unindents selection instead of deleting it
++ Move whole word left and right commands emulates the behavior in Visual Studio, where the location is the same when moving forward or backword
++ You can double-click on a <source>:<line>: formatted string in the the console to get to the location in the editor
++ `⌘-N` / `⌘-Shift-N` keyboard shortcuts moves to the next/previous location as in Visual Studio. This means:
+ + Results in the issue navigator
+ + Issues in the issue navigator
+ + Source locations in the console output
+ + It will use the same shortcut for all of these and use last active of them to go to the source location
 
 __CurrentLineHighlighter__: This fixin highlights the line currently
 being edited in the source editor, making it easier to track the
 current insertion point. This fixin adds a "Current Line Highlight
 Color..." menu item to the Editor menu to set the highlight color.
 
+__CustomizeWarningErrorHighlights__: Customize the inline
+error/warning message highlight color. Useful if want to be able to
+read your code when using a dark background color.
+
+Note that the CustomizeWarningErrorHighlights fixin includes a
+reference to an Xcode framework; to build this fixin, Xcode must be
+installed in the default location of /Applications/Xcode.app/.
+
 __DisableAnimations__: This fixin disables Xcode's various
 NSAnimation-based animations, such as the Show/Hide Debug Area,
 Show/Hide Navigator, and Show/Hide Utilities animations.
-
-__FindFix__: By default, when Xcode's inline find bar opens, it
-doesn't display any options to customize searching. This fixin makes
-Xcode show all find options (such as "Ignore Case") in the find bar
-when it opens. This fixin also makes text-replacement the default mode
-in the inline find bar, giving immediate access to the "Replace" and
-"Replace All" buttons.
-
-The FindFix fixin also installs an additional option in the Find menu:
-__Auto Populate Find Bar__. When ticked, and the find bar is
-activated, the search text will be set to the text of the current
-selection, if any, or the word at the cursor.
 
 __HideDistractions__: This fixin adds a "Hide Distractions" menu item
 to the View menu, which focuses the current editor by hiding auxiliary
@@ -69,6 +77,42 @@ in such a case, Xcode jumps to the nearest argument placeholder
 instead of indenting. This fixin does not affect the "Jump to Next
 Placeholder" key binding in the Xcode preferences.
 
+
+__MiniXcode__:
+This is a plugin that makes it easier to run Xcode without the main toolbar. It adds keyboard shortcuts for selecting the active scheme and device (`Ctrl`+`7` / `Ctrl` + `8`), and a compact popup menu in the window title bar that shows the currently selected run configuration.
+
+While building a target, a circular spinner, the current progress (%) and all eventual errors, warnings and analyzer results are shown. 
+
+You can disable the popup from the _View_ menu if you find it distracting, the keyboard shortcuts will also work without it. The popup is automatically hidden when the main toolbar is visible.
+
+__P4Checkout__:
+This fixin checks out files controlled by Perforce when trying to edit a read only file.
+
+***Prerequisites***
+
+* p4 executable in path
+* Perforce configured to use P4CONFIG files
+* A $P4CONFIG (usually .p4config) file in any parent directories of file being checked out
+
+__Highlight__:
+This fixin adds additional highlighting functionality to C dialects. Currently hardcoded with prefixes used to identify different language constructs.
+
+__===== UNMAINTAINED FIXINS =====__
+
+These fixins ane not maintained, but might still work.
+
+__FindFix__: By default, when Xcode's inline find bar opens, it
+doesn't display any options to customize searching. This fixin makes
+Xcode show all find options (such as "Ignore Case") in the find bar
+when it opens. This fixin also makes text-replacement the default mode
+in the inline find bar, giving immediate access to the "Replace" and
+"Replace All" buttons.
+
+The FindFix fixin also installs an additional option in the Find menu:
+__Auto Populate Find Bar__. When ticked, and the find bar is
+activated, the search text will be set to the text of the current
+selection, if any, or the word at the cursor.
+
 __TabAcceptsCompletion__: Upon pressing tab, this fixin makes Xcode
 accept the currently-highlighted completion suggestion in the popup
 list. (Xcode's default tab behavior accepts only as much of the
@@ -77,10 +121,4 @@ highlighted completion that is common amongst other suggestions.)
 __UserScripts__: Reinstates some semblance of the Xcode 3.x User
 Scripts menu. See documentation in the XCFixin_UserScripts directory.
 
-__CustomizeWarningErrorHighlights__: Customize the inline
-error/warning message highlight color. Useful if want to be able to
-read your code when using a dark background color.
 
-Note that the CustomizeWarningErrorHighlights fixin includes a
-reference to an Xcode framework; to build this fixin, Xcode must be
-installed in the default location of /Applications/Xcode.app/.

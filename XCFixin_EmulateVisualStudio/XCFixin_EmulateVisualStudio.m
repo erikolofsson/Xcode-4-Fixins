@@ -25,6 +25,18 @@ static IMP original_doCommandBySelector = nil;
 static IMP original_shouldIndentPastedText = nil;
 static IMP original_didSelectTabViewItem = nil;
 static IMP original_mouseDownInConsole = nil;
+static IMP original_becomeFirstResponder_Console = nil;
+static IMP original_becomeFirstResponder_Search = nil;
+static IMP original_becomeFirstResponder_NavigatorOutlineView = nil;
+
+
+enum EPreferredNextLocation
+{
+	EPreferredNextLocation_Undefined
+	, EPreferredNextLocation_Search
+	, EPreferredNextLocation_Issue
+	, EPreferredNextLocation_Console
+};
 
 
 @interface NSView (SubtreeDescription)
@@ -77,6 +89,8 @@ static void setEditorFocus(NSWindow* _pWindow)
 	}
 }
 
+enum EPreferredNextLocation g_PreferredNextLocation = EPreferredNextLocation_Undefined;
+
 //-----------------------------------------------------------------------------------------------
 - (id) init {
 //-----------------------------------------------------------------------------------------------
@@ -104,7 +118,13 @@ static void setEditorFocus(NSWindow* _pWindow)
 			NSUInteger ModifierFlags = [event modifierFlags];
 			if ((keyCode == 45) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
 			{
-				if (m_pActiveView && [m_pActiveView isValid])
+				if (g_PreferredNextLocation == EPreferredNextLocation_Console)
+				{
+					IDEConsoleTextView* pView = getConsoleTextView(nil);
+					if (pView)
+						navigateToLineInConsoleTextView(pView, true, ModifierFlags & NSShiftKeyMask);
+				}
+				else if (m_pActiveView && [m_pActiveView isValid])
 				{
 					NSWindow* pWindow = [m_pActiveView window];
 					bool bSetEditorFocus = false;
@@ -243,6 +263,7 @@ IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
+	//g_PreferredNextLocation = EPreferredNextLocation_Undefined;
 	
 	NSWindow *window = [notification object];
 	
@@ -365,7 +386,6 @@ static void potentialView(IDENavigatorOutlineView* _pView)
 	NSViewController* pViewController = (NSViewController*)[_pView firstAvailableResponderOfClass: [	NSViewController class]];
 	if (pViewController)
 	{
-		
 		if ([pViewController isKindOfClass:[IDEBatchFindResultsOutlineController class]])
 		{
 			m_pActiveView = _pView;
@@ -416,6 +436,7 @@ static void updateLastValidEditorTab(NSWindow* _pWindow)
 
 static BOOL didSelectTabViewItem( NSView *self_, SEL _cmd, NSTabView *_pTabView, NSTabViewItem *_pItem)
 {
+	g_PreferredNextLocation = EPreferredNextLocation_Undefined;
 	updateLastValidEditorTab([_pTabView window]);
 	
 	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([_pItem view], "IDENavigatorOutlineView"));
@@ -451,103 +472,203 @@ static NSTabView* getWorkspaceTabView(NSWindow *_pWindow)
 	return pView;
 }
 
+static IDEConsoleTextView* getConsoleTextView(NSWindow *_pWindow)
+{
+	if (_pWindow == nil)
+		_pWindow = [NSApp keyWindow];
+	IDEConsoleTextView* pView = (IDEConsoleTextView*)findSubViewWithClassName([_pWindow contentView], "IDEConsoleTextView");
+	return pView;
+}
+
+
+
+static BOOL becomeFirstResponder_Console(IDEConsoleTextView* self_, SEL _cmd)
+{
+	g_PreferredNextLocation = EPreferredNextLocation_Console;
+	//XCFixinLog(@"%@ become first responder\n", [self_ className]);
+	return ((BOOL (*)(id, SEL))original_becomeFirstResponder_Console)(self_, _cmd);
+}
+
+static BOOL becomeFirstResponder_Search(id self_, SEL _cmd)
+{
+	g_PreferredNextLocation = EPreferredNextLocation_Search;
+	//XCFixinLog(@"%@ become first responder\n", [self_ className]);
+	return ((BOOL (*)(id, SEL))original_becomeFirstResponder_Search)(self_, _cmd);
+}
+
+static BOOL becomeFirstResponder_NavigatorOutlineView(IDENavigatorOutlineView* self_, SEL _cmd)
+{
+	potentialView(self_);
+	if (m_pActiveViewControllerBatchFind)
+		g_PreferredNextLocation = EPreferredNextLocation_Search;
+	else if (m_pActiveViewControllerIssues)
+		g_PreferredNextLocation = EPreferredNextLocation_Issue;
+	//XCFixinLog(@"%@ become first responder\n", [self_ className]);
+	return ((BOOL (*)(id, SEL))original_becomeFirstResponder_NavigatorOutlineView)(self_, _cmd);
+}
+
+static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool _bNext, bool _bBackwards)
+{
+	
+	NSRange selectedRange = _pTextView.selectedRange;
+	NSString *text = _pTextView.string;
+	NSRange lineRange = [text lineRangeForRange:selectedRange];
+	NSString *line = [text substringWithRange:lineRange];
+	
+	NSArray *matches = [g_pSourceLocationRegex matchesInString:line
+													   options:0
+														 range:NSMakeRange(0, [line length])];
+
+	if (matches.count > 0)
+	{
+		NSTextCheckingResult* pMatch = matches[0];
+		NSUInteger nRanges = [pMatch numberOfRanges];
+		if (nRanges == 4)
+		{
+			NSRange SourceRange = [pMatch rangeAtIndex:1];
+			NSRange LineRange = [pMatch rangeAtIndex:2];
+			NSString* pSource = [line substringWithRange:SourceRange];
+			NSString* pLine = [line substringWithRange:LineRange];
+//				NSString* pInfo = [line substringWithRange:[pMatch rangeAtIndex:3]];
+			
+//				XCFixinLog(@"Source: %@\n", pSource);
+//				XCFixinLog(@"Line: %@\n", pLine);
+			
+			IDESourceCodeEditorContainerView* pView = getSourceCodeEditorView([_pTextView window]);
+			if (!pView && g_pLastValidEditorTabItem)
+			{
+				NSTabView* pTabView = getWorkspaceTabView([_pTextView window]);
+				if (pTabView)
+				{
+					bool bValid = false;
+					for (NSTabViewItem* pItem in [pTabView tabViewItems])
+					{
+						if (pItem == g_pLastValidEditorTabItem)
+						{
+							bValid = true;
+							break;
+						}
+					}
+
+					if (bValid)
+					{
+						[g_pLastValidEditorTabView selectTabViewItem:g_pLastValidEditorTabItem];
+						pView = getSourceCodeEditorView([_pTextView window]);
+					}
+				}
+			}
+			IDEWorkspaceTabController* pTabController = getWorkspaceTabController([_pTextView window]);
+			
+			if (pView && pTabController)
+			{
+				IDESourceCodeEditor* pEditor = [pView editor];
+				if (pEditor)
+				{
+					//+[IDEEditorCoordinator _doOpenEditorOpenSpecifier:forWorkspaceTabController:editorContext:target:takeFocus:] ()
+					
+					NSNumber* pTimeStamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
+					
+					NSURL* pURL = [NSURL fileURLWithPath:pSource isDirectory: false];
+					DVTTextDocumentLocation *documentLocation = 
+						[
+							[DVTTextDocumentLocation alloc] 
+							initWithDocumentURL:pURL
+							timestamp:pTimeStamp
+							lineRange:NSMakeRange([pLine integerValue] - 1, 1)
+						]
+					;
+					
+					IDEWorkspaceDocument *pDocument = [pTabController workspaceDocument];
+					
+					if (pDocument)
+					{
+						NSRange NewRange;
+						NewRange.location = lineRange.location + SourceRange.location;
+						NewRange.length = (LineRange.location + LineRange.length) - SourceRange.location;
+						if (NSEqualRanges(selectedRange, NewRange) && _bNext)
+						{
+							// Goto next line if this line is already selected
+							goto End;
+						}
+						[_pTextView setSelectedRange:NewRange];
+						[_pTextView scrollRangeToVisible:NewRange];
+						
+						IDEEditorOpenSpecifier *pSpecifier = [IDEEditorOpenSpecifier structureEditorOpenSpecifierForDocumentLocation:documentLocation
+																															inWorkspace:[pDocument workspace]
+																																  error:nil];
+					
+						[IDEEditorCoordinator _doOpenEditorOpenSpecifier:pSpecifier forWorkspaceTabController:pTabController editorContext:nil target:0 takeFocus:1];
+						setEditorFocus([pView window]);
+						return true;
+					}
+				}
+			}
+		}
+	}
+End:
+	if (_bNext)
+	{
+		bool bWrapped = false;
+		while (true)
+		{
+			NSRange StartRange = lineRange;
+			if (_bBackwards)
+			{
+				if (lineRange.location > 0)
+					lineRange.location = lineRange.location - 1;
+			}
+			else
+				lineRange.location = lineRange.location + lineRange.length;
+			lineRange.length = 0;
+			
+			lineRange = [text lineRangeForRange:lineRange];
+			if (NSEqualRanges(lineRange, StartRange))
+			{
+				if (bWrapped)
+					return false;
+				bWrapped = true;
+				if (_bBackwards)
+				{
+					lineRange.location = [text length] - 1;
+					lineRange.length = 0;
+				}
+				else
+				{
+					lineRange.location = 0;
+					lineRange.length = 0;
+				}
+				continue;
+			}
+			NSString *line = [text substringWithRange:lineRange];
+			
+			NSArray *matches = [g_pSourceLocationRegex matchesInString:line
+															   options:0
+																 range:NSMakeRange(0, [line length])];
+			if (matches.count > 0)
+			{
+				NSTextCheckingResult* pMatch = matches[0];
+				NSUInteger nRanges = [pMatch numberOfRanges];
+				if (nRanges == 4)
+				{
+					lineRange.length = 0;
+					[_pTextView setSelectedRange:lineRange];
+					break;
+				}
+			}
+		}
+		
+		return navigateToLineInConsoleTextView(_pTextView, false, false);
+	}
+	return false;
+}
+
 
 static void mouseDownInConsole(IDEConsoleTextView* self_, SEL _cmd, NSEvent* _pEvent)
 {
 	if ([_pEvent clickCount] >= 2)
 	{
-		// Double click
-		//XCFixinLog(@"%@: mouseDown: %ld\n", [self_ className], [_pEvent clickCount]);
-		
-		NSRange selectedRange = self_.selectedRange;
-		NSString *text = self_.string;
-		NSRange lineRange = [text lineRangeForRange:selectedRange];
-		NSString *line = [text substringWithRange:lineRange];
-		
-		NSArray *matches = [g_pSourceLocationRegex matchesInString:line
-														   options:0
-															 range:NSMakeRange(0, [line length])];
-
-		if (matches.count > 0)
-		{
-			NSTextCheckingResult* pMatch = matches[0];
-			NSUInteger nRanges = [pMatch numberOfRanges];
-			if (nRanges == 4)
-			{
-				NSRange SourceRange = [pMatch rangeAtIndex:1];
-				NSRange LineRange = [pMatch rangeAtIndex:2];
-				NSString* pSource = [line substringWithRange:SourceRange];
-				NSString* pLine = [line substringWithRange:LineRange];
-//				NSString* pInfo = [line substringWithRange:[pMatch rangeAtIndex:3]];
-				
-//				XCFixinLog(@"Source: %@\n", pSource);
-//				XCFixinLog(@"Line: %@\n", pLine);
-				
-				IDESourceCodeEditorContainerView* pView = getSourceCodeEditorView([self_ window]);
-				if (!pView && g_pLastValidEditorTabItem)
-				{
-					NSTabView* pTabView = getWorkspaceTabView([self_ window]);
-					if (pTabView)
-					{
-						bool bValid = false;
-						for (NSTabViewItem* pItem in [pTabView tabViewItems])
-						{
-							if (pItem == g_pLastValidEditorTabItem)
-							{
-								bValid = true;
-								break;
-							}
-						}
-
-						if (bValid)
-						{
-							[g_pLastValidEditorTabView selectTabViewItem:g_pLastValidEditorTabItem];
-							pView = getSourceCodeEditorView([self_ window]);
-						}
-					}
-				}
-				IDEWorkspaceTabController* pTabController = getWorkspaceTabController([self_ window]);
-				
-				if (pView && pTabController)
-				{
-					IDESourceCodeEditor* pEditor = [pView editor];
-					if (pEditor)
-					{
-						//+[IDEEditorCoordinator _doOpenEditorOpenSpecifier:forWorkspaceTabController:editorContext:target:takeFocus:] ()
-						
-						NSNumber* pTimeStamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
-						
-						NSURL* pURL = [NSURL fileURLWithPath:pSource isDirectory: false];
-						DVTTextDocumentLocation *documentLocation = 
-							[
-								[DVTTextDocumentLocation alloc] 
-								initWithDocumentURL:pURL
-								timestamp:pTimeStamp
-								lineRange:NSMakeRange([pLine integerValue], 1)
-							]
-						;
-						
-						IDEWorkspaceDocument *pDocument = [pTabController workspaceDocument];
-						
-						if (pDocument)
-						{
-							NSRange NewRange;
-							NewRange.location = lineRange.location + SourceRange.location;
-							NewRange.length = (LineRange.location + LineRange.length) - SourceRange.location;
-							[self_ setSelectedRange:NewRange];
-							
-							IDEEditorOpenSpecifier *pSpecifier = [IDEEditorOpenSpecifier structureEditorOpenSpecifierForDocumentLocation:documentLocation
-																																inWorkspace:[pDocument workspace]
-																																	  error:nil];
-						
-							[IDEEditorCoordinator _doOpenEditorOpenSpecifier:pSpecifier forWorkspaceTabController:pTabController editorContext:nil target:0 takeFocus:1];
-							setEditorFocus([pView window]);
-							return;
-						}
-					}
-				}
-			}
-		}
+		if (navigateToLineInConsoleTextView(self_, false, false))
+			return;
 	}
 	return ((void (*)(id, SEL, id))original_mouseDownInConsole)(self_, _cmd, _pEvent);
 }
@@ -827,6 +948,7 @@ static id singleton = nil;
 
 NSRegularExpression *g_pSourceLocationRegex;
 
+
 + (void) pluginDidLoad:(NSBundle *)plugin
 {
 	XCFixinPreflight();
@@ -854,6 +976,16 @@ NSRegularExpression *g_pSourceLocationRegex;
 
 	original_mouseDownInConsole = XCFixinOverrideMethodString(@"IDEConsoleTextView", @selector(mouseDown:), (IMP)&mouseDownInConsole);
 	XCFixinAssertOrPerform(original_mouseDownInConsole, goto failed);
+	
+	original_becomeFirstResponder_Console = XCFixinOverrideMethodString(@"IDEConsoleTextView", @selector(becomeFirstResponder), (IMP)&becomeFirstResponder_Console);
+	XCFixinAssertOrPerform(original_becomeFirstResponder_Console, goto failed);
+
+	original_becomeFirstResponder_Search = XCFixinOverrideMethodString(@"IDEProgressSearchField", @selector(becomeFirstResponder), (IMP)&becomeFirstResponder_Search);
+	XCFixinAssertOrPerform(original_becomeFirstResponder_Search, goto failed);
+	
+	original_becomeFirstResponder_NavigatorOutlineView = XCFixinOverrideMethodString(@"IDENavigatorOutlineView", @selector(becomeFirstResponder), (IMP)&becomeFirstResponder_NavigatorOutlineView);
+	XCFixinAssertOrPerform(original_becomeFirstResponder_NavigatorOutlineView, goto failed);
+	
 
 	XCFixinPostflight();
 }

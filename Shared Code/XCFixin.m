@@ -125,7 +125,6 @@ NSTextView *XCFixinFindIDETextView(BOOL log)
 
 IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation)
 {
-  Method *classMethods = nil;
   IMP result = nil;
     
   XCFixinAssertOrPerform(class, goto cleanup);
@@ -136,23 +135,12 @@ IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation
   XCFixinAssertOrPerform(originalMethod, goto cleanup);
     
   IMP originalImplementation = method_getImplementation(originalMethod);
-  unsigned int classMethodsCount = 0;
-  classMethods = class_copyMethodList(class, &classMethodsCount);
-  XCFixinAssertOrPerform(classMethods, goto cleanup);
-    
   IMP setImplementationResult = method_setImplementation(originalMethod, newImplementation);
   XCFixinAssertOrPerform(setImplementationResult, goto cleanup);
     
   result = originalImplementation;
     
 cleanup:
-  {
-    if (classMethods)
-    {
-      free(classMethods),
-      classMethods = nil;
-    }
-  }
     
     return result;
 }

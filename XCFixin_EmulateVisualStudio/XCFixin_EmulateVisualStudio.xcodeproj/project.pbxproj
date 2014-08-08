@@ -10,6 +10,7 @@
 		03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03318EDA1937BC3B00132304 /* Cocoa.framework */; };
 		03329EC81937AA1A000E475B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03329EC71937AA1A000E475B /* README.md */; };
 		0372C85519378E9400364146 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 0372C85419378E9400364146 /* XCFixin.m */; };
+		0382BA6D199516B500E48ED4 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382BA6C199516B500E48ED4 /* Carbon.framework */; };
 		0382C751199412CB00DEF003 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C750199412CB00DEF003 /* DVTKit.framework */; };
 		0382C7531994131400DEF003 /* DVTFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C7521994131400DEF003 /* DVTFoundation.framework */; };
 		03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A1896E1992C68500F87332 /* IDEKit.framework */; };
@@ -22,6 +23,7 @@
 		03329EC71937AA1A000E475B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		0372C85319378E9400364146 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		0372C85419378E9400364146 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
+		0382BA6C199516B500E48ED4 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		0382C750199412CB00DEF003 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = "/Source/Xcode-4-Fixins/XCFixin_Highlight/../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework"; sourceTree = "<absolute>"; };
 		0382C7521994131400DEF003 /* DVTFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTFoundation.framework; path = ../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework; sourceTree = "<group>"; };
 		03A1896E1992C68500F87332 /* IDEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEKit.framework; path = ../../../Applications/Xcode.app/Contents/Frameworks/IDEKit.framework; sourceTree = "<group>"; };
@@ -36,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0382BA6D199516B500E48ED4 /* Carbon.framework in Frameworks */,
 				0382C7531994131400DEF003 /* DVTFoundation.framework in Frameworks */,
 				03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */,
 				03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */,
@@ -49,6 +52,7 @@
 		435E246513A8E4510052479A = {
 			isa = PBXGroup;
 			children = (
+				0382BA6C199516B500E48ED4 /* Carbon.framework */,
 				0382C7521994131400DEF003 /* DVTFoundation.framework */,
 				0382C750199412CB00DEF003 /* DVTKit.framework */,
 				03A1896E1992C68500F87332 /* IDEKit.framework */,

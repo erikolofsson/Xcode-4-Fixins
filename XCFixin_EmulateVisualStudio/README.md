@@ -13,7 +13,21 @@ This fixin aims to emulate the editor behavior of the Visual Studio editor. The 
  + Issues in the issue navigator
  + Source locations in the console output
  + It will use the same shortcut for all of these and use last active of them to go to the source location
++ Emulate keyboard behaviour of find and replace:
+ + Tab / Shift+Tab goes between find and replace fields instead of stopping at find button first
+ + Down arrow centers on the last recent item instead of on the options menu item
+ + `Ctrl-N` finds next search result
+ + `Ctrl-Shift-N` finds previous search result
+ + `Ctrl-R` Replaces one result
+ + `Ctrl-A` Replaces all results
+ + `Ctrl-O` Shows the options panel
+ + `Ctrl-C` Toggels match case
+ + `Ctrl-E` Toggels regular expression
+ + `Ctrl-W` Toggles whole word only matching
+ 
 
+### TODO
++ Keyboard shortcut to start debugging several schemes
 
 ### Installation
 

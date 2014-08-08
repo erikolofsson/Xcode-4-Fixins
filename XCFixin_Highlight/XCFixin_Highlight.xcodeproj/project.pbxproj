@@ -13,7 +13,6 @@
 		03424047193F9ACE0038ACA5 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03424046193F9ACE0038ACA5 /* DVTKit.framework */; };
 		03580362198C284000A2EF45 /* DumpXcode.sh in Resources */ = {isa = PBXBuildFile; fileRef = 03580361198C284000A2EF45 /* DumpXcode.sh */; };
 		0372C85519378E9400364146 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 0372C85419378E9400364146 /* XCFixin.m */; };
-		038959F519943FD3000941CA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 038959F419943FD3000941CA /* README.md */; };
 		435E248813A8E5A40052479A /* XCFixin_Highlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 435E248513A8E5A40052479A /* XCFixin_Highlight.m */; };
 		437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 437DCBC314D41E700039CB49 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
@@ -142,7 +141,6 @@
 			files = (
 				03329EC81937AA1A000E475B /* README.md in Resources */,
 				437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */,
-				038959F519943FD3000941CA /* README.md in Resources */,
 				03580362198C284000A2EF45 /* DumpXcode.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

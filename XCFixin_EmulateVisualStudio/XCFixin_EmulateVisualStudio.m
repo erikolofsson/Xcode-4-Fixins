@@ -1,7 +1,17 @@
 #import <Cocoa/Cocoa.h>
+#include <Carbon/Carbon.h>
 #import <objc/runtime.h>
 #include "../Shared Code/XCFixin.h"
+
 #import "../Shared Code/Xcode5/DVTKit/DVTSourceTextView.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTDocumentLocation.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTTextDocumentLocation.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTFindBar.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTFindPatternFieldEditor.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTFindPatternTextField.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTFindBarOptionsCtrl.h"
+
+
 #import "../Shared Code/Xcode5/IDEKit/IDENavigatorOutlineView.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEBatchFindResultsOutlineController.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEIssueNavigator.h"
@@ -11,15 +21,12 @@
 #import "../Shared Code/Xcode5/IDEKit/IDEConsoleTextView.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEEditorCoordinator.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEEditorOpenSpecifier.h"
-#import "../Shared Code/Xcode5/DVTKit/DVTDocumentLocation.h"
-#import "../Shared Code/Xcode5/DVTKit/DVTTextDocumentLocation.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceWindow.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceWindowController.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceTabController.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceDocument.h"
 
-
-
+#import "../Shared Code/Xcode5/AppKit/NSCarbonMenuImpl.h"
 
 static IMP original_doCommandBySelector = nil;
 static IMP original_shouldIndentPastedText = nil;
@@ -28,6 +35,9 @@ static IMP original_mouseDownInConsole = nil;
 static IMP original_becomeFirstResponder_Console = nil;
 static IMP original_becomeFirstResponder_Search = nil;
 static IMP original_becomeFirstResponder_NavigatorOutlineView = nil;
+static IMP original_becomeFirstResponder_DVTFindPatternFieldEditor = nil;
+static IMP original_resignFirstResponder_DVTFindPatternFieldEditor = nil;
+static IMP original_menuItemWithKeyEquivalentMatchingEventRef = nil;
 
 
 enum EPreferredNextLocation
@@ -37,7 +47,6 @@ enum EPreferredNextLocation
 	, EPreferredNextLocation_Issue
 	, EPreferredNextLocation_Console
 };
-
 
 @interface NSView (SubtreeDescription)
 
@@ -91,6 +100,167 @@ static void setEditorFocus(NSWindow* _pWindow)
 
 enum EPreferredNextLocation g_PreferredNextLocation = EPreferredNextLocation_Undefined;
 
+static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFlags, NSEvent *event)
+{
+	DVTFindBar* pFindBar = getFindBar(g_pRespondingPatternFieldEditor);
+	
+	if (!pFindBar && !g_pFindBarOptionsCtrl)
+		return false;
+	
+	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == 0)
+	{
+		// Alone key
+		if (keyCode == kVK_Tab && pFindBar)
+		{
+			if (![pFindBar findFieldHasFocus])
+				return false;
+			if (!event)
+				return true;
+			[pFindBar selectReplaceField:nil];
+			return true;
+		}
+		else if (keyCode == kVK_DownArrow && pFindBar)
+		{
+			if ([pFindBar findFieldHasFocus])
+			{
+				NSMenu* pMenu = [pFindBar _recentsMenu];
+				(void)pMenu;
+				
+				bool bFoundRecents = false;
+				NSMenuItem* pFirstRecentItem = nil;
+				for (NSMenuItem* pItem in [pMenu itemArray])
+				{
+					if (bFoundRecents)
+					{
+						pFirstRecentItem = pItem;
+						break;
+					}
+					if ([[pItem title] compare:@"Recent Results"] == NSOrderedSame)
+						bFoundRecents = true;
+				}
+				
+				if (pFirstRecentItem)
+				{
+					if (!event)
+						return true;
+					NSPoint Location;
+					Location.x = 0;
+					Location.y = 0;
+					[pMenu popUpMenuPositioningItem:pFirstRecentItem atLocation:Location inView:[pFindBar findBarView]];
+					return true;
+				}
+			}
+		}
+	}
+	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSShiftKeyMask)
+	{
+		// Shift key
+		if (keyCode == kVK_Tab && pFindBar)
+		{
+			if (![pFindBar replaceFieldHasFocus])
+				return false;
+			if (!event)
+				return true;
+			[pFindBar selectFindField:nil];
+			return true;
+		}
+	}
+	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSControlKeyMask)
+	{
+		// Control
+		if (keyCode == kVK_ANSI_N && pFindBar)
+		{
+			if (!event)
+				return true;
+			[pFindBar findNext:nil];
+			return true;
+		}
+		else if (keyCode == kVK_ANSI_R && pFindBar)
+		{
+			if ([pFindBar finderMode] != 1)
+				return false;
+			if (!event)
+				return true;
+			[pFindBar replaceAndFindNext:nil];
+			return true;
+		}
+		else if (keyCode == kVK_ANSI_A && pFindBar)
+		{
+			if ([pFindBar finderMode] != 1)
+				return false;
+			if (!event)
+				return true;
+			[pFindBar replaceAll:nil];
+			return true;
+		}
+		else if (keyCode == kVK_ANSI_O && pFindBar)
+		{
+			if (!event)
+				return true;
+			[pFindBar _showFindOptionsPopover:nil];
+			return true;
+		}
+		else if (keyCode == kVK_ANSI_C)
+		{
+			DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
+			if (!pOptionsControl)
+				pOptionsControl = [pFindBar optionsCtrl];
+			if (pOptionsControl)
+			{
+				if (!event)
+					return true;
+				pOptionsControl.findIgnoresCase = !pOptionsControl.findIgnoresCase;
+				return true;
+			}
+		}
+		else if (keyCode == kVK_ANSI_E)
+		{
+			DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
+			if (!pOptionsControl)
+				pOptionsControl = [pFindBar optionsCtrl];
+			if (pOptionsControl)
+			{
+				if (!event)
+					return true;
+				if (pOptionsControl.findType == 0)
+					pOptionsControl.findType = 1;
+				else
+					pOptionsControl.findType = 0;
+				return true;
+			}
+		}
+		else if (keyCode == kVK_ANSI_W)
+		{
+			DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
+			if (!pOptionsControl)
+				pOptionsControl = [pFindBar optionsCtrl];
+			if (pOptionsControl)
+			{
+				if (!event)
+					return true;
+				if (pOptionsControl.matchStyle == 0)
+					pOptionsControl.matchStyle = 2;
+				else
+					pOptionsControl.matchStyle = 0;
+				return true;
+			}
+		}
+	}
+	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == (NSControlKeyMask | NSShiftKeyMask))
+	{
+		// Control + shift
+		if (keyCode == kVK_ANSI_N)
+		{
+			if (!event)
+				return true;
+			[pFindBar findPrevious:nil];
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 //-----------------------------------------------------------------------------------------------
 - (id) init {
 //-----------------------------------------------------------------------------------------------
@@ -110,12 +280,29 @@ enum EPreferredNextLocation g_PreferredNextLocation = EPreferredNextLocation_Und
 								   name: NSWindowDidBecomeKeyNotification
 								 object: nil];
 		  
-
+		[notificationCenter addObserver: self
+							   selector: @selector( popoverDidShowNotification: )
+								   name: NSPopoverDidShowNotification
+								 object: nil];
+		  
+		[notificationCenter addObserver: self
+							   selector: @selector( popoverWillCloseNotification: )
+								   name: NSPopoverWillCloseNotification
+								 object: nil];
+		
 		eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^NSEvent *(NSEvent *event) 
 		{
 			unsigned short keyCode = [event keyCode];
 			//XCFixinLog(@"%d %@ %@\n", keyCode, [event characters], [event charactersIgnoringModifiers]);
 			NSUInteger ModifierFlags = [event modifierFlags];
+			
+			if (g_pRespondingPatternFieldEditor || g_pFindBarOptionsCtrl)
+			{
+				if (handleFieldEditorEvent(keyCode, ModifierFlags, event))
+					return nil;
+				return event;
+			}
+			
 			if ((keyCode == 45) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
 			{
 				if (g_PreferredNextLocation == EPreferredNextLocation_Console)
@@ -257,6 +444,36 @@ static NSView* findSubViewWithController(NSView* _pView, Class ClassToFind)
 	return NULL;
 }
 
+static NSView* findParentViewWithClassName(NSView* _pView, char const* _pClassName)
+{
+	char const* pClassName = object_getClassName([_pView class]);
+	if (strcmp(pClassName, _pClassName) == 0)
+		return _pView;
+	NSView * pView;
+	if ((pView = [_pView superview])) 
+	{
+		NSView * pFound;
+		if ((pFound = findParentViewWithClassName(pView, _pClassName)))
+			return pFound;
+	}
+	return NULL;
+}
+
+static NSView* findParentViewWithController(NSView* _pView, Class ClassToFind)
+{
+	NSViewController* pViewController = (NSViewController*)[_pView firstAvailableResponderOfClass:ClassToFind];
+	if (pViewController)
+		return _pView;
+	NSView * pView;
+	if ((pView = [_pView superview])) 
+	{
+		NSView * pFound;
+		if ((pFound = findParentViewWithController(pView, ClassToFind)))
+			return pFound;
+	}
+	return NULL;
+}
+
 IDENavigatorOutlineView* m_pActiveView = nil;
 IDEBatchFindResultsOutlineController* m_pActiveViewControllerBatchFind = nil;
 IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
@@ -274,6 +491,28 @@ IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
 	updateLastValidEditorTab(window);
 	
 	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([window contentView], "IDENavigatorOutlineView"));
+}
+
+
+- (void)popoverDidShowNotification:(NSNotification *)notification
+{
+	NSPopover* pPopover = [notification object];
+	DVTFindBarOptionsCtrl* pViewController = (DVTFindBarOptionsCtrl*)[pPopover contentViewController];
+	if ([pViewController isKindOfClass:[DVTFindBarOptionsCtrl class]])
+	{
+		g_pFindBarOptionsCtrl = pViewController;
+	}
+}
+
+- (void)popoverWillCloseNotification:(NSNotification *)notification
+{
+	NSPopover* pPopover = [notification object];
+	DVTFindBarOptionsCtrl* pViewController = (DVTFindBarOptionsCtrl*)[pPopover contentViewController];
+	if ([pViewController isKindOfClass:[DVTFindBarOptionsCtrl class]])
+	{
+		if (g_pFindBarOptionsCtrl == pViewController)
+			g_pFindBarOptionsCtrl = nil;
+	}
 }
 
 
@@ -496,6 +735,7 @@ static BOOL becomeFirstResponder_Search(id self_, SEL _cmd)
 	return ((BOOL (*)(id, SEL))original_becomeFirstResponder_Search)(self_, _cmd);
 }
 
+
 static BOOL becomeFirstResponder_NavigatorOutlineView(IDENavigatorOutlineView* self_, SEL _cmd)
 {
 	potentialView(self_);
@@ -506,6 +746,84 @@ static BOOL becomeFirstResponder_NavigatorOutlineView(IDENavigatorOutlineView* s
 	//XCFixinLog(@"%@ become first responder\n", [self_ className]);
 	return ((BOOL (*)(id, SEL))original_becomeFirstResponder_NavigatorOutlineView)(self_, _cmd);
 }
+
+DVTFindPatternFieldEditor* g_pRespondingPatternFieldEditor = nil;
+
+DVTFindBarOptionsCtrl* g_pFindBarOptionsCtrl = nil;
+
+static BOOL becomeFirstResponder_DVTFindPatternFieldEditor(DVTFindPatternFieldEditor* self_, SEL _cmd)
+{
+	//XCFixinLog(@"%@ become first responder\n", [self_ className]);
+	g_pRespondingPatternFieldEditor = self_;
+	return ((BOOL (*)(id, SEL))original_becomeFirstResponder_DVTFindPatternFieldEditor)(self_, _cmd);
+}
+
+static BOOL resignFirstResponder_DVTFindPatternFieldEditor(DVTFindPatternFieldEditor* self_, SEL _cmd)
+{
+	//XCFixinLog(@"%@ resign first responder\n", [self_ className]);
+	if (g_pRespondingPatternFieldEditor == self_)
+		g_pRespondingPatternFieldEditor = nil;
+	return ((BOOL (*)(id, SEL))original_resignFirstResponder_DVTFindPatternFieldEditor)(self_, _cmd);
+}
+
+static DVTFindBar* getFindBar(DVTFindPatternFieldEditor* self_)
+{
+	NSView* pParentView = findParentViewWithClassName(self_, "DVTFindPatternFieldEditor");
+	if (!pParentView)
+		pParentView = findParentViewWithController(self_, NSClassFromString(@"DVTFindBar"));
+	if (pParentView)
+	{
+		DVTFindBar* pViewController = (DVTFindBar*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"DVTFindBar")];
+		if (pViewController)
+			return pViewController;
+	}
+	
+	return nil;
+}
+
+// + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
+static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu)
+{
+	if (g_pRespondingPatternFieldEditor || g_pFindBarOptionsCtrl)
+	{
+		OSType EventClass = GetEventClass(_pEventRef);
+		
+		if (EventClass == 'keyb')
+		{
+			UInt32 EventKind = GetEventKind(_pEventRef);
+			if (EventKind == kEventRawKeyDown || EventKind == kEventRawKeyRepeat)
+			{
+				UInt32 KeyCode;
+				UInt32 Modifiers;
+				GetEventParameter(_pEventRef, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &Modifiers);
+				GetEventParameter(_pEventRef, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &KeyCode);
+				
+				NSUInteger nsModifiers = 0;
+				if (Modifiers & cmdKey)
+					nsModifiers |= NSCommandKeyMask;
+				if (Modifiers & controlKey)
+					nsModifiers |= NSControlKeyMask;
+				if (Modifiers & optionKey)
+					nsModifiers |= NSAlternateKeyMask;
+				if (Modifiers & shiftKey)
+					nsModifiers |= NSShiftKeyMask;
+				
+				if (handleFieldEditorEvent(KeyCode, nsModifiers, nil))
+				{
+					// Don't let menu handle event
+					_pRetVal->_field2 = nil;
+					_pRetVal->_field1 = nil;
+					_pRetVal->_field3 = 0;
+					return;
+				}
+			}
+		}
+	}
+	
+	return ((void(*)(struct _NSCarbonMenuSearchReturn *, id, SEL, EventRef, id))original_menuItemWithKeyEquivalentMatchingEventRef)(_pRetVal, self_, _Sel, _pEventRef, _pInMenu);
+}
+
+
 
 static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool _bNext, bool _bBackwards)
 {
@@ -985,7 +1303,15 @@ NSRegularExpression *g_pSourceLocationRegex;
 	
 	original_becomeFirstResponder_NavigatorOutlineView = XCFixinOverrideMethodString(@"IDENavigatorOutlineView", @selector(becomeFirstResponder), (IMP)&becomeFirstResponder_NavigatorOutlineView);
 	XCFixinAssertOrPerform(original_becomeFirstResponder_NavigatorOutlineView, goto failed);
+
+	original_becomeFirstResponder_DVTFindPatternFieldEditor = XCFixinOverrideMethodString(@"DVTFindPatternFieldEditor", @selector(becomeFirstResponder), (IMP)&becomeFirstResponder_DVTFindPatternFieldEditor);
+	XCFixinAssertOrPerform(original_becomeFirstResponder_DVTFindPatternFieldEditor, goto failed);
+
+	original_resignFirstResponder_DVTFindPatternFieldEditor = XCFixinOverrideMethodString(@"DVTFindPatternFieldEditor", @selector(resignFirstResponder), (IMP)&resignFirstResponder_DVTFindPatternFieldEditor);
+	XCFixinAssertOrPerform(original_resignFirstResponder_DVTFindPatternFieldEditor, goto failed);
 	
+	original_menuItemWithKeyEquivalentMatchingEventRef = XCFixinOverrideStaticMethodString(@"NSCarbonMenuImpl", @selector(_menuItemWithKeyEquivalentMatchingEventRef:inMenu:), (IMP)&menuItemWithKeyEquivalentMatchingEventRef);
+	XCFixinAssertOrPerform(original_menuItemWithKeyEquivalentMatchingEventRef, goto failed);
 
 	XCFixinPostflight();
 }

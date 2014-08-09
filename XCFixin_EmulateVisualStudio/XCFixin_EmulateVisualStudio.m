@@ -302,165 +302,187 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 			//XCFixinLog(@"%d %@ %@\n", keyCode, [event characters], [event charactersIgnoringModifiers]);
 			NSUInteger ModifierFlags = [event modifierFlags];
 			
-			if (g_pRespondingPatternFieldEditor || g_pFindBarOptionsCtrl)
+			bool bHandled = false;
+
+			do
 			{
-				if (handleFieldEditorEvent(keyCode, ModifierFlags, event))
-					return nil;
-				return event;
-			}
-
-			if ((keyCode == kVK_ANSI_G) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
-			{
-				// Run
-				
-				IDEWorkspaceTabController* pTabController = getWorkspaceTabController([event window]);
-				
-				if (!pTabController)
-					return event;
-				
-				IDEWorkspace* pWorkspace = [pTabController workspace];
-				if (!pWorkspace)
-					return event;
-
-				IDERunContextManager* pRunContextManager = [pWorkspace runContextManager];
-				if (!pRunContextManager)
-					return event;
-				
-				IDEScheme* pActiveScheme = [pRunContextManager activeRunContext];
-				if (!pActiveScheme)
-					return event;
-				
-				IDELaunchSchemeAction* pLaunchAction = [pActiveScheme launchSchemeAction];
-				
-				if (!pLaunchAction)
-					return event;
-				
-				if ([pLaunchAction runnable])
-					return event; // User configured runnable
-				
-				NSString *pCustomWorkingDir = [pLaunchAction customWorkingDirectory];
-				
-				if ([pCustomWorkingDir compare:@"[MulitLaunchSchemes]"] != NSOrderedSame)
-					return event; // Magic enable for multil launch
-
-				bool bRun = false;
-				for (IDECommandLineArgumentEntry* pCommandLineArg in [pLaunchAction commandLineArgumentEntries])
+				if (g_pRespondingPatternFieldEditor || g_pFindBarOptionsCtrl)
 				{
-					if (!pCommandLineArg.isEnabled)
-						continue;
-					for (IDEScheme* pScheme in [pRunContextManager runContexts])
-					{
-						if ([[pScheme name] compare:[pCommandLineArg argument]] == NSOrderedSame)
-						{
-							[pTabController _runWithoutBuildingForScheme:pScheme runDestination:[pRunContextManager activeRunDestination] invocationRecord:nil];
-							bRun = true;
-							//XCFixinLog(@"pScheme %@\n", [pScheme name]);
-						}
-					}
+					if (handleFieldEditorEvent(keyCode, ModifierFlags, event))
+						return nil;
 				}
-				
-				if (bRun)
-					return nil;
-			}
-			else if ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
-			{
-				if (g_PreferredNextLocation == EPreferredNextLocation_Console)
+
+				if ((keyCode == kVK_ANSI_G) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
 				{
-					IDEConsoleTextView* pView = getConsoleTextView(nil);
-					if (pView)
-						navigateToLineInConsoleTextView(pView, true, ModifierFlags & NSShiftKeyMask);
-				}
-				else if (m_pActiveView && [m_pActiveView isValid])
-				{
-					NSWindow* pWindow = [m_pActiveView window];
-					bool bSetEditorFocus = false;
-					if (m_pActiveViewControllerBatchFind)
-					{
-						if (ModifierFlags & NSShiftKeyMask)
-							[m_pActiveView doCommandBySelector:@selector(moveUp:)];
-						else
-							[m_pActiveView doCommandBySelector:@selector(moveDown:)];
+					// Run
 					
-						[m_pActiveViewControllerBatchFind openSelectedNavigableItemsKeyAction:m_pActiveView];
-						bSetEditorFocus = true;
-					}
-					else
+					IDEWorkspaceTabController* pTabController = getWorkspaceTabController([event window]);
+					
+					if (!pTabController)
+						break;
+					
+					IDEWorkspace* pWorkspace = [pTabController workspace];
+					if (!pWorkspace)
+						break;
+
+					IDERunContextManager* pRunContextManager = [pWorkspace runContextManager];
+					if (!pRunContextManager)
+						break;
+					
+					IDEScheme* pActiveScheme = [pRunContextManager activeRunContext];
+					if (!pActiveScheme)
+						break;
+					
+					IDELaunchSchemeAction* pLaunchAction = [pActiveScheme launchSchemeAction];
+					
+					if (!pLaunchAction)
+						break;
+					
+					if ([pLaunchAction runnable])
+						break; // User configured runnable
+					
+					NSString *pCustomWorkingDir = [pLaunchAction customWorkingDirectory];
+					
+					if ([pCustomWorkingDir compare:@"[MulitLaunchSchemes]"] != NSOrderedSame)
+						break; // Magic enable for multil launch
+
+					for (IDECommandLineArgumentEntry* pCommandLineArg in [pLaunchAction commandLineArgumentEntries])
 					{
-						unsigned short KeyCode = 0;
-						NSString* pCharacters;
-						if (ModifierFlags & NSShiftKeyMask)
+						if (!pCommandLineArg.isEnabled)
+							continue;
+						for (IDEScheme* pScheme in [pRunContextManager runContexts])
 						{
-							KeyCode = 126;
-							pCharacters = @"";
+							if ([[pScheme name] compare:[pCommandLineArg argument]] == NSOrderedSame)
+							{
+								[pTabController _runWithoutBuildingForScheme:pScheme runDestination:[pRunContextManager activeRunDestination] invocationRecord:nil];
+								bHandled = true;
+								[NSThread sleepForTimeInterval:0.1];
+								//XCFixinLog(@"pScheme %@\n", [pScheme name]);
+							}
+						}
+					}
+				}
+				else if ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
+				{
+					if (g_PreferredNextLocation == EPreferredNextLocation_Console)
+					{
+						IDEConsoleTextView* pView = getConsoleTextView(nil);
+						if (pView)
+						{
+							bHandled = true;
+							navigateToLineInConsoleTextView(pView, true, ModifierFlags & NSShiftKeyMask);
+						}
+					}
+					else if (m_pActiveView && [m_pActiveView isValid])
+					{
+						NSWindow* pWindow = [m_pActiveView window];
+						bool bSetEditorFocus = false;
+						if (m_pActiveViewControllerBatchFind)
+						{
+							if (ModifierFlags & NSShiftKeyMask)
+								[m_pActiveView doCommandBySelector:@selector(moveUp:)];
+							else
+								[m_pActiveView doCommandBySelector:@selector(moveDown:)];
+						
+							[m_pActiveViewControllerBatchFind openSelectedNavigableItemsKeyAction:m_pActiveView];
+							bSetEditorFocus = true;
+							bHandled = true;
 						}
 						else
 						{
-							KeyCode = 125;
-							pCharacters = @"";
-						}
-						NSEvent* pEvent = [
-							NSEvent keyEventWithType:NSKeyDown 
-							location:[pWindow mouseLocationOutsideOfEventStream] 
-							modifierFlags:0xa00100
-							timestamp:0.0
-							windowNumber:[pWindow windowNumber]
-							context:nil 
-							characters:pCharacters 
-							charactersIgnoringModifiers:pCharacters
-							isARepeat:false 
-							keyCode:KeyCode
-						];
-						
-						bool bDoNavigation = false;
-						IDEIssueNavigableItem* pLastSelected = nil;
-						do
-						{
-							NSArray* pSelected = [m_pActiveView selectedItems];
-							if ([pSelected count] <= 0)
-								break;
-							pLastSelected = (IDEIssueNavigableItem*)pSelected[0];
-						}
-						while (false)
-							;
-						while (true)
-						{
-							[m_pActiveView keyDown:pEvent];
-							NSArray* pSelected = [m_pActiveView selectedItems];
-							if ([pSelected count] <= 0)
-								break;
-							
-							IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
-							if (pLastSelected == pSelectedItem)
-								break; // No change in selection
-							pLastSelected = pSelectedItem;
-							NSString* pClassName = [pSelectedItem className];
-							//XCFixinLog(@"%@ %d", pClassName, [pSelectedItem isLeaf]);
-							bDoNavigation = false;
-							if ([pClassName compare:@"IDEIssueGroupNavigableItem_AnyIDEIssueGroup"] == NSOrderedSame)
-								continue;
-							else if ([pClassName compare:@"IDEIssueFileGroupNavigableItem_AnyIDEIssueFileGroup"] == NSOrderedSame)
-								continue;
-							else if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+							unsigned short KeyCode = 0;
+							NSString* pCharacters;
+							if (ModifierFlags & NSShiftKeyMask)
 							{
-								bDoNavigation = true;
-								if (![pSelectedItem isLeaf])
-									[m_pActiveView expandItem:pSelectedItem];
+								KeyCode = 126;
+								pCharacters = @"";
 							}
-							break;
-						}
-						
-						if (m_pActiveViewControllerIssues && bDoNavigation)
-						{
-							[m_pActiveViewControllerIssues openSelectedNavigableItemsKeyAction:m_pActiveView];
-							bSetEditorFocus = true;
+							else
+							{
+								KeyCode = 125;
+								pCharacters = @"";
+							}
+							NSEvent* pEvent = [
+								NSEvent keyEventWithType:NSKeyDown 
+								location:[pWindow mouseLocationOutsideOfEventStream] 
+								modifierFlags:0xa00100
+								timestamp:0.0
+								windowNumber:[pWindow windowNumber]
+								context:nil 
+								characters:pCharacters 
+								charactersIgnoringModifiers:pCharacters
+								isARepeat:false 
+								keyCode:KeyCode
+							];
 							
+							bool bDoNavigation = false;
+							IDEIssueNavigableItem* pLastSelected = nil;
+							do
+							{
+								NSArray* pSelected = [m_pActiveView selectedItems];
+								if ([pSelected count] <= 0)
+									break;
+								pLastSelected = (IDEIssueNavigableItem*)pSelected[0];
+							}
+							while (false)
+								;
+							while (true)
+							{
+								{
+									NSArray* pSelected = [m_pActiveView selectedItems];
+									if ([pSelected count] <= 0)
+										break;
+									IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
+									pLastSelected = pSelectedItem;
+									NSString* pClassName = [pSelectedItem className];
+									if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+									{
+										if (![pSelectedItem isLeaf])
+											[m_pActiveView expandItem:pSelectedItem];
+									}
+								}
+								[m_pActiveView keyDown:pEvent];
+								NSArray* pSelected = [m_pActiveView selectedItems];
+								if ([pSelected count] <= 0)
+									break;
+								
+								IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
+								if (pLastSelected == pSelectedItem)
+									break; // No change in selection
+								pLastSelected = pSelectedItem;
+								NSString* pClassName = [pSelectedItem className];
+								//XCFixinLog(@"%@ %d", pClassName, [pSelectedItem isLeaf]);
+								bDoNavigation = false;
+								if ([pClassName compare:@"IDEIssueGroupNavigableItem_AnyIDEIssueGroup"] == NSOrderedSame)
+									continue;
+								else if ([pClassName compare:@"IDEIssueFileGroupNavigableItem_AnyIDEIssueFileGroup"] == NSOrderedSame)
+									continue;
+								else if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+								{
+									bDoNavigation = true;
+									if (![pSelectedItem isLeaf])
+										[m_pActiveView expandItem:pSelectedItem];
+								}
+								break;
+							}
+							
+							if (m_pActiveViewControllerIssues && bDoNavigation)
+							{
+								[m_pActiveViewControllerIssues openSelectedNavigableItemsKeyAction:m_pActiveView];
+								bSetEditorFocus = true;
+								bHandled = true;
+							}
 						}
+						if (bSetEditorFocus)
+							setEditorFocus(pWindow);
 					}
-					if (bSetEditorFocus)
-						setEditorFocus(pWindow);
+					return nil;
 				}
-				return nil;
 			}
+			while (false)
+				;
+			if (bHandled)
+				return nil;
 			return event;
 		}];
 	}

@@ -14,7 +14,7 @@ This fixin aims to emulate the editor behavior of the Visual Studio editor. The 
  + Source locations in the console output
  + It will use the same shortcut for all of these and use last active of them to go to the source location
 + Emulate keyboard behaviour of find and replace:
- + Tab / Shift+Tab goes between find and replace fields instead of stopping at find button first
+ + `Tab` / `Shift+Tab` goes between find and replace fields instead of stopping at find button first
  + Down arrow centers on the last recent item instead of on the options menu item
  + `Ctrl-N` finds next search result
  + `Ctrl-Shift-N` finds previous search result
@@ -24,10 +24,12 @@ This fixin aims to emulate the editor behavior of the Visual Studio editor. The 
  + `Ctrl-C` Toggels match case
  + `Ctrl-E` Toggels regular expression
  + `Ctrl-W` Toggles whole word only matching
++ Run multiple schemes with `⌘-G` from one scheme by setting Custom working directory to "[MulitLaunchSchemes]" and the scheme names as arguments
  
 
 ### TODO
-+ Keyboard shortcut to start debugging several schemes
++ Keyboard shortcuts in batch find
++ Fix bug where breakpoint is not removed
 
 ### Installation
 

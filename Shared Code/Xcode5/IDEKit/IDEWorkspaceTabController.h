@@ -19,6 +19,7 @@
 #import "IDEWorkspaceDocumentProvider-Protocol.h"
 
 @class DVTFilePath, DVTMapTable, DVTMutableOrderedSet, DVTNotificationToken, DVTObservingToken, DVTReplacementView, DVTSplitView, DVTSplitViewItem, DVTStackBacktrace, IDEARCConversionAssistantContext, IDEBuildAlertMonitor, IDEEditorArea, IDELaunchSession, IDENavigatorArea, IDEObjCModernizationAssistantContext, IDERunAlertMonitor, IDEUnitTestsModernizationAssistantContext, IDEWorkspace, IDEWorkspaceDocument, IDEWorkspaceWindowController, NSAlert, NSDocument, NSMutableArray, NSString;
+@class IDEWorkspace;
 
 @interface IDEWorkspaceTabController : IDEViewController <NSTextViewDelegate, DVTTabbedWindowTabContentControlling, DVTStatefulObject, DVTReplacementViewDelegate, IDEEditorAreaContainer, IDEStructureEditingWorkspaceTabContext, IDEWorkspaceDocumentProvider, DVTEditor>
 {
@@ -309,7 +310,7 @@
 - (void)_pushDefaultPrimaryEditorFrameSize;
 @property BOOL showNavigator;
 @property BOOL showUtilities;
-- (id)workspace;
+- (IDEWorkspace*)workspace;
 - (void)removeDebuggingAdditionUIControllerLifeCycleObserver:(id)arg1;
 - (void)addDebuggingAdditionUIControllerLifeCycleObserver:(id)arg1;
 - (void)_notifyDebuggingAdditionUIControllerLifeCycleObserversOfInvalidated:(id)arg1;

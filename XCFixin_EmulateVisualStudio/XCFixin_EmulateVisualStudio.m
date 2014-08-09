@@ -25,6 +25,12 @@
 #import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceWindowController.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceTabController.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEWorkspaceDocument.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEWorkspace.h"
+#import "../Shared Code/Xcode5/IDEKit/IDERunContextManager.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEScheme.h"
+#import "../Shared Code/Xcode5/IDEKit/IDELaunchSchemeAction.h"
+#import "../Shared Code/Xcode5/IDEKit/IDECommandLineArgumentEntry.h"
+
 
 #import "../Shared Code/Xcode5/AppKit/NSCarbonMenuImpl.h"
 
@@ -302,8 +308,59 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					return nil;
 				return event;
 			}
-			
-			if ((keyCode == 45) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
+
+			if ((keyCode == kVK_ANSI_G) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
+			{
+				// Run
+				
+				IDEWorkspaceTabController* pTabController = getWorkspaceTabController([event window]);
+				
+				if (!pTabController)
+					return event;
+				
+				IDEWorkspace* pWorkspace = [pTabController workspace];
+				if (!pWorkspace)
+					return event;
+
+				IDERunContextManager* pRunContextManager = [pWorkspace runContextManager];
+				if (!pRunContextManager)
+					return event;
+				
+				IDEScheme* pActiveScheme = [pRunContextManager activeRunContext];
+				if (!pActiveScheme)
+					return event;
+				
+				IDELaunchSchemeAction* pLaunchAction = [pActiveScheme launchSchemeAction];
+				
+				if (!pLaunchAction)
+					return event;
+				
+				if ([pLaunchAction runnable])
+					return event; // User configured runnable
+				
+				NSString *pCustomWorkingDir = [pLaunchAction customWorkingDirectory];
+				
+				if ([pCustomWorkingDir compare:@"[MulitLaunchSchemes]"] != NSOrderedSame)
+					return event; // Magic enable for multil launch
+
+				bool bRun = false;
+				for (IDECommandLineArgumentEntry* pCommandLineArg in [pLaunchAction commandLineArgumentEntries])
+				{
+					for (IDEScheme* pScheme in [pRunContextManager runContexts])
+					{
+						if ([[pScheme name] compare:[pCommandLineArg argument]] == NSOrderedSame)
+						{
+							[pTabController _runWithoutBuildingForScheme:pScheme runDestination:[pRunContextManager activeRunDestination] invocationRecord:nil];
+							bRun = true;
+							//XCFixinLog(@"pScheme %@\n", [pScheme name]);
+						}
+					}
+				}
+				
+				if (bRun)
+					return nil;
+			}
+			else if ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
 			{
 				if (g_PreferredNextLocation == EPreferredNextLocation_Console)
 				{
@@ -822,7 +879,6 @@ static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearch
 	
 	return ((void(*)(struct _NSCarbonMenuSearchReturn *, id, SEL, EventRef, id))original_menuItemWithKeyEquivalentMatchingEventRef)(_pRetVal, self_, _Sel, _pEventRef, _pInMenu);
 }
-
 
 
 static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool _bNext, bool _bBackwards)

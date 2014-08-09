@@ -89,14 +89,6 @@ in such a case, Xcode jumps to the nearest argument placeholder
 instead of indenting. This fixin does not affect the "Jump to Next
 Placeholder" key binding in the Xcode preferences.
 
-
-__MiniXcode__:
-This is a plugin that makes it easier to run Xcode without the main toolbar. It adds keyboard shortcuts for selecting the active scheme and device (`Ctrl`+`7` / `Ctrl` + `8`), and a compact popup menu in the window title bar that shows the currently selected run configuration.
-
-While building a target, a circular spinner, the current progress (%) and all eventual errors, warnings and analyzer results are shown. 
-
-You can disable the popup from the _View_ menu if you find it distracting, the keyboard shortcuts will also work without it. The popup is automatically hidden when the main toolbar is visible.
-
 __P4Checkout__:
 This fixin checks out files controlled by Perforce when trying to edit a read only file.
 
@@ -112,6 +104,13 @@ This fixin adds additional highlighting functionality to C dialects. Currently h
 __===== UNMAINTAINED FIXINS =====__
 
 These fixins ane not maintained, but might still work.
+
+__MiniXcode__:
+This is a plugin that makes it easier to run Xcode without the main toolbar. It adds keyboard shortcuts for selecting the active scheme and device (`Ctrl`+`7` / `Ctrl` + `8`), and a compact popup menu in the window title bar that shows the currently selected run configuration.
+
+While building a target, a circular spinner, the current progress (%) and all eventual errors, warnings and analyzer results are shown. 
+
+You can disable the popup from the _View_ menu if you find it distracting, the keyboard shortcuts will also work without it. The popup is automatically hidden when the main toolbar is visible.
 
 __FindFix__: By default, when Xcode's inline find bar opens, it
 doesn't display any options to customize searching. This fixin makes

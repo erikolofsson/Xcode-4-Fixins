@@ -98,20 +98,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_MiniXcode.xcplugin"
-               BlueprintName = "XCFixin_MiniXcode"
-               ReferencedContainer = "container:XCFixin_MiniXcode/XCFixin_MiniXcode.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
                BuildableName = "XCFixin_P4Checkout.xcplugin"
                BlueprintName = "XCFixin_P4Checkout"

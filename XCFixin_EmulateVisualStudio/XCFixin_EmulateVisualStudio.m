@@ -30,6 +30,8 @@
 #import "../Shared Code/Xcode5/IDEKit/IDEScheme.h"
 #import "../Shared Code/Xcode5/IDEKit/IDELaunchSchemeAction.h"
 #import "../Shared Code/Xcode5/IDEKit/IDECommandLineArgumentEntry.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEBatchFindStrategiesController.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEBatchFindNavigator.h"
 
 
 #import "../Shared Code/Xcode5/AppKit/NSCarbonMenuImpl.h"
@@ -106,69 +108,180 @@ static void setEditorFocus(NSWindow* _pWindow)
 
 enum EPreferredNextLocation g_PreferredNextLocation = EPreferredNextLocation_Undefined;
 
+static bool displayRecentsMenu(NSMenu* _pMenu, NSView* _pView, bool _bPretend)
+{
+	bool bFoundRecents = false;
+	NSMenuItem* pFirstRecentItem = nil;
+	for (NSMenuItem* pItem in [_pMenu itemArray])
+	{
+		if (bFoundRecents)
+		{
+			pFirstRecentItem = pItem;
+			break;
+		}
+		if ([[pItem title] compare:@"Recent Results"] == NSOrderedSame)
+			bFoundRecents = true;
+	}
+	
+	if (pFirstRecentItem)
+	{
+		if (_bPretend)
+			return true;
+		NSPoint Location;
+		Location.x = 0;
+		Location.y = 0;
+		[_pMenu popUpMenuPositioningItem:pFirstRecentItem atLocation:Location inView:_pView];
+		return true;
+	}
+	return false;
+}
+
+
+bool findFieldHasFocusInBatchNavigator(IDEBatchFindNavigator* _pNavigator)
+{
+	DVTFindPatternTextField* pField = [_pNavigator _findField];
+	if (pField)
+	{
+		DVTFindPatternFieldEditor* pFirstResponder = (DVTFindPatternFieldEditor*)[[pField window] firstResponder];
+		if ([pFirstResponder isKindOfClass:[DVTFindPatternFieldEditor class]])
+		{
+			if ([pField _fieldEditor] == pFirstResponder)
+				return true;
+		}
+	}
+	return false;
+}
+
+bool replaceFieldHasFocusInBatchNavigator(IDEBatchFindNavigator* _pNavigator)
+{
+	DVTFindPatternTextField* pField = [_pNavigator _replaceField];
+	if (pField)
+	{
+		DVTFindPatternFieldEditor* pFirstResponder = (DVTFindPatternFieldEditor*)[[pField window] firstResponder];
+		if ([pFirstResponder isKindOfClass:[DVTFindPatternFieldEditor class]])
+		{
+			if ([pField _fieldEditor] == pFirstResponder)
+				return true;
+		}
+	}
+	return false;
+}
+
 static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFlags, NSEvent *event)
 {
 	DVTFindBar* pFindBar = getFindBar(g_pRespondingPatternFieldEditor);
+
+	IDEBatchFindStrategiesController* pBatchFindController = nil;
 	
-	if (!pFindBar && !g_pFindBarOptionsCtrl)
+	if (!pFindBar)
+		pBatchFindController = getBatchFindStrategiesController(g_pRespondingPatternFieldEditor);
+	
+	if (!pFindBar && !g_pFindBarOptionsCtrl && !pBatchFindController)
 		return false;
 	
 	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == 0)
 	{
 		// Alone key
-		if (keyCode == kVK_Tab && pFindBar)
+		if (keyCode == kVK_Tab)
 		{
-			if (![pFindBar findFieldHasFocus])
-				return false;
-			if (!event)
-				return true;
-			[pFindBar selectReplaceField:nil];
-			return true;
-		}
-		else if (keyCode == kVK_DownArrow && pFindBar)
-		{
-			if ([pFindBar findFieldHasFocus])
+			if (pBatchFindController)
 			{
-				NSMenu* pMenu = [pFindBar _recentsMenu];
-				(void)pMenu;
-				
-				bool bFoundRecents = false;
-				NSMenuItem* pFirstRecentItem = nil;
-				for (NSMenuItem* pItem in [pMenu itemArray])
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator)
 				{
-					if (bFoundRecents)
+					if (findFieldHasFocusInBatchNavigator(pNavigator))
 					{
-						pFirstRecentItem = pItem;
-						break;
+						DVTFindPatternTextField* pReplaceField = [pNavigator _replaceField];
+						if (pReplaceField && [pNavigator findMode] == 1)
+						{
+							if (!event)
+								return true;
+							[pReplaceField becomeFirstResponder];
+							return true;
+						}
 					}
-					if ([[pItem title] compare:@"Recent Results"] == NSOrderedSame)
-						bFoundRecents = true;
 				}
-				
-				if (pFirstRecentItem)
+			}
+			else if (pFindBar)
+			{
+				if ([pFindBar findFieldHasFocus] && [pFindBar finderMode] == 1)
 				{
 					if (!event)
 						return true;
-					NSPoint Location;
-					Location.x = 0;
-					Location.y = 0;
-					[pMenu popUpMenuPositioningItem:pFirstRecentItem atLocation:Location inView:[pFindBar findBarView]];
+					[pFindBar selectReplaceField:nil];
 					return true;
 				}
+			}
+		}
+		else if (keyCode == kVK_DownArrow)
+		{
+			if (pBatchFindController)
+			{
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator)
+				{
+					if (findFieldHasFocusInBatchNavigator(pNavigator))
+					{
+						DVTFindPatternTextField* pField = [pNavigator _findField];
+						if (displayRecentsMenu([pNavigator _recentsMenu], pField, event != nil))
+							return true;
+					}
+				}
+			}
+			else if (pFindBar)
+			{
+				if ([pFindBar findFieldHasFocus])
+				{
+					if (displayRecentsMenu([pFindBar _recentsMenu], [pFindBar findBarView], event != nil))
+						return true;
+				}
+			}
+		}
+		else if (keyCode == kVK_Escape)
+		{
+			if (pBatchFindController)
+			{
+				if (!event)
+					return true;
+				
+				setEditorFocus([event window]);
+				return true;
 			}
 		}
 	}
 	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSShiftKeyMask)
 	{
 		// Shift key
-		if (keyCode == kVK_Tab && pFindBar)
+		if (keyCode == kVK_Tab )
 		{
-			if (![pFindBar replaceFieldHasFocus])
-				return false;
-			if (!event)
-				return true;
-			[pFindBar selectFindField:nil];
-			return true;
+			if (pBatchFindController)
+			{
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator)
+				{
+					if (replaceFieldHasFocusInBatchNavigator(pNavigator))
+					{
+						DVTFindPatternTextField* pFindField = [pNavigator _findField];
+						if (pFindField && [pNavigator findMode] == 1)
+						{
+							if (!event)
+								return true;
+							[pFindField becomeFirstResponder];
+							return true;
+						}
+					}
+				}
+			}
+			else if (pFindBar)
+			{
+				if ([pFindBar replaceFieldHasFocus] && [pFindBar finderMode] == 1)
+				{
+					if (!event)
+						return true;
+					[pFindBar selectFindField:nil];
+					return true;
+				}
+			}
 		}
 	}
 	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSControlKeyMask)
@@ -181,23 +294,49 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 			[pFindBar findNext:nil];
 			return true;
 		}
-		else if (keyCode == kVK_ANSI_R && pFindBar)
+		else if (keyCode == kVK_ANSI_R)
 		{
-			if ([pFindBar finderMode] != 1)
-				return false;
-			if (!event)
+			if (pBatchFindController)
+			{
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator && [pNavigator findMode] == 1)
+				{
+					if (!event)
+						return true;
+					if ([pNavigator canShowReplacePreview])
+						[pNavigator showReplacePreview:nil];
+					return true;
+				}
+			}
+			else if (pFindBar && [pFindBar finderMode] == 1)
+			{
+				if (!event)
+					return true;
+				[pFindBar replaceAndFindNext:nil];
 				return true;
-			[pFindBar replaceAndFindNext:nil];
-			return true;
+			}
 		}
-		else if (keyCode == kVK_ANSI_A && pFindBar)
+		else if (keyCode == kVK_ANSI_A)
 		{
-			if ([pFindBar finderMode] != 1)
-				return false;
-			if (!event)
+			if (pBatchFindController)
+			{
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator && [pNavigator findMode] == 1)
+				{
+					if (!event)
+						return true;
+					if ([pNavigator canReplaceAll])
+						[pNavigator replaceAllAction:nil];
+					return true;
+				}
+			}
+			else if (pFindBar && [pFindBar finderMode] == 1)
+			{
+				if (!event)
+					return true;
+				[pFindBar replaceAll:nil];
 				return true;
-			[pFindBar replaceAll:nil];
-			return true;
+			}
 		}
 		else if (keyCode == kVK_ANSI_O && pFindBar)
 		{
@@ -208,47 +347,104 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_ANSI_C)
 		{
-			DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
-			if (!pOptionsControl)
-				pOptionsControl = [pFindBar optionsCtrl];
-			if (pOptionsControl)
+			if (pBatchFindController)
 			{
 				if (!event)
 					return true;
-				pOptionsControl.findIgnoresCase = !pOptionsControl.findIgnoresCase;
+				pBatchFindController.ignoresCase = !pBatchFindController.ignoresCase;
 				return true;
+			}
+			else
+			{
+				DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
+				if (!pOptionsControl)
+					pOptionsControl = [pFindBar optionsCtrl];
+				if (pOptionsControl)
+				{
+					if (!event)
+						return true;
+					pOptionsControl.findIgnoresCase = !pOptionsControl.findIgnoresCase;
+					return true;
+				}
 			}
 		}
 		else if (keyCode == kVK_ANSI_E)
 		{
-			DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
-			if (!pOptionsControl)
-				pOptionsControl = [pFindBar optionsCtrl];
-			if (pOptionsControl)
+			if (pBatchFindController)
 			{
 				if (!event)
 					return true;
-				if (pOptionsControl.findType == 0)
-					pOptionsControl.findType = 1;
+				if (pBatchFindController.findType == 0)
+					pBatchFindController.findType = 1;
 				else
-					pOptionsControl.findType = 0;
+					pBatchFindController.findType = 0;
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator)
+					[pNavigator updatePathbar];
 				return true;
+			}
+			else
+			{
+
+				DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
+				if (!pOptionsControl)
+					pOptionsControl = [pFindBar optionsCtrl];
+				if (pOptionsControl)
+				{
+					if (!event)
+						return true;
+					if (pOptionsControl.findType == 0)
+						pOptionsControl.findType = 1;
+					else
+						pOptionsControl.findType = 0;
+					return true;
+				}
 			}
 		}
 		else if (keyCode == kVK_ANSI_W)
 		{
-			DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
-			if (!pOptionsControl)
-				pOptionsControl = [pFindBar optionsCtrl];
-			if (pOptionsControl)
+			if (pBatchFindController)
 			{
 				if (!event)
 					return true;
-				if (pOptionsControl.matchStyle == 0)
-					pOptionsControl.matchStyle = 2;
+				if (pBatchFindController.matchStyle == 0)
+					pBatchFindController.matchStyle = 2;
 				else
-					pOptionsControl.matchStyle = 0;
+					pBatchFindController.matchStyle = 0;
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator)
+					[pNavigator updatePathbar];
 				return true;
+			}
+			else
+			{
+				DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
+				if (!pOptionsControl)
+					pOptionsControl = [pFindBar optionsCtrl];
+				if (pOptionsControl)
+				{
+					if (!event)
+						return true;
+					if (pOptionsControl.matchStyle == 0)
+						pOptionsControl.matchStyle = 2;
+					else
+						pOptionsControl.matchStyle = 0;
+					return true;
+				}
+			}
+		}
+		else if (keyCode == kVK_ANSI_L)
+		{
+			if (pBatchFindController)
+			{
+				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
+				if (pNavigator)
+				{
+					if (!event)
+						return true;
+					[pNavigator showLocationPicker:nil];
+					return true;
+				}
 			}
 		}
 	}
@@ -850,8 +1046,6 @@ static BOOL resignFirstResponder_DVTFindPatternFieldEditor(DVTFindPatternFieldEd
 static DVTFindBar* getFindBar(DVTFindPatternFieldEditor* self_)
 {
 	NSView* pParentView = findParentViewWithClassName(self_, "DVTFindPatternFieldEditor");
-	if (!pParentView)
-		pParentView = findParentViewWithController(self_, NSClassFromString(@"DVTFindBar"));
 	if (pParentView)
 	{
 		DVTFindBar* pViewController = (DVTFindBar*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"DVTFindBar")];
@@ -861,6 +1055,34 @@ static DVTFindBar* getFindBar(DVTFindPatternFieldEditor* self_)
 	
 	return nil;
 }
+
+static IDEBatchFindStrategiesController* getBatchFindStrategiesController(DVTFindPatternFieldEditor* self_)
+{
+	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView");
+	if (pParentView)
+	{
+		IDEBatchFindNavigator* pViewController = (IDEBatchFindNavigator*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"IDEBatchFindNavigator")];
+		if (pViewController)
+			return [pViewController configurationController];
+	}
+	
+	return nil;
+}
+
+static IDEBatchFindNavigator* getBatchFindNavigator(DVTFindPatternFieldEditor* self_)
+{
+	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView");
+	if (pParentView)
+	{
+		IDEBatchFindNavigator* pViewController = (IDEBatchFindNavigator*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"IDEBatchFindNavigator")];
+		if (pViewController)
+			return pViewController;
+	}
+	
+	return nil;
+}
+
+
 
 // + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
 static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu)

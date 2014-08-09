@@ -346,6 +346,8 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				bool bRun = false;
 				for (IDECommandLineArgumentEntry* pCommandLineArg in [pLaunchAction commandLineArgumentEntries])
 				{
+					if (!pCommandLineArg.isEnabled)
+						continue;
 					for (IDEScheme* pScheme in [pRunContextManager runContexts])
 					{
 						if ([[pScheme name] compare:[pCommandLineArg argument]] == NSOrderedSame)

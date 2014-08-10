@@ -49,6 +49,7 @@ This fixin aims to emulate the editor behavior of the Visual Studio editor. The 
  + `Ctrl-W` Toggles whole word only matching
  + `Esc` Returns to editor from batch find
 + Run multiple schemes with `⌘-G` from one scheme by setting Custom working directory to "[MulitLaunchSchemes]" and the scheme names as arguments
++ `Ctrl-H` Toggles deletes breakpoints more reliably than the built in shortcut for toggling breakpoints (workaround for Xcode bug)
 
 __CurrentLineHighlighter__: This fixin highlights the line currently
 being edited in the source editor, making it easier to track the

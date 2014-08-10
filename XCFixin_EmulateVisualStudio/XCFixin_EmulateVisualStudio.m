@@ -10,6 +10,12 @@
 #import "../Shared Code/Xcode5/DVTKit/DVTFindPatternFieldEditor.h"
 #import "../Shared Code/Xcode5/DVTKit/DVTFindPatternTextField.h"
 #import "../Shared Code/Xcode5/DVTKit/DVTFindBarOptionsCtrl.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTAnnotationManager.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTAnnotationProvider.h"
+#import "../Shared Code/Xcode5/DVTKit/DBGBreakpointAnnotationProvider.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTAnnotation.h"
+#import "../Shared Code/Xcode5/DVTKit/DBGBreakpointAnnotation.h"
+#import "../Shared Code/Xcode5/DVTKit/DVTTextStorage.h"
 
 
 #import "../Shared Code/Xcode5/IDEKit/IDENavigatorOutlineView.h"
@@ -32,6 +38,10 @@
 #import "../Shared Code/Xcode5/IDEKit/IDECommandLineArgumentEntry.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEBatchFindStrategiesController.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEBatchFindNavigator.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEBreakpoint.h"
+#import "../Shared Code/Xcode5/IDEKit/IDEBreakpointManager.h"
+
+
 
 
 #import "../Shared Code/Xcode5/AppKit/NSCarbonMenuImpl.h"
@@ -169,6 +179,90 @@ bool replaceFieldHasFocusInBatchNavigator(IDEBatchFindNavigator* _pNavigator)
 
 static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFlags, NSEvent *event)
 {
+	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSControlKeyMask)
+	{
+		// Control
+		
+		if (keyCode == kVK_ANSI_H)
+		{
+			
+			do
+			{
+				NSWindow* pWindow = nil;
+				if (event)
+					pWindow = [event window];
+				else
+					pWindow = [NSApp keyWindow];
+					
+				if (!pWindow)
+					break;
+				DVTSourceTextView *pSourceTextView = (DVTSourceTextView *)findSubViewWithClassName([pWindow contentView], "DVTSourceTextView");
+				if (!pSourceTextView)
+					break;
+				
+				NSRange SelectedRange = [pSourceTextView selectedRange];
+				
+				NSRange LineRange = [[pSourceTextView textStorage] lineRangeForCharacterRange: SelectedRange];
+				
+				DVTAnnotationManager* pAnnotationManager = [pSourceTextView annotationManager];
+				if (!pAnnotationManager)
+					break;
+
+				IDEWorkspaceTabController* pTabController = getWorkspaceTabController(pWindow);
+				if (!pTabController)
+					break;
+				
+				IDEWorkspace* pWorkspace = [pTabController workspace];
+				if (!pWorkspace)
+					break;
+				
+				IDEBreakpointManager* pBreakpointManager = [pWorkspace breakpointManager];
+				if (!pBreakpointManager)
+					break;
+				
+				NSMutableArray* pBreakpointsToDelete = [[NSMutableArray alloc] initWithCapacity:16];
+				for (NSDictionary* pProviderDict in [pAnnotationManager annotationProviders])
+				{
+					DVTAnnotationProvider* pProvider = (DVTAnnotationProvider*)[pProviderDict valueForKey:@"annotationProviderObject"];
+					
+					if ([pProvider isKindOfClass:NSClassFromString(@"DBGBreakpointAnnotationProvider")])
+					{
+						DBGBreakpointAnnotationProvider* pBreakpointProvider = (DBGBreakpointAnnotationProvider*)pProvider;
+						
+						for (DBGBreakpointAnnotation* pAnnotation in [pBreakpointProvider annotations])
+						{
+							NSRange BreakpointRange = [pAnnotation paragraphRange];
+
+							if (NSIntersectionRange(LineRange, BreakpointRange).length == 0)
+								continue;
+							
+							if ([[pAnnotation representedObject] isKindOfClass:NSClassFromString(@"IDEBreakpoint")])
+							{
+								IDEBreakpoint* pBreakpoint = (IDEBreakpoint*)[pAnnotation representedObject];
+
+								[pBreakpointsToDelete addObject:pBreakpoint];
+								
+							}
+						}
+					}
+				}
+				
+				if ([pBreakpointsToDelete count] > 0)
+				{
+					if (event)
+						return true;
+					
+					for (IDEBreakpoint* pBreakpoint in pBreakpointsToDelete)
+						[pBreakpointManager removeBreakpoint:pBreakpoint];
+					
+					return true;
+				}
+			}
+			while (false)
+				;
+		}
+	}
+	
 	DVTFindBar* pFindBar = getFindBar(g_pRespondingPatternFieldEditor);
 
 	IDEBatchFindStrategiesController* pBatchFindController = nil;
@@ -287,6 +381,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSControlKeyMask)
 	{
 		// Control
+		
 		if (keyCode == kVK_ANSI_N && pFindBar)
 		{
 			if (!event)
@@ -502,11 +597,8 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 
 			do
 			{
-				if (g_pRespondingPatternFieldEditor || g_pFindBarOptionsCtrl)
-				{
-					if (handleFieldEditorEvent(keyCode, ModifierFlags, event))
-						return nil;
-				}
+				if (handleFieldEditorEvent(keyCode, ModifierFlags, event))
+					return nil;
 
 				if ((keyCode == kVK_ANSI_G) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSCommandKeyMask) 
 				{
@@ -1087,38 +1179,35 @@ static IDEBatchFindNavigator* getBatchFindNavigator(DVTFindPatternFieldEditor* s
 // + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
 static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu)
 {
-	if (g_pRespondingPatternFieldEditor || g_pFindBarOptionsCtrl)
+	OSType EventClass = GetEventClass(_pEventRef);
+	
+	if (EventClass == 'keyb')
 	{
-		OSType EventClass = GetEventClass(_pEventRef);
-		
-		if (EventClass == 'keyb')
+		UInt32 EventKind = GetEventKind(_pEventRef);
+		if (EventKind == kEventRawKeyDown || EventKind == kEventRawKeyRepeat)
 		{
-			UInt32 EventKind = GetEventKind(_pEventRef);
-			if (EventKind == kEventRawKeyDown || EventKind == kEventRawKeyRepeat)
+			UInt32 KeyCode;
+			UInt32 Modifiers;
+			GetEventParameter(_pEventRef, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &Modifiers);
+			GetEventParameter(_pEventRef, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &KeyCode);
+			
+			NSUInteger nsModifiers = 0;
+			if (Modifiers & cmdKey)
+				nsModifiers |= NSCommandKeyMask;
+			if (Modifiers & controlKey)
+				nsModifiers |= NSControlKeyMask;
+			if (Modifiers & optionKey)
+				nsModifiers |= NSAlternateKeyMask;
+			if (Modifiers & shiftKey)
+				nsModifiers |= NSShiftKeyMask;
+			
+			if (handleFieldEditorEvent(KeyCode, nsModifiers, nil))
 			{
-				UInt32 KeyCode;
-				UInt32 Modifiers;
-				GetEventParameter(_pEventRef, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &Modifiers);
-				GetEventParameter(_pEventRef, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &KeyCode);
-				
-				NSUInteger nsModifiers = 0;
-				if (Modifiers & cmdKey)
-					nsModifiers |= NSCommandKeyMask;
-				if (Modifiers & controlKey)
-					nsModifiers |= NSControlKeyMask;
-				if (Modifiers & optionKey)
-					nsModifiers |= NSAlternateKeyMask;
-				if (Modifiers & shiftKey)
-					nsModifiers |= NSShiftKeyMask;
-				
-				if (handleFieldEditorEvent(KeyCode, nsModifiers, nil))
-				{
-					// Don't let menu handle event
-					_pRetVal->_field2 = nil;
-					_pRetVal->_field1 = nil;
-					_pRetVal->_field3 = 0;
-					return;
-				}
+				// Don't let menu handle event
+				_pRetVal->_field2 = nil;
+				_pRetVal->_field1 = nil;
+				_pRetVal->_field3 = 0;
+				return;
 			}
 		}
 	}

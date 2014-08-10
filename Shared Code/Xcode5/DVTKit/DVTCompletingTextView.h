@@ -9,7 +9,7 @@
 #import "DVTLayoutManagerDelegate-Protocol.h"
 #import "DVTCompletingTextViewDelegate-Protocol.h"
 
-@class DVTFoldingLayoutManager, DVTFoldingManager, DVTSourceCodeLanguage, DVTTextCompletionController, DVTTextCompletionDataSource, NSColor;
+@class DVTFoldingLayoutManager, DVTFoldingManager, DVTSourceCodeLanguage, DVTTextCompletionController, DVTTextCompletionDataSource, NSColor, DVTTextStorage;
 
 @interface DVTCompletingTextView : NSTextView <DVTLayoutManagerDelegate>
 {
@@ -63,7 +63,7 @@
 - (id)_formatBlockLiteralFromDeclaration:(id)arg1 lineCount:(unsigned long long *)arg2;
 - (void)textStorage:(id)arg1 didEndEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
 - (void)textStorage:(id)arg1 willEndEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
-- (id)textStorage;
+- (DVTTextStorage*)textStorage;
 - (id)layoutManager;
 - (void)didInsertCompletionTextAtRange:(struct _NSRange)arg1;
 - (void)invalidateDisplayForRange:(struct _NSRange)arg1;

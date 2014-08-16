@@ -40,9 +40,8 @@
 #import "../Shared Code/Xcode5/IDEKit/IDEBatchFindNavigator.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEBreakpoint.h"
 #import "../Shared Code/Xcode5/IDEKit/IDEBreakpointManager.h"
-
-
-
+#import "../Shared Code/Xcode5/IDEKit/DBGLLDBDebugLocalService.h"
+#import "../Shared Code/Xcode5/IDEKit/DBGLLDBLauncher.h"
 
 #import "../Shared Code/Xcode5/AppKit/NSCarbonMenuImpl.h"
 
@@ -56,6 +55,8 @@ static IMP original_becomeFirstResponder_NavigatorOutlineView = nil;
 static IMP original_becomeFirstResponder_DVTFindPatternFieldEditor = nil;
 static IMP original_resignFirstResponder_DVTFindPatternFieldEditor = nil;
 static IMP original_menuItemWithKeyEquivalentMatchingEventRef = nil;
+static IMP original_LLDBLauncherStart = nil;
+
 
 
 enum EPreferredNextLocation
@@ -564,6 +565,8 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 	self = [super init];
 	if (self) 
 	{
+		g_LLDBLaunchLock = [[NSLock alloc] init];
+
 
 		NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
 
@@ -644,7 +647,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 							{
 								[pTabController _runWithoutBuildingForScheme:pScheme runDestination:[pRunContextManager activeRunDestination] invocationRecord:nil];
 								bHandled = true;
-								[NSThread sleepForTimeInterval:0.1];
+								//[NSThread sleepForTimeInterval:0.0];
 								//XCFixinLog(@"pScheme %@\n", [pScheme name]);
 							}
 						}
@@ -1175,6 +1178,35 @@ static IDEBatchFindNavigator* getBatchFindNavigator(DVTFindPatternFieldEditor* s
 }
 
 
+NSLock<NSLocking> *g_LLDBLaunchLock = nil;
+DVTDispatchLock *g_LLDBLifeCycleLock = nil;
+Ivar g_LLDBLifeCycleLockIvar = nil;
+
+// - (void)start;
+static void LLDBLauncherStart(DBGLLDBLauncher* self_, SEL _Sel)
+{
+	[g_LLDBLaunchLock lock];
+	if (!g_LLDBLifeCycleLock)
+	{
+		// Make all LLDB debuggers use the same serialization queue to improve stability
+		Ivar IVar = class_getInstanceVariable(NSClassFromString(@"DBGLLDBLauncher"), "_lifeCycleLock");
+		
+		if (IVar)
+		{
+			g_LLDBLifeCycleLockIvar = IVar;
+			g_LLDBLifeCycleLock = object_getIvar(self_, g_LLDBLifeCycleLockIvar);
+		}
+	}
+	else
+	{
+		object_setIvar(self_, g_LLDBLifeCycleLockIvar, g_LLDBLifeCycleLock);
+	}
+//	XCFixinLog(@"LLDBLauncherStart: %p\n", self_);
+	((void(*)(id self_, SEL _Sel))original_LLDBLauncherStart)(self_, _Sel);
+//	XCFixinLog(@"LLDBLauncherStart finished: %p\n", self_);
+	[g_LLDBLaunchLock unlock];
+}
+
 
 // + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
 static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu)
@@ -1660,6 +1692,8 @@ NSRegularExpression *g_pSourceLocationRegex;
 
 + (void) pluginDidLoad:(NSBundle *)plugin
 {
+	if (singleton)
+		return;
 	XCFixinPreflight();
 
 	singleton = [[XCFixin_EmulateVisualStudio alloc] init];
@@ -1704,6 +1738,20 @@ NSRegularExpression *g_pSourceLocationRegex;
 	original_menuItemWithKeyEquivalentMatchingEventRef = XCFixinOverrideStaticMethodString(@"NSCarbonMenuImpl", @selector(_menuItemWithKeyEquivalentMatchingEventRef:inMenu:), (IMP)&menuItemWithKeyEquivalentMatchingEventRef);
 	XCFixinAssertOrPerform(original_menuItemWithKeyEquivalentMatchingEventRef, goto failed);
 
+	{
+		id pDebuggerExtension = [NSClassFromString(@"DBGLLDBDebugLocalService") _loadDebuggerExtension];
+		
+		if (pDebuggerExtension)
+		{
+			id pWorkerClass = [pDebuggerExtension valueForKey:@"workerClass"];
+			(void)pWorkerClass;
+		}
+	}
+
+	original_LLDBLauncherStart = XCFixinOverrideMethodString(@"DBGLLDBLauncher", @selector(start), (IMP)&LLDBLauncherStart);
+	XCFixinAssertOrPerform(original_LLDBLauncherStart, goto failed);
+	
+	
 	XCFixinPostflight();
 }
 @end

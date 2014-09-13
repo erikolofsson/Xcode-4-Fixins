@@ -607,7 +607,12 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				NSUInteger Length = [pIdentifier length];
 				if (!pColor && Length >= 3)
 				{
-					if (Length >= 6)
+					if (Length >= 7)
+					{
+						if (MatchOtherPrefix(pIdentifier, @"tfp_PF"))
+							pColor = pFunctionTemplateTypeParam;
+					}
+					if (!pColor && Length >= 6)
 					{
 						if (MatchOtherPrefix(pIdentifier, @"tf_PF"))
 							pColor = pFunctionTemplateTypeParam;
@@ -615,6 +620,12 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 							pColor = pStaticFunction;
 						else if (MatchOtherPrefix(pIdentifier, @"fspr_"))
 							pColor = pMemberStaticFunctionPrivate; // pMemberStaticFunctionProtected
+						if (MatchOtherPrefix(pIdentifier, @"tfp_C") || MatchOtherPrefix(pIdentifier, @"tfp_F"))
+							pColor = pFunctionTemplateTypeParam;
+						else if (MatchOtherPrefix(pIdentifier, @"tfp_T"))
+							pColor = pFunctionTemplateTemplateParam;
+						else if (MatchOtherPrefix(pIdentifier, @"tp_PF"))
+							pColor = pTemplateTypeParam;
 					}
 					if (!pColor && Length >= 5)
 					{
@@ -638,6 +649,12 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 							pColor = pMemberStaticVariablePrivate; // pMemberStaticVariableProtected
 						else if (MatchVariablePrefix(pIdentifier, @"mcp_"))
 							pColor = pMemberConstantPrivate; // pMemberConstantProtected
+						else if (MatchVariablePrefix(pIdentifier, @"tfp_"))
+							pColor = pFunctionTemplateNonTypeParam;
+						else if (MatchOtherPrefix(pIdentifier, @"tp_C") || MatchOtherPrefix(pIdentifier, @"tp_F"))
+							pColor = pTemplateTypeParam;
+						else if (MatchOtherPrefix(pIdentifier, @"tp_T"))
+							pColor = pTemplateTemplateParam;
 					}
 					if (!pColor && Length >= 4)
 					{
@@ -667,6 +684,14 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 							pColor = pMemberConstantPublic;
 						else if (MatchVariablePrefix(pIdentifier, @"gc_"))
 							pColor = pGlobalConstant; // pGlobalStaticConstant;
+						else if (MatchOtherPrefix(pIdentifier, @"tp_"))
+							pColor = pTemplateNonTypeParam;
+						else if (MatchVariablePrefix(pIdentifier, @"_o"))
+							pColor = pFunctionParameter;
+						else if (MatchVariablePrefix(pIdentifier, @"o_"))
+							pColor = pFunctionParameter;
+						else if (MatchVariablePrefix(pIdentifier, @"p_")) // Parameter pack
+							pColor = pFunctionParameter;
 					}
 					if (!pColor)
 					{

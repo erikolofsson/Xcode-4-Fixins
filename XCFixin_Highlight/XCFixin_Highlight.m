@@ -2,16 +2,16 @@
 #import <AppKit/AppKit.h>
 #import <objc/runtime.h>
 #include "../Shared Code/XCFixin.h"
-#import "../Shared Code/Xcode5/DVTKit/DVTSourceTextView.h"
-#import "../Shared Code/Xcode5/DVTKit/DVTTextStorage.h"
-#import "../Shared Code/Xcode5/DVTKit/DVTFontAndColorTheme.h"
-#import "../Shared Code/Xcode5/DVTFoundation/DVTSourceNodeTypes.h"
-#import "../Shared Code/Xcode5/DVTFoundation/DVTSourceModelItem.h"
-#import "../Shared Code/Xcode5/DVTFoundation/DVTSourceCodeLanguage.h"
-#import "../Shared Code/Xcode5/DVTFoundation/DVTLanguageSpecification.h"
-#import "../Shared Code/Xcode5/Plugins/IDESourceEditor/IDESourceCodeEditor.h"
-#import "../Shared Code/Xcode5/Plugins/IDESourceEditor/IDESourceCodeEditor.h"
-#import "../Shared Code/Xcode5/IDEFoundation/IDEIndex.h"
+#import "../Shared Code/Xcode/DVTSourceTextView.h"
+#import "../Shared Code/Xcode/DVTTextStorage.h"
+#import "../Shared Code/Xcode/DVTFontAndColorTheme.h"
+#import "../Shared Code/Xcode/DVTSourceNodeTypes.h"
+#import "../Shared Code/Xcode/DVTSourceModelItem.h"
+#import "../Shared Code/Xcode/DVTSourceCodeLanguage.h"
+#import "../Shared Code/Xcode/DVTLanguageSpecification.h"
+#import "../Shared Code/Xcode/IDESourceCodeEditor.h"
+#import "../Shared Code/Xcode/IDESourceCodeEditor.h"
+#import "../Shared Code/Xcode/IDEIndex.h"
 
 
 @interface XCFixin_Highlight_ViewState : NSObject
@@ -419,6 +419,8 @@ static short StringIdentifier = -1;
 static short CharacterIdentifier = -1;
 static short NumberIdentifier = -1;
 static short PreprocessorIdentifier = -1;
+static short IdentifierNodeType = -1;
+static short IdentifierPlainNodeType = -1;
 
 
 static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _Index, struct _NSRange *_pEffectiveRange, NSDictionary* _pContext)
@@ -427,10 +429,13 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 	DVTSourceCodeLanguage* pLanguage = [textStorage language];
 	
 	long long NodeType = [textStorage nodeTypeAtCharacterIndex:_Index effectiveRange:_pEffectiveRange context:_pContext];
-	//NSColor* Ret = ((NSColor* (*)(id, SEL, unsigned long long, struct _NSRange *, id))original_colorAtCharacterIndex)(self_, _cmd, _Index, _pEffectiveRange, _pContext);
+//	NSColor* OriginalRet = ((NSColor* (*)(id, SEL, unsigned long long, struct _NSRange *, id))original_colorAtCharacterIndex)(self_, _cmd, _Index, _pEffectiveRange, _pContext);
 	
 	if (pLanguage)
 	{
+		if (NodeType == IdentifierNodeType)
+			NodeType = IdentifierPlainNodeType; // Mimic the behaviour in Xcode implementation of colorAtCharacterIndex
+		
 		//XCFixinLog(@"NodeType: %@\n", [DVTSourceNodeTypes nodeTypeNameForId:NodeType]);
 		//double Time = CFAbsoluteTimeGetCurrent();
 		
@@ -474,7 +479,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		NSUInteger Length = [pString length];
 		
 		
-		//XCFixinLog(@"%lld: %@\n", NodeType, [pString substringWithRange:*_pEffectiveRange]);
+//		XCFixinLog(@"%lld(%@): %@\n", NodeType, [DVTSourceNodeTypes nodeTypeNameForId:NodeType], [pString substringWithRange:*_pEffectiveRange]);
 		
 		
 		if (NodeType == CommentNodeType || NodeType == CommentDocNodeType || NodeType == StringIdentifier || NodeType == NumberIdentifier || NodeType == CharacterIdentifier)
@@ -745,7 +750,16 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			SafeRange.location = _Index;
 		}
 		
-		return FixupCommentBackground2(pTextView, [pTheme colorForNodeType:NodeType], NSIntersectionRange(SafeRange, Bounds), false, pViewState);
+		NSColor *pColor = [pTheme colorForNodeType:NodeType];
+		
+/*		CGFloat Red;
+		CGFloat Green;
+		CGFloat Blue;
+		CGFloat Alpha;
+		[pColor getRed:&Red green:&Green blue:&Blue alpha:&Alpha];
+		XCFixinLog(@"Color: %f %f %f - %f\n", Red, Green, Blue, Alpha);*/
+		
+		return FixupCommentBackground2(pTextView, pColor, NSIntersectionRange(SafeRange, Bounds), false, pViewState);
 	}
 
 	DVTFontAndColorTheme *pTheme = [textStorage fontAndColorTheme];
@@ -1299,6 +1313,8 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 	CharacterIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.character"];
 	NumberIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.number"];
 	PreprocessorIdentifier = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.identifier.macro"];
+	IdentifierNodeType = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.identifier"];
+	IdentifierPlainNodeType = [DVTSourceNodeTypes registerNodeTypeNamed:@"xcode.syntax.identifier.plain"];
 	
 	AddDefaultKeywords();
 

@@ -10,29 +10,29 @@
 	<string>XCFixins</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>AA878BC4-B78D-4ED5-89F0-EFF8F1333365</key>
+		<key>96D43A877E291B56F2BCE7F56D0902346B99E8F2</key>
 		<string>https://github.com/erikolofsson/Xcode-4-Fixins.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>XCFixins.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>AA878BC4-B78D-4ED5-89F0-EFF8F1333365</key>
+		<key>96D43A877E291B56F2BCE7F56D0902346B99E8F2</key>
 		<string>..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/erikolofsson/Xcode-4-Fixins.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>AA878BC4-B78D-4ED5-89F0-EFF8F1333365</string>
+	<string>96D43A877E291B56F2BCE7F56D0902346B99E8F2</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>AA878BC4-B78D-4ED5-89F0-EFF8F1333365</string>
+			<string>96D43A877E291B56F2BCE7F56D0902346B99E8F2</string>
 			<key>IDESourceControlWCCName</key>
 			<string>Xcode-4-Fixins</string>
 		</dict>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0500"
+   LastUpgradeVersion = "0600"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -40,8 +40,17 @@
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
       <PathRunnable
-         FilePath = "/Applications/Xcode.app">
+         FilePath = "/Applications/Xcode.app/Contents/MacOS/Xcode">
       </PathRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "435E247113A8E4A20052479A"
+            BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
+            BlueprintName = "XCFixin_EmulateVisualStudio"
+            ReferencedContainer = "container:XCFixin_EmulateVisualStudio.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

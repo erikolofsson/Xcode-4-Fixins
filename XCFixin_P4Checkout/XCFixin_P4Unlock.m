@@ -1,9 +1,9 @@
 #import <Cocoa/Cocoa.h>
 #import <objc/runtime.h>
 #include "../Shared Code/XCFixin.h"
-#import "../Shared Code/Xcode5/IDEKit/IDEEditorDocument.h"
+#import "../Shared Code/Xcode/IDEEditorDocument.h"
 #import <AppKit/AppKit.h>
-#import "../Shared Code/Xcode5/DVTFoundation/_DVTAsynchronousRequest.h"
+#import "../Shared Code/Xcode/_DVTAsynchronousRequest.h"
 
 static IMP original__unlockIfNeededCompletionBlock = nil;
 static Class g_EditorDocumentClass;

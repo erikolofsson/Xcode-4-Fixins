@@ -218,7 +218,10 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 			if (NodeType == CommentDocNodeType || NodeType == CommentNodeType)
 				[pNewIndexSet addIndexesInRange:NSIntersectionRange(EffectiveRange, Bounds)];
 			
-			iCharacter = EffectiveRange.location + EffectiveRange.length;
+			if (EffectiveRange.length == 0)
+				++iCharacter;
+			else
+				iCharacter = EffectiveRange.location + EffectiveRange.length;
 		}
 
 		if (

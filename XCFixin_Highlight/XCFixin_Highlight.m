@@ -78,20 +78,10 @@ static NSString* pAttributeName = @"XCFixinTempAttribute00";
     NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
 
     [notificationCenter addObserver: self
-                           selector: @selector( applicationReady: )
-                               name: NSApplicationDidFinishLaunchingNotification
-                             object: nil];
-
-    [notificationCenter addObserver: self
                            selector: @selector( frameChanged: )
                                name: NSViewFrameDidChangeNotification
                              object: nil];
 
-    [notificationCenter addObserver: self
-                           selector: @selector( selectionChanged: )
-                               name: NSTextViewDidChangeSelectionNotification
-                             object: nil];
-	  
     [notificationCenter addObserver: self
                            selector: @selector( boundsChanged: )
                                name: NSViewBoundsDidChangeNotification
@@ -246,11 +236,6 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 	}
 }
 
-
-//-----------------------------------------------------------------------------------------------
-- (void) applicationReady:(NSNotification*)notification {
-}
-
 //-----------------------------------------------------------------------------------------------
 - (void) frameChanged:(NSNotification*)notification {
 	if ([notification.object isKindOfClass:[NSClipView class]])
@@ -276,10 +261,6 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 			updateTextView(pTextView, NULL);
 		}
 	}
-}
-
-//-----------------------------------------------------------------------------------------------
-- (void) selectionChanged:(NSNotification*)notification {
 }
 
 static id highlighter = nil;

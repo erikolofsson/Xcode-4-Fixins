@@ -21,9 +21,13 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 + (void)pluginDidLoad:(NSBundle *)plugin	{
 
 	XCFixinPreflight();
-
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationFinishedLaunching:)
-															 name:NSApplicationDidFinishLaunchingNotification object: nil];
+	if ([NSRunningApplication currentApplication].finishedLaunching) {
+		[self applicationFinishedLaunching:nil];
+	}
+	else {
+		[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(applicationFinishedLaunching:)
+																 name:NSApplicationDidFinishLaunchingNotification object: nil];
+	}
 	XCFixinPostflight();
 }
 + (instancetype) sharedPlugin {	static XCFixin_HideDistractions * sharedPlugin = nil;

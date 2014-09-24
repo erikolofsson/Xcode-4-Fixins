@@ -60,11 +60,17 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
     pColor = nil;
 
     NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
+    
+    if ([NSRunningApplication currentApplication].finishedLaunching) {
+      [self applicationReady:nil];
+    }
+    else {
+      [notificationCenter addObserver: self
+                             selector: @selector( applicationReady: )
+                                 name: NSApplicationDidFinishLaunchingNotification
+                               object: nil];
 
-    [notificationCenter addObserver: self
-                           selector: @selector( applicationReady: )
-                               name: NSApplicationDidFinishLaunchingNotification
-                             object: nil];
+    }
 
     [notificationCenter addObserver: self
                            selector: @selector( frameChanged: )
@@ -130,7 +136,16 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   @try {
     if (pColor)
     {
-      NSRange LineRange = [[view string] lineRangeForRange:range];
+      NSString* pString = [view string];
+      
+      NSRange StringRange;
+      StringRange.location = 0;
+      StringRange.length = [pString length];
+      
+      NSRange CommonRange = NSIntersectionRange(StringRange, range);
+      if (CommonRange.location == 0 && CommonRange.length == 0)
+        return;
+      NSRange LineRange = [pString lineRangeForRange:range];
       NSLayoutManager *layoutManager = [view layoutManager];
       [layoutManager addTemporaryAttribute: pAttributeName value: pColor forCharacterRange: LineRange];
       XCFixinUpdateTempAttributes(layoutManager, LineRange);
@@ -148,9 +163,18 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
 - (void) removeHighlightFromLineInView:(id)view containingRange:(NSRange)range {
 //-----------------------------------------------------------------------------------------------
   @try {
-    NSRange LineRange = [[view string] lineRangeForRange:range];
+    NSString* pString = [view string];
+    
+    NSRange StringRange;
+    StringRange.location = 0;
+    StringRange.length = [pString length];
+    
+    NSRange CommonRange = NSIntersectionRange(StringRange, range);
+    if (CommonRange.location == 0 && CommonRange.length == 0)
+      return;
+    NSRange LineRange = [pString lineRangeForRange: CommonRange];
     NSLayoutManager *layoutManager = [view layoutManager];
-    [[view layoutManager] removeTemporaryAttribute: pAttributeName forCharacterRange: LineRange];
+    [layoutManager removeTemporaryAttribute: pAttributeName forCharacterRange: LineRange];
     XCFixinUpdateTempAttributes(layoutManager, LineRange);
   }
   @catch ( NSException* exception ) {
@@ -268,10 +292,10 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
 //-----------------------------------------------------------------------------------------------
 - (void) selectionChanged:(NSNotification*)notification {
 //----------------------------------------------------------------------------------------------- 
-  if ([[notification object] isMemberOfClass:sourceEditorViewClass]) {
-
-    id view = [notification object];
-    NSRange oldRange = [[[notification userInfo] objectForKey:@"NSOldSelectedCharacterRange"] rangeValue];
+  id view = [notification object];
+  id OldSelectedRange = [[notification userInfo] objectForKey:@"NSOldSelectedCharacterRange"];
+  if (OldSelectedRange != nil && view != nil && [view isMemberOfClass:sourceEditorViewClass]) {
+    NSRange oldRange = [OldSelectedRange rangeValue];
     NSRange newRange = [view selectedRange];
 
     [self removeHighlightFromLineInView:view containingRange:oldRange];

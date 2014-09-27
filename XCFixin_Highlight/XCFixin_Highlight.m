@@ -69,9 +69,7 @@ static XCFixin_Highlight_ViewState* GetViewState(NSLayoutManager* _pLayoutManage
 
 static NSString* pAttributeName = @"XCFixinTempAttribute00";
 
-//-----------------------------------------------------------------------------------------------
 - (id) init {
-//-----------------------------------------------------------------------------------------------
   self = [super init];
   if (self) {
 
@@ -112,9 +110,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute00";
 }
 
 
-//-----------------------------------------------------------------------------------------------
 - (void) dealloc {
-//-----------------------------------------------------------------------------------------------
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -236,7 +232,6 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) frameChanged:(NSNotification*)notification {
 	if ([notification.object isKindOfClass:[NSClipView class]])
 	{
@@ -249,7 +244,6 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) boundsChanged:(NSNotification*)notification {
 	
 	if ([notification.object isKindOfClass:[NSClipView class]])
@@ -1246,9 +1240,7 @@ static NSCharacterSet *pWhitespaceNoNewLineChars = nil;
 static NSCharacterSet *pNewLineChars = nil;
 static NSMutableDictionary *pDefaultKeywords = nil;
 
-//-----------------------------------------------------------------------------------------------
 + (void) pluginDidLoad: (NSBundle*)plugin
-//-----------------------------------------------------------------------------------------------
 {
 	// Singleton instance
 

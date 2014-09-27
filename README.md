@@ -1,13 +1,13 @@
-__These plugins are only maintained for the latest version of Xcode (currently 5.1)__
+__These plugins are only maintained for the latest version of Xcode (currently 6.0.1)__
 
 __===== DESCRIPTION =====__
 
 This project includes plugins (known as _fixins_) that extend Xcode
 and fix some of its annoying behaviors.
 
-__===== INSTALLATION (Xcode 5) =====__
+__===== INSTALLATION (Xcode 6) =====__
 
-Despite the name, the Xcode 4 Fixins are compatible with Xcode 5.
+Despite the name, the Xcode 4 Fixins are compatible with Xcode 6.
 
 To install the fixins:
 
@@ -50,6 +50,7 @@ This fixin aims to emulate the editor behavior of the Visual Studio editor. The 
  + `Esc` Returns to editor from batch find
 + Run multiple schemes with `⌘-G` from one scheme by setting Custom working directory to "[MulitLaunchSchemes]" and the scheme names as arguments
 + `Ctrl-H` Toggles deletes breakpoints more reliably than the built in shortcut for toggling breakpoints (workaround for Xcode bug)
++ Ability to stop the debugger from setting DYLD_INSERT_LIBRARIES, DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH. Accessbile from Edit->Xcode fixes options... or `Ctrl+O`
 
 __CurrentLineHighlighter__: This fixin highlights the line currently
 being edited in the source editor, making it easier to track the

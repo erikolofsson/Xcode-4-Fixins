@@ -27,6 +27,7 @@ This fixin aims to emulate the editor behavior of the Visual Studio editor. The 
  + `Esc` Returns to editor from batch find
 + Run multiple schemes with `⌘-G` from one scheme by setting Custom working directory to "[MulitLaunchSchemes]" and the scheme names as arguments
 + `Ctrl-H` Toggles deletes breakpoints more reliably than the built in shortcut for toggling breakpoints (workaround for Xcode bug)
++ Ability to stop the debugger from setting DYLD_INSERT_LIBRARIES, DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH. Accessbile from Edit->Xcode fixes options... or `Ctrl+O`
 
 ### TODO
 + Build only current project

@@ -50,9 +50,7 @@
 
 static NSString* pAttributeName = @"XCFixinTempAttribute10";
 
-//-----------------------------------------------------------------------------------------------
 - (id) init {
-//-----------------------------------------------------------------------------------------------
   self = [super init];
   if (self) {
     sourceEditorViewClass = Nil;    
@@ -85,27 +83,19 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   return self;
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) dealloc {
-//-----------------------------------------------------------------------------------------------
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-//-----------------------------------------------------------------------------------------------
 - (NSString*) highlightColorDefaultsKeyName {
-//-----------------------------------------------------------------------------------------------
   return @"CurrentLineHighlightColor";
 }
 
-//-----------------------------------------------------------------------------------------------
 - (NSString*) highlightColorMenuItemTitle {
-//-----------------------------------------------------------------------------------------------
   return @"Current Line Highlight Color...";
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) loadHighlightColor {
-//-----------------------------------------------------------------------------------------------
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];   
 
   NSData* colorAsData = [userDefaults objectForKey:[self highlightColorDefaultsKeyName]];
@@ -121,18 +111,14 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   }
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) saveHighlightColor:(NSColor*)color {
-//-----------------------------------------------------------------------------------------------
   NSData* colorAsData = [NSKeyedArchiver archivedDataWithRootObject:color];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:colorAsData forKey:[self highlightColorDefaultsKeyName]];
   pColor = color;
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) highlightLineInView:(id)view containingRange:(NSRange)range {
-//-----------------------------------------------------------------------------------------------
   @try {
     if (pColor)
     {
@@ -159,9 +145,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) removeHighlightFromLineInView:(id)view containingRange:(NSRange)range {
-//-----------------------------------------------------------------------------------------------
   @try {
     NSString* pString = [view string];
     
@@ -184,9 +168,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   }
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) selectHighlightColor:(id)sender {
-//-----------------------------------------------------------------------------------------------
   NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
 
   NSColor* color = [highlightColorAttributes objectForKey:NSBackgroundColorAttributeName];
@@ -201,9 +183,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   [NSApp orderFrontColorPanel:nil];
 }
 
-//-----------------------------------------------------------------------------------------------
 - (IBAction)changeColor:(id)sender {
-//-----------------------------------------------------------------------------------------------
   NSColorPanel* colorPanel = [NSColorPanel sharedColorPanel];
 
   highlightColorAttributes = 
@@ -227,9 +207,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   [window setFrame:frame display:YES];
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) colorPanelWillClose:(NSNotification*)notification {
-//-----------------------------------------------------------------------------------------------
   NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
 
   [[NSNotificationCenter defaultCenter] removeObserver: self 
@@ -239,9 +217,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   [colorPanel setAction:nil];
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) addItemToApplicationMenu {
-//-----------------------------------------------------------------------------------------------
   NSMenu* mainMenu = [NSApp mainMenu];
   NSMenu* editorMenu = [[mainMenu itemAtIndex:[mainMenu indexOfItemWithTitle:@"Editor"]] submenu];
 
@@ -267,16 +243,12 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
     XCFixinLog(@"%s: failed to add editor menu.\n",__FUNCTION__);
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) applicationReady:(NSNotification*)notification {
-//-----------------------------------------------------------------------------------------------
   sourceEditorViewClass = NSClassFromString(@"DVTSourceTextView");
   [self loadHighlightColor];
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) frameChanged:(NSNotification*)notification {
-//----------------------------------------------------------------------------------------------- 
   id view = [notification object];
 
   //XCFixinLog(@"%s: frameChanged.\n",__FUNCTION__);
@@ -289,9 +261,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   }
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) selectionChanged:(NSNotification*)notification {
-//----------------------------------------------------------------------------------------------- 
   id view = [notification object];
   id OldSelectedRange = [[notification userInfo] objectForKey:@"NSOldSelectedCharacterRange"];
   if (OldSelectedRange != nil && view != nil && [view isMemberOfClass:sourceEditorViewClass]) {
@@ -306,9 +276,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   }
 }
 
-//-----------------------------------------------------------------------------------------------
 + (void) pluginDidLoad: (NSBundle*)plugin
-//-----------------------------------------------------------------------------------------------
 {
   // Singleton instance
   static id highlighter = nil;

@@ -56,6 +56,7 @@ static IMP original_becomeFirstResponder_DVTFindPatternFieldEditor = nil;
 static IMP original_resignFirstResponder_DVTFindPatternFieldEditor = nil;
 static IMP original_menuItemWithKeyEquivalentMatchingEventRef = nil;
 static IMP original_LLDBLauncherStart = nil;
+static IMP original_compositeEnvironmentVariables = nil;
 
 
 
@@ -559,17 +560,25 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 	return false;
 }
 
-//-----------------------------------------------------------------------------------------------
 - (id) init {
-//-----------------------------------------------------------------------------------------------
 	self = [super init];
 	if (self) 
 	{
 		g_LLDBLaunchLock = [[NSLock alloc] init];
 
-
 		NSNotificationCenter* notificationCenter = [NSNotificationCenter defaultCenter];
 
+		if ([NSRunningApplication currentApplication].finishedLaunching) {
+		  [self applicationReady:nil];
+		}
+		else {
+		  [notificationCenter addObserver: self
+								 selector: @selector( applicationReady: )
+									 name: NSApplicationDidFinishLaunchingNotification
+								   object: nil];
+
+		}
+		
 		[notificationCenter addObserver: self
 							   selector: @selector( frameChanged: )
 								   name: NSViewFrameDidChangeNotification
@@ -653,8 +662,13 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 						}
 					}
 				}
-				else if ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask) 
+				else if 
+					(
+						((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask)
+						|| ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSAlternateKeyMask)
+					)
 				{
+					bool bExpandNext = (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSAlternateKeyMask;
 					if (g_PreferredNextLocation == EPreferredNextLocation_Console)
 					{
 						IDEConsoleTextView* pView = getConsoleTextView(nil);
@@ -670,10 +684,65 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 						bool bSetEditorFocus = false;
 						if (m_pActiveViewControllerBatchFind)
 						{
+							NSArray* pSelected = [m_pActiveView selectedItems];
+							IDEKeyDrivenNavigableItem* pLastSelected = nil;
+							if ([pSelected count] > 0)
+								pLastSelected = (IDEKeyDrivenNavigableItem*)pSelected[0];
+								
 							if (ModifierFlags & NSShiftKeyMask)
 								[m_pActiveView doCommandBySelector:@selector(moveUp:)];
 							else
 								[m_pActiveView doCommandBySelector:@selector(moveDown:)];
+							
+							pSelected = [m_pActiveView selectedItems];
+							IDEKeyDrivenNavigableItem* pSelectedItem = nil;
+							if ([pSelected count] > 0)
+								pSelectedItem = (IDEKeyDrivenNavigableItem*)pSelected[0];
+							if (pLastSelected == pSelectedItem)
+							{
+								NSArray *pRootItems = [m_pActiveView rootItems];
+								
+								if (pRootItems)
+								{
+									if ([pRootItems count])
+									{
+										if (ModifierFlags & NSShiftKeyMask)
+										{
+											IDEKeyDrivenNavigableItem *pObject = [pRootItems lastObject];
+											IDEKeyDrivenNavigableItem *pLastObject = pObject;
+											
+											while (pObject)
+											{
+												NSArray *pItems = [pObject childItems];
+												if (pItems == nil)
+													break;
+												pObject = [pItems lastObject];
+												if (pObject)
+													pLastObject = pObject;
+											}
+											
+											NSArray *pSelectedItems = [NSArray arrayWithObject: pLastObject];
+											[m_pActiveView setSelectedItems:pSelectedItems];
+											pSelectedItem = pLastObject;
+											if (pSelectedItem == pLastSelected)
+												break;
+										}
+										else
+										{
+											NSArray *pSelectedItems = [NSArray arrayWithObject: pRootItems[0]];
+											[m_pActiveView setSelectedItems:pSelectedItems];
+											[m_pActiveView doCommandBySelector:@selector(moveDown:)];
+											if (pSelectedItem == pLastSelected)
+												break;
+										}
+										
+									}
+									else
+										break;
+								}
+								else
+									break;
+							}
 						
 							[m_pActiveViewControllerBatchFind openSelectedNavigableItemsKeyAction:m_pActiveView];
 							bSetEditorFocus = true;
@@ -685,6 +754,8 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 							NSString* pCharacters;
 							if (ModifierFlags & NSShiftKeyMask)
 							{
+								if (bExpandNext)
+									return nil; // Does not work
 								KeyCode = 126;
 								pCharacters = @"";
 							}
@@ -707,39 +778,83 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 							];
 							
 							bool bDoNavigation = false;
+							bool bLooped = false;
 							IDEIssueNavigableItem* pLastSelected = nil;
-							do
-							{
-								NSArray* pSelected = [m_pActiveView selectedItems];
-								if ([pSelected count] <= 0)
-									break;
-								pLastSelected = (IDEIssueNavigableItem*)pSelected[0];
-							}
-							while (false)
-								;
 							while (true)
 							{
 								{
 									NSArray* pSelected = [m_pActiveView selectedItems];
-									if ([pSelected count] <= 0)
-										break;
-									IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
-									pLastSelected = pSelectedItem;
-									NSString* pClassName = [pSelectedItem className];
-									if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+									if ([pSelected count] > 0)
 									{
-										if (![pSelectedItem isLeaf])
-											[m_pActiveView expandItem:pSelectedItem];
+										IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
+										pLastSelected = pSelectedItem;
+										if (bExpandNext)
+										{
+											//NSString* pClassName = [pSelectedItem className];
+											//if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+											{
+												if (![pSelectedItem isLeaf])
+													[m_pActiveView expandItem:pSelectedItem];
+											}
+										}
 									}
 								}
 								[m_pActiveView keyDown:pEvent];
 								NSArray* pSelected = [m_pActiveView selectedItems];
-								if ([pSelected count] <= 0)
-									break;
 								
-								IDEIssueNavigableItem* pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
+								IDEIssueNavigableItem* pSelectedItem = nil;
+								if ([pSelected count] > 0)
+									pSelectedItem = (IDEIssueNavigableItem*)pSelected[0];
 								if (pLastSelected == pSelectedItem)
-									break; // No change in selection
+								{
+									NSArray *pRootItems = [m_pActiveView rootItems];
+									
+									if (pRootItems)
+									{
+										if ([pRootItems count])
+										{
+											if (bLooped)
+												break;
+											if (ModifierFlags & NSShiftKeyMask)
+											{
+												IDEIssueNavigableItem *pObject = [pRootItems lastObject];
+												IDEIssueNavigableItem *pLastObject = pObject;
+												
+												while (pObject)
+												{
+													NSArray *pItems = [pObject childItems];
+													if (pItems == nil)
+														break;
+													pObject = [pItems lastObject];
+													if (pObject)
+														pLastObject = pObject;
+												}
+												
+												NSArray *pSelectedItems = [NSArray arrayWithObject: pLastObject];
+												[m_pActiveView setSelectedItems:pSelectedItems];
+												//[m_pActiveView keyDown:pEvent];
+												pSelectedItem = pLastObject;
+												if (pSelectedItem == pLastSelected)
+													break;
+												bLooped = true;
+											}
+											else
+											{
+												NSArray *pSelectedItems = [NSArray arrayWithObject: pRootItems[0]];
+												[m_pActiveView setSelectedItems:pSelectedItems];
+												pSelectedItem = pRootItems[0];
+												if (pSelectedItem == pLastSelected)
+													break;
+												bLooped = true;
+											}
+											
+										}
+										else
+											break;
+									}
+									else
+										break;
+								}
 								pLastSelected = pSelectedItem;
 								NSString* pClassName = [pSelectedItem className];
 								//XCFixinLog(@"%@ %d", pClassName, [pSelectedItem isLeaf]);
@@ -751,8 +866,11 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 								else if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
 								{
 									bDoNavigation = true;
-									if (![pSelectedItem isLeaf])
-										[m_pActiveView expandItem:pSelectedItem];
+									if (bExpandNext)
+									{
+										if (![pSelectedItem isLeaf])
+											[m_pActiveView expandItem:pSelectedItem];
+									}
 								}
 								break;
 							}
@@ -780,9 +898,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 	return self;
 }
 
-//-----------------------------------------------------------------------------------------------
 - (void) dealloc {
-//-----------------------------------------------------------------------------------------------
 	[NSEvent removeMonitor:eventMonitor];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -888,7 +1004,6 @@ IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
 }
 
 
-//-----------------------------------------------------------------------------------------------
 - (void) frameChanged:(NSNotification*)notification {
 	
 	if ([[notification.object className] compare:@"IDENavigatorOutlineView"] == NSOrderedSame)
@@ -902,7 +1017,13 @@ IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
 				potentialView(pOutlineView);
 		}
 	}
+
+	id view = [notification object];
+
+	if (view != nil && [view isMemberOfClass: m_SourceEditorViewClass])
+		[self addItemToApplicationMenu];
 }
+
 
 static int clearSelection(id self_)
 {
@@ -1024,7 +1145,6 @@ static void potentialView(IDENavigatorOutlineView* _pView)
 	}
 }
 
-//- (void)tabView:(id)arg1 didSelectTabViewItem:(id)arg2;
 NSTabViewItem* g_pLastValidEditorTabItem = nil;
 NSTabView* g_pLastValidEditorTabView = nil;
 
@@ -1206,6 +1326,8 @@ static void LLDBLauncherStart(DBGLLDBLauncher* self_, SEL _Sel)
 //	XCFixinLog(@"LLDBLauncherStart finished: %p\n", self_);
 	[g_LLDBLaunchLock unlock];
 }
+
+
 
 
 // + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
@@ -1750,8 +1872,181 @@ NSRegularExpression *g_pSourceLocationRegex;
 
 	original_LLDBLauncherStart = XCFixinOverrideMethodString(@"DBGLLDBLauncher", @selector(start), (IMP)&LLDBLauncherStart);
 	XCFixinAssertOrPerform(original_LLDBLauncherStart, goto failed);
+
+	original_compositeEnvironmentVariables = XCFixinOverrideMethodString(@"IDERunOperationPathWorker", @selector(compositeEnvironmentVariables), (IMP)&compositeEnvironmentVariables);
+	XCFixinAssertOrPerform(original_compositeEnvironmentVariables, goto failed);
 	
 	
 	XCFixinPostflight();
 }
+
+// - (id)compositeEnvironmentVariables
+static NSDictionary *compositeEnvironmentVariables(id self_, SEL _Sel)
+{
+	NSDictionary *pRet = ((id (*)(id self_, SEL _Sel))original_compositeEnvironmentVariables)(self_, _Sel);
+
+	NSMutableDictionary *pNewDictionary = [pRet mutableCopy];
+
+	if (m_bDisableDyldLibraries)
+	{
+		[pNewDictionary removeObjectForKey:@"DYLD_LIBRARY_PATH"];
+		[pNewDictionary removeObjectForKey:@"DYLD_FRAMEWORK_PATH"];
+		[pNewDictionary removeObjectForKey:@"__XPC_DYLD_LIBRARY_PATH"];
+		[pNewDictionary removeObjectForKey:@"__XPC_DYLD_FRAMEWORK_PATH"];
+	}
+	
+	if (m_bDisableDyldInsertLibraries)
+	{
+		[pNewDictionary removeObjectForKey:@"DYLD_INSERT_LIBRARIES"];
+	}
+
+	return pNewDictionary;
+}
+
+BOOL m_bDisableDyldLibraries = true;
+BOOL m_bDisableDyldInsertLibraries = true;
+
+- (void) loadSettings 
+{
+	NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];   
+	
+	NSDictionary *pAllSettings = [userDefaults dictionaryRepresentation];
+	if ([[pAllSettings allKeys] containsObject:@"EmulateVisualStudio_DisableDyldLibraries"])
+		m_bDisableDyldLibraries = [userDefaults boolForKey:@"EmulateVisualStudio_DisableDyldLibraries"];
+	if ([[pAllSettings allKeys] containsObject:@"EmulateVisualStudio_DisableDyldInsertLibraries"])
+		m_bDisableDyldInsertLibraries = [userDefaults boolForKey:@"EmulateVisualStudio_DisableDyldInsertLibraries"];
+}
+- (void) saveSettings 
+{
+	NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+	[userDefaults setBool:m_bDisableDyldLibraries forKey:@"EmulateVisualStudio_DisableDyldLibraries"];
+	[userDefaults setBool:m_bDisableDyldInsertLibraries forKey:@"EmulateVisualStudio_DisableDyldInsertLibraries"];
+}
+
+NSPanel* m_OptionsWindow = nil;
+NSWindow* m_MainWindow = nil;
+
+- (void)optionsDidEndSheet:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+	[self saveSettings];
+	[sheet orderOut:self];
+	[NSApp stopModal];
+	m_MainWindow = nil;
+	m_OptionsWindow = nil; 
+}
+
+- (void) closeOptions:(id)sender 
+{
+	[m_MainWindow endSheet:m_OptionsWindow];
+}
+
+- (void) optionChanged:(id)sender
+{
+	if ([sender isKindOfClass:[NSButton class]])
+	{
+		NSButton* button = sender;
+		if ([[button title] compare:@"Disable DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH in debugger"] == NSOrderedSame)
+			m_bDisableDyldLibraries = [button state] == NSOnState;
+		else if ([[button title] compare:@"Disable DYLD_INSERT_LIBRARIES in debugger"] == NSOrderedSame)
+			m_bDisableDyldInsertLibraries = [button state] == NSOnState;
+	}
+}
+
+- (void) changeOptions:(id)sender 
+{
+	if (m_OptionsWindow)
+		return;
+	
+	float Width = 600;
+	
+	NSRect frame = NSMakeRect(0, 0, Width, 110);
+	
+	NSPanel* window  = [[NSPanel alloc] initWithContentRect:frame
+						styleMask:NSClosableWindowMask | NSTitledWindowMask
+						backing:NSBackingStoreBuffered
+						defer:NO];
+	
+	m_OptionsWindow = window;
+	m_MainWindow = [NSApp keyWindow];
+	
+	window.title = @"Xcode fixes options";
+
+	NSButton* disableLibrariesButton = [[NSButton alloc] initWithFrame:NSMakeRect(10, 70, Width-20, 25)];
+	disableLibrariesButton.autoresizingMask = NSViewWidthSizable;
+	disableLibrariesButton.title = @"Disable DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH in debugger";
+	if (m_bDisableDyldLibraries)
+		[disableLibrariesButton setState: NSOnState];
+	[disableLibrariesButton setTarget:self];
+	[disableLibrariesButton setAction: @selector(optionChanged:)];
+	[disableLibrariesButton setButtonType: NSSwitchButton];
+	[[window contentView] addSubview:disableLibrariesButton];
+
+	NSButton* disableInsertLibrariesButton = [[NSButton alloc] initWithFrame:NSMakeRect(10, 45, Width - 20, 25)];
+	disableInsertLibrariesButton.autoresizingMask = NSViewWidthSizable;
+	disableInsertLibrariesButton.title = @"Disable DYLD_INSERT_LIBRARIES in debugger";
+	if (m_bDisableDyldInsertLibraries)
+		[disableInsertLibrariesButton setState: NSOnState];
+	[disableInsertLibrariesButton setTarget:self];
+	[disableInsertLibrariesButton setAction: @selector(optionChanged:)];
+	[disableInsertLibrariesButton setButtonType: NSSwitchButton];
+	[[window contentView] addSubview:disableInsertLibrariesButton];
+	
+	NSButton* closeButton = [[NSButton alloc] initWithFrame:NSMakeRect(10, 10, 80, 25)];
+	closeButton.autoresizingMask = NSViewWidthSizable;
+	closeButton.title = @"Close";
+	[closeButton setTarget:self];
+	[closeButton setAction: @selector(closeOptions:)];
+	[closeButton setButtonType: NSPushOnPushOffButton];
+	[closeButton setBezelStyle: NSRoundedBezelStyle];
+	[[window contentView] addSubview:closeButton];
+	
+	[NSApp beginSheet:window
+   modalForWindow:m_MainWindow
+    modalDelegate:self
+   didEndSelector:@selector(optionsDidEndSheet: returnCode: contextInfo:)
+      contextInfo:nil];
+	
+	[NSApp runModalForWindow: window];
+	
+}
+
+- (void) addItemToApplicationMenu
+{
+	NSMenu* mainMenu = [NSApp mainMenu];
+	NSMenu* editorMenu = [[mainMenu itemAtIndex:[mainMenu indexOfItemWithTitle:@"Edit"]] submenu];
+
+	XCFixinLog(@"%s: editor menu: %p.\n",__FUNCTION__, editorMenu);
+
+	if ( editorMenu != nil) 
+	{
+		if ([editorMenu itemWithTitle:@"Xcode fixes options..."] == nil) 
+		{
+			XCFixinLog(@"%s: editor menu added.\n",__FUNCTION__);
+
+			NSMenuItem* newItem = [NSMenuItem new];
+
+			[newItem setTitle:@"Xcode fixes options..."];  // note: not localized
+			[newItem setTarget:self];
+			[newItem setAction:@selector( changeOptions: )];
+			[newItem setEnabled:YES];
+			[newItem setKeyEquivalent:@"o"];
+			[newItem setKeyEquivalentModifierMask:NSControlKeyMask];
+
+			[editorMenu insertItem:newItem atIndex:[editorMenu numberOfItems]];
+		}
+		else
+			XCFixinLog(@"%s: editor menu already added.\n",__FUNCTION__);
+	}
+	else
+		XCFixinLog(@"%s: failed to add editor menu.\n",__FUNCTION__);
+}
+
+Class m_SourceEditorViewClass = nil;
+
+- (void) applicationReady:(NSNotification*)notification {
+  m_SourceEditorViewClass = NSClassFromString(@"DVTSourceTextView");
+  [self loadSettings];
+}
+
 @end

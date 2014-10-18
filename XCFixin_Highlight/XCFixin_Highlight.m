@@ -667,14 +667,16 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 							pColor = pMemberConstantPublic;
 						else if (MatchVariablePrefix(pIdentifier, @"gc_"))
 							pColor = pGlobalConstant; // pGlobalStaticConstant;
-						else if (MatchOtherPrefix(pIdentifier, @"tp_"))
+						else if (MatchVariablePrefix(pIdentifier, @"tp_"))
 							pColor = pTemplateNonTypeParam;
+						else if (MatchVariablePrefix(pIdentifier, @"po_")) // Parameter pack
+							pColor = pFunctionParameter_OutputParamPack;
 						else if (MatchVariablePrefix(pIdentifier, @"_o"))
-							pColor = pFunctionParameter;
+							pColor = pFunctionParameter_Output;
 						else if (MatchVariablePrefix(pIdentifier, @"o_"))
-							pColor = pFunctionParameter;
+							pColor = pFunctionParameter_Output;
 						else if (MatchVariablePrefix(pIdentifier, @"p_")) // Parameter pack
-							pColor = pFunctionParameter;
+							pColor = pFunctionParameter_ParamPack;
 					}
 					if (!pColor)
 					{
@@ -683,7 +685,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 							pColor = pTemplateType;
 						else if (MatchOtherPrefix(pIdentifier, @"f_"))
 							pColor = pMemberFunctionPublic;
-						else if (MatchOtherPrefix(pIdentifier, @"t_"))
+						else if (MatchVariablePrefix(pIdentifier, @"t_"))
 							pColor = pTemplateNonTypeParam;
 						else if (MatchOtherPrefix(pIdentifier, @"d_"))
 							pColor = pMacroParameter;
@@ -756,6 +758,9 @@ static NSColor* pFunctionTemplateTemplateParam = nil;
 static NSColor* pTemplateType = nil;
 static NSColor* pEnumerator = nil;
 static NSColor* pFunctionParameter = nil;
+static NSColor* pFunctionParameter_Output = nil;
+static NSColor* pFunctionParameter_OutputParamPack = nil;
+static NSColor* pFunctionParameter_ParamPack = nil;
 static NSColor* pMacroParameter = nil;
 static NSColor* pMemberFunctionPrivate = nil;
 static NSColor* pMemberFunctionProtected = nil;
@@ -795,80 +800,151 @@ static NSColor* CreateColor(unsigned int _Color)
 	return [NSColor colorWithCalibratedRed:((_Color >> 0) & 0xFF)/255.0 green:((_Color >> 8) & 0xFF)/255.0 blue:((_Color >> 16) & 0xFF)/255.0 alpha:1.0];
 }
 
+#if 0
+
+
+<tr><td style="background-color:#FFFFFF"></td><td style="color:#FFFFFF">=</td><td>pOperator</td></tr>
+<tr><td style="background-color:#FFFFFF"></td><td style="color:#FFFFFF">for</td><td>pKeywordDefault</td></tr>
+<tr><td style="background-color:#C0C0C0"></td><td style="color:#C0C0C0">typename</td>pKeywordTypename</td></tr>
+<tr><td style="background-color:#C0C0C0"></td><td style="color:#C0C0C0">inline</td>pKeywordPropertyModifiers</td></tr>
+
+<tr><td style="background-color:#D8BEBE"></td><td style="color:#D8BEBE">private</td>pKeywordAccess</td></tr>
+
+<tr><td style="background-color:#009EFF"></td><td style="color:#009EFF">"String" 'Char'</td><td>String, Charater</td></tr>
+
+<tr><td style="background-color:#C8C0FF"></td><td style="color:#C8C0FF">auto</td><td>pKeywordAuto</td></tr>
+<tr><td style="background-color:#CBC6FF"></td><td style="color:#CBC6FF">tf_CTest tf_TTest</td>pFunctionTemplateTypeParam, pFunctionTemplateTemplateParam</td></tr>
+<tr><td style="background-color:#A79DFF"></td><td style="color:#A79DFF">CTest TCTest ETest</td>pType, pTemplateType, pTypedef, pEnum</td></tr>
+<tr><td style="background-color:#A29CCD"></td><td style="color:#A29CCD">NTest</td>pNamespace</td></tr>
+<tr><td style="background-color:#8779FF"></td><td style="color:#8779FF">t_CTest, t_TTest</td>pTemplateTypeParam, pTemplateTemplateParam</td></tr>
+
+<tr><td style="background-color:#FFB7DB"></td><td style="color:#FFB7DB">tf_Test</td>pFunctionTemplateNonTypeParam</td></tr>
+<tr><td style="background-color:#E1A8C5"></td><td style="color:#E1A8C5">mcp_Test</td>pMemberConstantPrivate, pMemberConstantProtected</td></tr>
+<tr><td style="background-color:#FF8AC5"></td><td style="color:#FF8AC5">gc_Test ETest_Value mc_Test gc_Test true false nullptr</td>pGlobalConstant, pEnumerator, pMemberConstantPublic, pGlobalStaticConstant, pKeywordBulitInConstants</td></tr>
+<tr><td style="background-color:#FF5BAD"></td><td style="color:#FF5BAD">t_Test</td>pTemplateNonTypeParam</td></tr>
+
+<tr><td style="background-color:#FF0080"></td><td style="color:#FF0080">15 60.6</td><td>Number</td></tr>
+
+<tr><td style="background-color:#FF5966"></td><td style="color:#FF5966">int bool void uint32</td>pKeywordBulitInTypes, pKeywordBulitInCharacterTypes, pKeywordBulitInIntegerTypes, pKeywordBulitInVectorTypes, pKeywordBulitInTypeModifiers, pKeywordBulitInFloatTypes</td></tr>
+<tr><td style="background-color:#FF2600"></td><td style="color:#FF2600">g_Test gs_Test</td>pGlobalVariable, pGlobalStaticVariable</td></tr>
+
+
+<tr><td style="background-color:#FFA600"></td><td style="color:#FFA600">m_Test ms_Test</td>pMemberVariablePublic, pMemberStaticVariablePublic</td></tr>
+<tr><td style="background-color:#C69D53"></td><td style="color:#C69D53">mp_Test msp_Test</td>pMemberVariablePrivate, pMemberVariableProtected, pMemberStaticVariablePrivate, pMemberStaticVariableProtected</td></tr>
+
+<tr><td style="background-color:#FF7D09"></td><td style="color:#FF7D09">DTest</td>pMacro</td></tr>
+<tr><td style="background-color:#FFBF80"></td><td style="color:#FFBF80">d_Test</td>pMacroParameter</td></tr>
+<tr><td style="background-color:#FFB680"></td><td style="color:#FFB680">const</td>pKeywordQualifier</td></tr>
+
+<tr><td style="background-color:#FFD700"></td><td style="color:#FFD700">Var</td><td>Variable</td></tr>
+
+<tr><td style="background-color:#E6FF00"></td><td style="color:#E6FF00">_Test o_Test p_Test po_Test</td>pFunctionParameter, pFunctionParameter_Output, pFunctionParameter_OutputParamPack, pFunctionParameter_ParamPack</td></tr>
+
+<tr><td style="background-color:#8AD580"></td><td style="color:#8AD580">fp_Test fsp_Test </td>pMemberFunctionPrivate, pMemberFunctionProtected, pMemberStaticFunctionPrivate, pMemberStaticFunctionProtected</td></tr>
+<tr><td style="background-color:#26FF00"></td><td style="color:#26FF00">f_Test fs_Test</td>pMemberFunctionPublic, pMemberStaticFunctionPublic</td></tr>
+<tr><td style="background-color:#1CB900"></td><td style="color:#1CB900">fg_Test fsg_Test</td>pFunction, pStaticFunction</td></tr>
+
+<tr><td style="background-color:#003737;color:#FF9F3B">Co</td><td style="background-color:#003737;color:#FF9F3B">// Comment</td>pCommentBackground and pCommentForeground</td></tr>
+
+#endif
+
 static void AddDefaultKeywords()
 {
 	pDefaultKeywords = [[NSMutableDictionary alloc] init];
 	
 	pType = CreateColor(0x00FF9DA7);
+	pTemplateType = pType;
+	pTypedef = pType;
+	pEnum = pType;
+	
 	pNamespace = CreateColor(0x00CD9CA2);
+	
 	pTemplateTypeParam = CreateColor(0x00FF7987);
+	pTemplateTemplateParam = pTemplateTypeParam;
+	
 	pTemplateNonTypeParam = CreateColor(0x00AD5BFF);
-	pTemplateTemplateParam = CreateColor(0x00FF7987);
+	
 	pFunctionTemplateTypeParam = CreateColor(0x00FFC6CB);
+	pFunctionTemplateTemplateParam = pFunctionTemplateTypeParam;
+	
 	pFunctionTemplateNonTypeParam = CreateColor(0x00DBB7FF);
-	pFunctionTemplateTemplateParam = CreateColor(0x00FFC6CB);
-	pTemplateType = CreateColor(0x00FF9DA7);
-	pEnumerator = CreateColor(0x00C58AFF);
+	
+
+	pGlobalConstant = CreateColor(0x00C58AFF);
+	pEnumerator = pGlobalConstant;
+	pMemberConstantPublic = pGlobalConstant;
+	pGlobalStaticConstant = pGlobalConstant;
+	NSColor* pKeywordBulitInConstants = pGlobalConstant;
+	
 	pFunctionParameter = CreateColor(0x0000FFE6);
+	pFunctionParameter_Output = pFunctionParameter;
+	pFunctionParameter_OutputParamPack = pFunctionParameter;
+	pFunctionParameter_ParamPack = pFunctionParameter;
+	
 	pMacroParameter = CreateColor(0x0080BFFF);
 	pMemberFunctionPrivate = CreateColor(0x0080D58A);
-	pMemberFunctionProtected = CreateColor(0x0080D58A);
+	pMemberFunctionProtected = pMemberFunctionPrivate;
+	pMemberStaticFunctionPrivate = pMemberFunctionPrivate;
+	pMemberStaticFunctionProtected = pMemberFunctionPrivate;
+	
 	pMemberFunctionPublic = CreateColor(0x0000FF26);
-	pMemberStaticFunctionPrivate = CreateColor(0x0080D58A);
-	pMemberStaticFunctionProtected = CreateColor(0x0080D58A);
-	pMemberStaticFunctionPublic = CreateColor(0x0000FF26);
+	pMemberStaticFunctionPublic = pMemberFunctionPublic;
+	
 	pMemberVariablePrivate = CreateColor(0x00539DC6);
-	pMemberVariableProtected = CreateColor(0x00539DC6);
+	pMemberVariableProtected = pMemberVariablePrivate;
+	pMemberStaticVariablePrivate = pMemberVariablePrivate;
+	pMemberStaticVariableProtected = pMemberVariablePrivate;
+	
 	pMemberVariablePublic = CreateColor(0x0000A6FF);
-	pMemberStaticVariablePrivate = CreateColor(0x00539DC6);
-	pMemberStaticVariableProtected = CreateColor(0x00539DC6);
-	pMemberStaticVariablePublic = CreateColor(0x0000A6FF);
-	pStaticFunction = CreateColor(0x0000B91C);
-	pGlobalVariable = CreateColor(0x000026FF);
-	pGlobalStaticVariable = CreateColor(0x000026FF);
-	pMemberConstantPrivate = CreateColor(0x00C5A8E1);
-	pMemberConstantProtected = CreateColor(0x00C5A8E1);
-	pMemberConstantPublic = CreateColor(0x00C58AFF);
-	pGlobalConstant = CreateColor(0x00C58AFF);
-	pGlobalStaticConstant = CreateColor(0x00C58AFF);
-	pTypedef = CreateColor(0x00FF9DA7);
+	pMemberStaticVariablePublic = pMemberVariablePublic;
+	
 	pFunction = CreateColor(0x0000B91C);
-	pEnum = CreateColor(0x00FF9DA7);
+	pStaticFunction = pFunction;
+	
+	pGlobalVariable = CreateColor(0x000026FF);
+	pGlobalStaticVariable = pGlobalVariable;
+	
+	pMemberConstantPrivate = CreateColor(0x00C5A8E1);
+	pMemberConstantProtected = pMemberConstantPrivate;
+	
 	pMacro = CreateColor(0x00097DFF);
 	pOperator = CreateColor(0x00FFFFFF);
 	pCommentForeground = CreateColor(0x003B9FFF);
 	pCommentBackground = CreateColor(0x00373700);
 	
+	NSColor* pKeywordDefault = CreateColor(0x00FFFFFF);
+	
+	NSColor* pKeywordControlStatement = pKeywordDefault;
+	NSColor* pKeywordStorageClass = pKeywordDefault;
+	NSColor* pKeywordExceptionHandling = pKeywordDefault;
+	NSColor* pKeywordIntrospection = pKeywordDefault;
+	NSColor* pKeywordStaticAssert = pKeywordDefault;
+	NSColor* pKeywordOptimization = pKeywordDefault;
+	NSColor* pKeywordNewDelete = pKeywordDefault;
+	NSColor* pKeywordCLR = pKeywordDefault;
+	NSColor* pKeywordOther = pKeywordDefault;
+	NSColor* pKeywordTypeSpecification = pKeywordDefault;
+	NSColor* pKeywordNamespace = pKeywordDefault;
+	NSColor* pKeywordTemplate = pKeywordDefault;
+	NSColor* pKeywordTypedef = pKeywordDefault;
+	NSColor* pKeywordUsing = pKeywordDefault;
+	NSColor* pKeywordThis = pKeywordDefault;
+	NSColor* pKeywordOperator = pKeywordDefault;
+	NSColor* pKeywordVirtual = pKeywordDefault;
+	NSColor* pKeywordCasts = pKeywordDefault;
+	NSColor* pKeywordPure = pKeywordDefault;
+	
 	NSColor* pKeywordBulitInTypes = CreateColor(0x006659FF);
-	NSColor* pKeywordBulitInCharacterTypes = CreateColor(0x006659FF);
-	NSColor* pKeywordBulitInIntegerTypes = CreateColor(0x006659FF);
-	NSColor* pKeywordBulitInVectorTypes = CreateColor(0x006659FF);
-	NSColor* pKeywordBulitInTypeModifiers = CreateColor(0x006659FF);
-	NSColor* pKeywordBulitInFloatTypes = CreateColor(0x006659FF);
-	NSColor* pKeywordBulitInConstants = CreateColor(0x00C58AFF);
-	NSColor* pKeywordControlStatement = CreateColor(0x00FFFFFF);
+	NSColor* pKeywordBulitInCharacterTypes = pKeywordBulitInTypes;
+	NSColor* pKeywordBulitInIntegerTypes = pKeywordBulitInTypes;
+	NSColor* pKeywordBulitInVectorTypes = pKeywordBulitInTypes;
+	NSColor* pKeywordBulitInTypeModifiers = pKeywordBulitInTypes;
+	NSColor* pKeywordBulitInFloatTypes = pKeywordBulitInTypes;
+	
 	NSColor* pKeywordPropertyModifiers = CreateColor(0x00C0C0C0);
-	NSColor* pKeywordStorageClass = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordExceptionHandling = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordIntrospection = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordStaticAssert = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordOptimization = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordNewDelete = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordCLR = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordOther = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordTypeSpecification = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordNamespace = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordTemplate = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordTypedef = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordUsing = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordAuto = CreateColor(255<<16 | 192<<8 | 200);
-	NSColor* pKeywordThis = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordOperator = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordVirtual = CreateColor(0x00FFFFFF);
-	NSColor* pKeywordCasts = CreateColor(0x00FFFFFF);
+	NSColor* pKeywordAuto = CreateColor(0x00FFC0C8);
 	NSColor* pKeywordTypename = CreateColor(0x00C0C0C0);
 	NSColor* pKeywordAccess = CreateColor(0x00BEBED8);
-	NSColor* pKeywordPure = CreateColor(0x00FFFFFF);
 	NSColor* pKeywordQualifier = CreateColor(0x0080B6FF);
 	
 	

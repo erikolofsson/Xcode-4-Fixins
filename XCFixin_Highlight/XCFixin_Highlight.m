@@ -259,14 +259,14 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 
 static id highlighter = nil;
 
-static BOOL MatchVariablePrefix(NSString* _pIdentifier, NSString* _pToMatch)
+static BOOL MatchVariablePrefix(NSString* _pIdentifier, NSString* _pToMatch, size_t _MatchLength, size_t _IdentLength)
 {
 	if (![_pIdentifier hasPrefix:_pToMatch])
 		return false;
 	
-	NSUInteger MatchLength = [_pToMatch length];
-	NSUInteger IdentLength = [_pIdentifier length];
-	if (IdentLength == MatchLength)
+	NSUInteger MatchLength = _MatchLength;
+	NSUInteger IdentLength = _IdentLength;
+	if (IdentLength <= MatchLength)
 		return false;
 	
 	unichar Character = [_pIdentifier characterAtIndex:MatchLength];
@@ -277,7 +277,7 @@ static BOOL MatchVariablePrefix(NSString* _pIdentifier, NSString* _pToMatch)
 	if (![pValidConceptCharacters characterIsMember:Character])
 		return false;
 
-	if (IdentLength == MatchLength + 1)
+	if (IdentLength <= MatchLength + 1)
 		return false;
 
 	Character = [_pIdentifier characterAtIndex:MatchLength + 1];
@@ -288,8 +288,10 @@ static BOOL MatchVariablePrefix(NSString* _pIdentifier, NSString* _pToMatch)
 	return false;
 }
 
-static BOOL MatchOtherPrefix(NSString* _pIdentifier, NSString* _pToMatch)
+static BOOL MatchOtherPrefix(NSString* _pIdentifier, NSString* _pToMatch, size_t _MatchLength, size_t _IdentLength)
 {
+	if (_IdentLength <= _MatchLength)
+		return false;
 	if ([_pIdentifier hasPrefix:_pToMatch] && [pUpperCaseChars characterIsMember:[_pIdentifier characterAtIndex:[_pToMatch length]]])
 		return true;
 	return false;
@@ -719,7 +721,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 							pColor = [ms_PrefixMapInfo[i] objectForKey:pToFind];
 							if (pColor)
 							{
-								if (MatchOtherPrefix(pIdentifier, pToFind))
+								if (MatchOtherPrefix(pIdentifier, pToFind, i, Length))
 								{
 									if (i == 1 && [pToFind compare:@"E"] == NSOrderedSame)
 									{
@@ -737,7 +739,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 							pColor = [ms_PrefixMapInfoVar[i] objectForKey:pToFind];
 							if (pColor)
 							{
-								if (MatchVariablePrefix(pIdentifier, pToFind))
+								if (MatchVariablePrefix(pIdentifier, pToFind, i, Length))
 									break;
 							}
 						}
@@ -1042,7 +1044,7 @@ static NSColor* CreateColor(unsigned int _Color)
 static void fs_GenerateHTMLTableStart()
 {
 //	printf("<div>%s</div>\n", _pHeading);
-	printf("<div style=\"background-color:black;color:white\"><font face=\"Unbroken, monospace\" style=\"font-size:10px\"><table border=\"0\" cellspacing=\"0\" style=\"margin-left:2px;border-spacing:5px\"><tbody>\n");
+	printf("<div style=\"background-color:black;color:white\"><font face=\"Unbroken,Menlo,Consolas,monospace\" style=\"font-size:10px\"><table border=\"0\" cellspacing=\"0\" style=\"margin-left:2px;border-spacing:5px\"><tbody>\n");
 }
 
 static void fs_GenerateHTMLSectionStart(char const *_pHeading)

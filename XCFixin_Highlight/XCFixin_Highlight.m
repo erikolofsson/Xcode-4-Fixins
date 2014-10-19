@@ -943,6 +943,9 @@ static struct CPrefixMap ms_PrefixMap[] =
 		, {"p_f", &pFunctionParameter_Pack_Functor, false}				ignore( p_fTest ) 
 		, {"o_f", &pFunctionParameter_Output_Functor, false}			ignore( o_fTest )
 		, {"po_f", &pFunctionParameter_Output_Pack_Functor, false}		ignore( po_fTest )
+
+		, {"_of", &pFunctionParameter_Output_Functor, false}			ignore( _ofTest ) // Deprecate?
+		, {"p_of", &pFunctionParameter_Output_Pack_Functor, false}		ignore( p_ofTest ) // Deprecate?
 		
 		, {"f", &pVariable_Fuctor, false}								ignore( fTest ), {"fl_", &pVariable_Fuctor, false} // To be deprecated
 		
@@ -967,12 +970,16 @@ static struct CPrefixMap ms_PrefixMap[] =
 		, {"fg_r", &pFunction_Recursive, false}							ignore( fg_rTest )
 		, {"fsg_", &pStaticFunction, false}								ignore( fsg_Test )
 		, {"fsgr_", &pStaticFunction_Recursive, false}					ignore( fsgr_Test )
-		, {"fsg_", &pStaticFunction_Recursive, false}					ignore( fsg_rTest )
+		, {"fsg_r", &pStaticFunction_Recursive, false}					ignore( fsg_rTest )
 
 		, {"_", &pFunctionParameter, true}								ignore( _Test )
 		, {"p_", &pFunctionParameter_Pack, true}						ignore( p_Test ) 
-		, {"o_", &pFunctionParameter_Output, true}						ignore( o_Test ) , {"_o", &pFunctionParameter_Output, true} // To be deprecated
+		, {"o_", &pFunctionParameter_Output, true}						ignore( o_Test )
 		, {"po_", &pFunctionParameter_Output_Pack, true}				ignore( po_Test )
+
+		
+		, {"_o", &pFunctionParameter_Output, true}						ignore( _oTest ) // Deprecate?
+		, {"p_o", &pFunctionParameter_Output_Pack, true}				ignore( p_oTest ) // Deprecate?
 		
 		
 		, {"m_", &pMemberVariablePublic, true}							ignore( m_Test )
@@ -2232,7 +2239,7 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 	}
 	{
 		pValidConceptCharacters = [[NSMutableCharacterSet alloc] init];
-		[pValidConceptCharacters addCharactersInString:@"bnihpf"];
+		[pValidConceptCharacters addCharactersInString:@"bcfinp"];
 	}
 	{
 		pOperatorCharacters = [[NSMutableCharacterSet alloc] init];

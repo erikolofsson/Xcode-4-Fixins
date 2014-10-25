@@ -1463,6 +1463,9 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword(@"zuch8", pKeywordBulitInCharacterTypes);
 	AddDefaultKeyword(@"zuch16", pKeywordBulitInCharacterTypes);
 	AddDefaultKeyword(@"zuch32", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword(@"char16_t", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword(@"char32_t", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword(@"zuch32", pKeywordBulitInCharacterTypes);
 
 
 	// built in integer types
@@ -1646,6 +1649,11 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword(@"return", pKeywordControlStatement);
 	AddDefaultKeyword(@"switch", pKeywordControlStatement);
 
+	AddDefaultKeyword(@"likely", pKeywordControlStatement);
+	AddDefaultKeyword(@"unlikely", pKeywordControlStatement);
+
+
+
 	// Optimization
 	AddDefaultKeyword(@"__asm", pKeywordOptimization);
 	AddDefaultKeyword(@"__assume", pKeywordOptimization);
@@ -1693,6 +1701,7 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword(@"__attribute__", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"__restrict__", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"assure_used", pKeywordPropertyModifiers);                
+	AddDefaultKeyword(@"align_cacheline", pKeywordPropertyModifiers);                
 
 	// new/delete operators
 	AddDefaultKeyword(@"delete", pKeywordNewDelete);

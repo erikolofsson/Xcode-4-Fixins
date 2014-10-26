@@ -549,7 +549,20 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			//parseAwayWhitespace(pString, Length, _pEffectiveRange);
 			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType), NSIntersectionRange(*_pEffectiveRange, Bounds), true, pViewState);
 		}
-		if (NodeType == NodeType_String || NodeType == NodeType_Number || NodeType == NodeType_Character)
+		if (NodeType == NodeType_Number)
+		{
+			NSUInteger iChar = _pEffectiveRange->location + _pEffectiveRange->length;
+			while (iChar < Length)
+			{
+				unichar Character = [pString characterAtIndex: iChar];
+				if (![pIdentifierCharacterSet characterIsMember:Character])
+					break;
+				++iChar;
+			}
+			_pEffectiveRange->length = iChar - _pEffectiveRange->location;
+			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType), NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+		}
+		if (NodeType == NodeType_String || NodeType == NodeType_Character)
 		{
 			// Don't color strings, numbers and characters
 			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType), NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
@@ -662,7 +675,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 
 				return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
 			}
- 			else if ([pStartNumberCharacterSet characterIsMember:Character])
+/* 			else if ([pStartNumberCharacterSet characterIsMember:Character])
 			{
 				NSUInteger iStart = iChar;
 				
@@ -681,7 +694,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				
 				*_pEffectiveRange = Range;
 				return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType_Number), NSIntersectionRange(Range, Bounds), false, pViewState);
-			}
+			}*/
 			else if ([pStartIdentifierCharacterSet characterIsMember:Character])
 			{
 				NSUInteger iStart = iChar;
@@ -729,6 +742,12 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 											pColor = pEnum;
 										else
 											pColor = pEnumerator;
+									}
+
+									if (i == 2 && [pToFind compare:@"CF"] == NSOrderedSame)
+									{
+										if ([pIdentifier hasSuffix:@"Ref"])
+											pColor = pType;
 									}
 									break;
 								}
@@ -910,6 +929,7 @@ static struct CPrefixMap ms_PrefixMap[] =
 		{"t_", &pTemplateNonTypeParam, true}							ignore( t_Test )
 		, {"tp_", &pTemplateNonTypeParam_Pack, true}					ignore( tp_Test )
 		, {"E", &pEnumerator, false}									ignore( ETest_Value ) // pEnum if NodeType == NodeType_IdentifierType
+		, {"k", &pEnumerator, false}									ignore( kCFCompareCaseInsensitive ) // Compatibility with OSX system headers
 		, {"c_", &pConstantVariable, true}								ignore( c_Test )
 		, {"gc_", &pGlobalConstant, true}								ignore( gc_Test )
 		, {"mc_", &pMemberConstantPublic, true}							ignore( mc_Test )
@@ -932,6 +952,9 @@ static struct CPrefixMap ms_PrefixMap[] =
 		, {"IC", &pType_Interface, false}								ignore( ICTest )
 		, {"TC", &pTemplateType, false}									ignore( TCTest )
 		, {"TIC", &pTemplateType_Interface, false}						ignore( TICTest )
+		, {"CFStr", &pType, false}										ignore( CFStr ) // Compatibility with core foundation
+		, {"CFWStr", &pType, false}										ignore( CFWStr ) // Compatibility with core foundation
+		, {"CFUStr", &pType, false}										ignore( CFUStr ) // Compatibility with core foundation
 		, {"tf_C", &pFunctionTemplateTypeParam_Class, false}			ignore( tf_CTest )
 		, {"tf_F", &pFunctionTemplateTypeParam_Function, false}			ignore( tf_FTest )
 		, {"tf_TC", &pFunctionTemplateTemplateParam, false}				ignore( tf_TCTest )
@@ -2128,6 +2151,14 @@ static void AddDefaultKeywords()
 
 	AddDefaultKeyword(@"owner_less", pTemplateType);
 	AddDefaultKeyword(@"enable_shared_from_this", pTemplateType);
+	
+	AddDefaultKeyword(@"CFStr", pType);
+	AddDefaultKeyword(@"CFWStr", pType);
+	AddDefaultKeyword(@"CFUStr", pType);
+	
+	AddDefaultKeyword(@"str_utf8", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"str_utf16", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"str_utf32", pKeywordPropertyModifiers);
 
 #if 0
 	// Let's not pollute the namespace here
@@ -2207,7 +2238,7 @@ static NSMutableCharacterSet *pValidConceptCharacters = nil;
 static NSMutableCharacterSet *pOperatorCharacters = nil;
 static NSMutableCharacterSet *pPreprocessorOperatorCharacters = nil;
 static NSMutableCharacterSet *pPreprocessorEscapeCharacters = nil;
-static NSCharacterSet *pUpperCaseChars = nil;
+static NSMutableCharacterSet *pUpperCaseChars = nil;
 static NSCharacterSet *pWhitespaceChars = nil;
 static NSCharacterSet *pWhitespaceNoNewLineChars = nil;
 static NSCharacterSet *pNewLineChars = nil;
@@ -2220,7 +2251,6 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 	XCFixinPreflight();
 
 	{
-		pUpperCaseChars = [NSCharacterSet uppercaseLetterCharacterSet];
 		pWhitespaceChars = [NSCharacterSet whitespaceAndNewlineCharacterSet];
 		pWhitespaceNoNewLineChars = [NSCharacterSet whitespaceCharacterSet];
 		pNewLineChars = [NSCharacterSet newlineCharacterSet];
@@ -2236,16 +2266,17 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 		[pStartNumberCharacterSet formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
 	}
 	{
-		pNumberCharacterSet = [[NSMutableCharacterSet alloc] init];
-		[pNumberCharacterSet formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
-		[pNumberCharacterSet addCharactersInString:@".xXeEfF"];
-	}
-	
-	{
 		pIdentifierCharacterSet = [[NSMutableCharacterSet alloc] init];
 		[pIdentifierCharacterSet formUnionWithCharacterSet:[NSCharacterSet alphanumericCharacterSet]];
 		[pIdentifierCharacterSet addCharactersInString:@"_"];
 	}
+	{
+		pNumberCharacterSet = [[NSMutableCharacterSet alloc] init];
+		[pNumberCharacterSet formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
+		[pNumberCharacterSet addCharactersInString:@".xXeEfF"];
+		[pNumberCharacterSet formUnionWithCharacterSet:pIdentifierCharacterSet];
+	}
+	
 	{
 		pValidConceptCharacters = [[NSMutableCharacterSet alloc] init];
 		[pValidConceptCharacters addCharactersInString:@"bcfinp"];
@@ -2261,6 +2292,11 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 	{
 		pPreprocessorEscapeCharacters = [[NSMutableCharacterSet alloc] init];
 		[pPreprocessorEscapeCharacters addCharactersInString:@"\\"];
+	}
+	{
+		pUpperCaseChars = [[NSMutableCharacterSet alloc] init];
+		[pUpperCaseChars formUnionWithCharacterSet:[NSCharacterSet uppercaseLetterCharacterSet]];
+		[pUpperCaseChars formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
 	}
 
 	

@@ -1674,8 +1674,14 @@ static void AddDefaultKeywords()
 
 	AddDefaultKeyword(@"likely", pKeywordControlStatement);
 	AddDefaultKeyword(@"unlikely", pKeywordControlStatement);
+	AddDefaultKeyword(@"assume", pKeywordControlStatement);
+	
+	AddDefaultKeyword(@"yield_cpu", pKeywordControlStatement);
+	
 
-
+	AddDefaultKeyword(@"constant_int64", pKeywordControlStatement);
+	AddDefaultKeyword(@"constant_uint64", pKeywordControlStatement);
+	
 
 	// Optimization
 	AddDefaultKeyword(@"__asm", pKeywordOptimization);
@@ -1706,9 +1712,14 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword(@"__thiscall", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"__fastcall", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"__stdcall", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"calling_convention_c", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"cdecl", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"stdcall", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"fastcall", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"inline_small", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"inline_always", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"inline_never", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"inline_never_debug", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"inline_medium", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"inline_large", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"inline_extralarge", pKeywordPropertyModifiers);
@@ -1724,7 +1735,8 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword(@"__attribute__", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"__restrict__", pKeywordPropertyModifiers);
 	AddDefaultKeyword(@"assure_used", pKeywordPropertyModifiers);                
-	AddDefaultKeyword(@"align_cacheline", pKeywordPropertyModifiers);                
+	AddDefaultKeyword(@"align_cacheline", pKeywordPropertyModifiers);
+	AddDefaultKeyword(@"intrinsic", pKeywordPropertyModifiers);
 
 	// new/delete operators
 	AddDefaultKeyword(@"delete", pKeywordNewDelete);
@@ -1846,6 +1858,8 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword(@"elif", pPreprocessorDirective);
 	//AddDefaultKeyword(@"if", pPreprocessorDirective);
 	AddDefaultKeyword(@"include", pPreprocessorDirective);
+	AddDefaultKeyword(@"once", pPreprocessorDirective);
+	AddDefaultKeyword(@"defined", pPreprocessorDirective);
 	AddDefaultKeyword(@"using", pPreprocessorDirective);
 	//AddDefaultKeyword(@"else", pPreprocessorDirective);
 	AddDefaultKeyword(@"ifdef", pPreprocessorDirective);

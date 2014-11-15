@@ -571,12 +571,13 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		NSUInteger iChar = _Index;
 		unichar Character = [pString characterAtIndex: iChar];
 		
-		if (_pEffectiveRange->location > 0 && _pEffectiveRange->location < iChar)
+		//if (_pEffectiveRange->location > 0 && _pEffectiveRange->location < iChar)
 		{
 			if ([pIdentifierCharacterSet characterIsMember:Character])
 			{
 				// Walk backwords finding start of identifier
-				while (iChar > _pEffectiveRange->location)
+				//while (iChar > _pEffectiveRange->location)
+				while (iChar > 0)
 				{
 					--iChar;
 					Character = [pString characterAtIndex: iChar];

@@ -119,8 +119,12 @@ static void setEditorFocus(NSWindow* _pWindow)
 	{
 		IDESourceCodeEditor* pEditor = [pView editor];
 		if (pEditor)
+		{
 			[pEditor takeFocus];
+			[_pWindow makeKeyWindow];
+		}
 	}
+	
 }
 
 enum EPreferredNextLocation g_PreferredNextLocation = EPreferredNextLocation_Undefined;
@@ -676,11 +680,13 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				{
 					bool bExpandNext = (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSAlternateKeyMask;
 					bool bIsValid = m_pActiveView && [m_pActiveView isValid];
+					if (g_pLastConsoleTextView)
+						g_pLastConsoleTextView = getConsoleTextView([g_pLastConsoleTextView window]);
 					if (!bIsValid)
 					{
 						if (!g_pLastConsoleTextView)
 						{
-							g_pLastConsoleTextView = getConsoleTextView(nil);;
+							g_pLastConsoleTextView = getConsoleTextView(nil);
 							g_PreferredNextLocation = EPreferredNextLocation_Console;
 						}
 					}
@@ -1150,9 +1156,11 @@ static bool stringRangeContainsCharacters(NSString *text, NSRange range, NSChara
 static void potentialView(IDENavigatorOutlineView* _pView)
 {
 //	IDEBatchFindResultsOutlineController
+	IDEWorkspaceTabController* pTabController = getWorkspaceTabController([_pView window]);
 	NSViewController* pViewController = (NSViewController*)[_pView firstAvailableResponderOfClass: [	NSViewController class]];
-	if (pViewController)
+	if (pViewController && pTabController && pTabController.userWantsNavigatorVisible)
 	{
+		;
 		if ([pViewController isKindOfClass:[IDEBatchFindResultsOutlineController class]])
 		{
 			m_pActiveView = _pView;
@@ -1427,39 +1435,31 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 	NSRange lineRange = [text lineRangeForRange:selectedRange];
 	NSString *line = [text substringWithRange:lineRange];
 	
-	NSArray *matchesColumn = [g_pSourceLocationColumnRegex matchesInString:line
-													   options:0
-														 range:NSMakeRange(0, [line length])];
-	
-	NSArray *matches = [g_pSourceLocationRegex matchesInString:line
+	NSArray *matches = [g_pSourceLocationColumnRegex matchesInString:line
 													   options:0
 														 range:NSMakeRange(0, [line length])];
 
-	if (matchesColumn.count > 0 || matches.count > 0)
+	if (matches.count > 0)
 	{
 		NSUInteger nRanges = 0;
-		NSTextCheckingResult* pMatch;
-		if (matchesColumn.count > 0 && [matchesColumn[0] numberOfRanges] == 4)
-			pMatch = matchesColumn[0];
-		else if (matches.count > 0)
-			pMatch = matches[0];
+		NSTextCheckingResult* pMatch = matches[0];
 		
 		nRanges = [pMatch numberOfRanges];
-		if ((pMatch == matches[0] && nRanges == 3) || (pMatch == matchesColumn[0] && nRanges == 4))
+		if (nRanges == 4)
 		{
 			NSRange SourceRange = [pMatch rangeAtIndex:1];
 			NSRange LineRange = [pMatch rangeAtIndex:2];
-			NSRange ColumnRange;
+			NSRange ColumnRange = [pMatch rangeAtIndex:3];
 			NSString* pSource = [line substringWithRange:SourceRange];
 			NSString* pLine = [line substringWithRange:LineRange];
 			
 			NSString* pColumn = nil;
 			
-			if (nRanges == 4)
-			{
-				ColumnRange = [pMatch rangeAtIndex:3];
+			if (LineRange.length == 0)
+				goto End;
+			
+			if (ColumnRange.length != 0)
 				pColumn = [line substringWithRange:ColumnRange];
-			}
 			
 			pSource = [pSource stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
 //				NSString* pInfo = [line substringWithRange:[pMatch rangeAtIndex:3]];
@@ -1603,14 +1603,14 @@ End:
 			}
 			NSString *line = [text substringWithRange:lineRange];
 			
-			NSArray *matches = [g_pSourceLocationRegex matchesInString:line
+			NSArray *matches = [g_pSourceLocationColumnRegex matchesInString:line
 															   options:0
 																 range:NSMakeRange(0, [line length])];
 			if (matches.count > 0)
 			{
 				NSTextCheckingResult* pMatch = matches[0];
 				NSUInteger nRanges = [pMatch numberOfRanges];
-				if (nRanges == 3)
+				if (nRanges == 4)
 				{
 					lineRange.length = 0;
 					[_pTextView setSelectedRange:lineRange];
@@ -1911,7 +1911,6 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 
 static id singleton = nil;
 
-NSRegularExpression *g_pSourceLocationRegex;
 NSRegularExpression *g_pSourceLocationColumnRegex;
 
 
@@ -1929,11 +1928,7 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	}
 	
 	NSError *error = NULL;
-	g_pSourceLocationRegex = [NSRegularExpression regularExpressionWithPattern:@"(.*?):([0-9]*?):"
-                                                                       options:NSRegularExpressionCaseInsensitive
-                                                                         error:&error];
-
-	g_pSourceLocationColumnRegex = [NSRegularExpression regularExpressionWithPattern:@"(.*?):([0-9]*?):([0-9]*?):"
+	g_pSourceLocationColumnRegex = [NSRegularExpression regularExpressionWithPattern:@"^(.*?):([0-9]*):([0-9]*):?"
                                                                        options:NSRegularExpressionCaseInsensitive
                                                                          error:&error];
 	

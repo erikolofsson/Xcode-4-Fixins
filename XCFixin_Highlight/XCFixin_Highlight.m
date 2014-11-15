@@ -48,6 +48,7 @@
 @end
 
 static IMP original_colorAtCharacterIndex = nil;
+static IMP original_IDESourceCodeEditor_doInitialSetup = nil;
 
 @interface XCFixin_Highlight : NSObject
 @end
@@ -152,7 +153,6 @@ static void parseAwayWhitespace(NSString *_pString, NSUInteger _Length, NSRange 
 
 static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_ViewState* _pViewState)
 {
-	
 	DVTTextStorage* textStorage = [_pTextView textStorage];
 	DVTSourceCodeLanguage* pLanguage = [textStorage language];
 	IDESourceCodeEditor* pSourceCodeEditor = (IDESourceCodeEditor*)[_pTextView delegate];
@@ -227,8 +227,6 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 			];
 			XCFixinUpdateTempAttributes(pLayoutManager, Bounds);
 		}
-		
-		
 	}
 }
 
@@ -478,6 +476,18 @@ static NSColor* fs_GetColor(DVTTextStorage* _pTextStorage, short _NodeType)
 	return [[_pTextStorage fontAndColorTheme] colorForNodeType:_NodeType];
 }
 
+
+static void IDESourceCodeEditor_doInitialSetup(IDESourceCodeEditor *self_, SEL _cmd)
+{
+	((void (*)(id, SEL))original_IDESourceCodeEditor_doInitialSetup)(self_, _cmd);
+
+	DVTSourceTextView *pTextView = [self_ textView];
+	if (pTextView)
+	{
+		updateTextView(pTextView, NULL);
+	}
+
+}
 static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _Index, struct _NSRange *_pEffectiveRange, NSDictionary* _pContext)
 {
 	DVTTextStorage* textStorage = self_;
@@ -2398,6 +2408,9 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 	original_colorAtCharacterIndex = XCFixinOverrideMethodString(@"DVTTextStorage", @selector(colorAtCharacterIndex: effectiveRange: context:), (IMP)&colorAtCharacterIndex);
 	XCFixinAssertOrPerform(original_colorAtCharacterIndex, goto failed);
 
+	original_IDESourceCodeEditor_doInitialSetup = XCFixinOverrideMethodString(@"IDESourceCodeEditor", @selector(_doInitialSetup), (IMP)&IDESourceCodeEditor_doInitialSetup);
+	XCFixinAssertOrPerform(original_IDESourceCodeEditor_doInitialSetup, goto failed);
+	
 	XCFixinPostflight();
 }
 

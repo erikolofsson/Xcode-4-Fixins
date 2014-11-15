@@ -221,7 +221,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   NSMenu* mainMenu = [NSApp mainMenu];
   NSMenu* editorMenu = [[mainMenu itemAtIndex:[mainMenu indexOfItemWithTitle:@"Editor"]] submenu];
 
-  XCFixinLog(@"%s: editor menu: %p.\n",__FUNCTION__, editorMenu);
+//  XCFixinLog(@"%s: editor menu: %p.\n",__FUNCTION__, editorMenu);
 
   if ( editorMenu != nil) {
     if ([editorMenu itemWithTitle:[self highlightColorMenuItemTitle]] == nil) {
@@ -236,8 +236,8 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
 
       [editorMenu insertItem:newItem atIndex:[editorMenu numberOfItems]];
     }
-    else
-        XCFixinLog(@"%s: editor menu already added.\n",__FUNCTION__);
+/*    else
+        XCFixinLog(@"%s: editor menu already added.\n",__FUNCTION__);*/
   }
   else
     XCFixinLog(@"%s: failed to add editor menu.\n",__FUNCTION__);

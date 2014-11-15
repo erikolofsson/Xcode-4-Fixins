@@ -1427,20 +1427,39 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 	NSRange lineRange = [text lineRangeForRange:selectedRange];
 	NSString *line = [text substringWithRange:lineRange];
 	
+	NSArray *matchesColumn = [g_pSourceLocationColumnRegex matchesInString:line
+													   options:0
+														 range:NSMakeRange(0, [line length])];
+	
 	NSArray *matches = [g_pSourceLocationRegex matchesInString:line
 													   options:0
 														 range:NSMakeRange(0, [line length])];
 
-	if (matches.count > 0)
+	if (matchesColumn.count > 0 || matches.count > 0)
 	{
-		NSTextCheckingResult* pMatch = matches[0];
-		NSUInteger nRanges = [pMatch numberOfRanges];
-		if (nRanges == 4)
+		NSUInteger nRanges = 0;
+		NSTextCheckingResult* pMatch;
+		if (matchesColumn.count > 0 && [matchesColumn[0] numberOfRanges] == 4)
+			pMatch = matchesColumn[0];
+		else if (matches.count > 0)
+			pMatch = matches[0];
+		
+		nRanges = [pMatch numberOfRanges];
+		if ((pMatch == matches[0] && nRanges == 3) || (pMatch == matchesColumn[0] && nRanges == 4))
 		{
 			NSRange SourceRange = [pMatch rangeAtIndex:1];
 			NSRange LineRange = [pMatch rangeAtIndex:2];
+			NSRange ColumnRange;
 			NSString* pSource = [line substringWithRange:SourceRange];
 			NSString* pLine = [line substringWithRange:LineRange];
+			
+			NSString* pColumn = nil;
+			
+			if (nRanges == 4)
+			{
+				ColumnRange = [pMatch rangeAtIndex:3];
+				pColumn = [line substringWithRange:ColumnRange];
+			}
 			
 			pSource = [pSource stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
 //				NSString* pInfo = [line substringWithRange:[pMatch rangeAtIndex:3]];
@@ -1485,14 +1504,36 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 					NSNumber* pTimeStamp = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
 					
 					NSURL* pURL = [NSURL fileURLWithPath:pSource isDirectory: false];
-					DVTTextDocumentLocation *documentLocation = 
-						[
-							[DVTTextDocumentLocation alloc] 
-							initWithDocumentURL:pURL
-							timestamp:pTimeStamp
-							lineRange:NSMakeRange([pLine integerValue] - 1, 1)
-						]
-					;
+					long long LineNumber = [pLine integerValue] - 1;
+					
+					DVTTextDocumentLocation *documentLocation;
+					if (pColumn)
+					{
+						long long ColumnNumber = [pColumn integerValue] - 1;
+						documentLocation = 
+							[
+								[DVTTextDocumentLocation alloc] 
+								initWithDocumentURL:pURL
+								timestamp:pTimeStamp
+								startingColumnNumber:ColumnNumber
+								endingColumnNumber:ColumnNumber
+								startingLineNumber:LineNumber
+								endingLineNumber:LineNumber
+								characterRange:NSMakeRange(0x7fffffffffffffffLL, 0)
+							]
+						;
+					}
+					else
+					{
+						documentLocation = 
+							[
+								[DVTTextDocumentLocation alloc] 
+								initWithDocumentURL:pURL
+								timestamp:pTimeStamp
+								lineRange:NSMakeRange(LineNumber, 1)
+							]
+						;
+					}
 					
 					IDEWorkspaceDocument *pDocument = [pTabController workspaceDocument];
 					
@@ -1500,7 +1541,10 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 					{
 						NSRange NewRange;
 						NewRange.location = lineRange.location + SourceRange.location;
-						NewRange.length = (LineRange.location + LineRange.length) - SourceRange.location;
+						if (pColumn)
+							NewRange.length = (ColumnRange.location + ColumnRange.length) - SourceRange.location;
+						else
+							NewRange.length = (LineRange.location + LineRange.length) - SourceRange.location;
 						if (NSEqualRanges(selectedRange, NewRange) && _bNext)
 						{
 							// Goto next line if this line is already selected
@@ -1566,7 +1610,7 @@ End:
 			{
 				NSTextCheckingResult* pMatch = matches[0];
 				NSUInteger nRanges = [pMatch numberOfRanges];
-				if (nRanges == 4)
+				if (nRanges == 3)
 				{
 					lineRange.length = 0;
 					[_pTextView setSelectedRange:lineRange];
@@ -1868,6 +1912,7 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 static id singleton = nil;
 
 NSRegularExpression *g_pSourceLocationRegex;
+NSRegularExpression *g_pSourceLocationColumnRegex;
 
 
 + (void) pluginDidLoad:(NSBundle *)plugin
@@ -1884,7 +1929,11 @@ NSRegularExpression *g_pSourceLocationRegex;
 	}
 	
 	NSError *error = NULL;
-	g_pSourceLocationRegex = [NSRegularExpression regularExpressionWithPattern:@"(.*):([0-9]*):(.*)"
+	g_pSourceLocationRegex = [NSRegularExpression regularExpressionWithPattern:@"(.*?):([0-9]*?):"
+                                                                       options:NSRegularExpressionCaseInsensitive
+                                                                         error:&error];
+
+	g_pSourceLocationColumnRegex = [NSRegularExpression regularExpressionWithPattern:@"(.*?):([0-9]*?):([0-9]*?):"
                                                                        options:NSRegularExpressionCaseInsensitive
                                                                          error:&error];
 	

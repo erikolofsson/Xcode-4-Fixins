@@ -422,8 +422,10 @@ static short NodeType_IdentifierVariable = -1;
 static short NodeType_IdentifierVariableSystem = -1;
 
 static NSMutableDictionary *pNodeTypeDict = NULL;
+static NSMutableDictionary *pLanguageDict = NULL;
 
-static NSColor* fs_GetColor(DVTTextStorage* _pTextStorage, short _NodeType)
+
+static NSColor* fs_GetColor(DVTTextStorage* _pTextStorage, short _NodeType, bool _bJS)
 {
 	
 	if (_NodeType == NodeType_Comment)
@@ -437,7 +439,12 @@ static NSColor* fs_GetColor(DVTTextStorage* _pTextStorage, short _NodeType)
 	else if (_NodeType == NodeType_String)
 		return pString;
 	else if (_NodeType == NodeType_Character)
-		return pCharacter;
+	{
+		if (_bJS)
+			return pString;
+		else
+			return pCharacter;
+	}
 	else if (_NodeType == NodeType_Number)
 		return pNumber;
 	else if (_NodeType == NodeType_Keyword)
@@ -493,6 +500,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 	DVTTextStorage* textStorage = self_;
 	DVTSourceCodeLanguage* pLanguage = [textStorage language];
 	
+	bool bJS = false;
 	long long NodeType = [textStorage nodeTypeAtCharacterIndex:_Index effectiveRange:_pEffectiveRange context:_pContext];
 //	NSColor* OriginalRet = ((NSColor* (*)(id, SEL, unsigned long long, struct _NSRange *, id))original_colorAtCharacterIndex)(self_, _cmd, _Index, _pEffectiveRange, _pContext);
 	
@@ -500,11 +508,11 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 	{
 		if (NodeType == NodeType_Identifier)
 			NodeType = NodeType_IdentifierPlain; // Mimic the behaviour in Xcode implementation of colorAtCharacterIndex
-	
+
+		/*
 		if (!pNodeTypeDict)
 			pNodeTypeDict = [NSMutableDictionary dictionary];
 		
-		/*
 		NSNumber *pToFind = @(NodeType);
 		
 		NSString *pNode = [pNodeTypeDict objectForKey:pToFind];
@@ -516,16 +524,55 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		//double Time = CFAbsoluteTimeGetCurrent();
 		
 		NSString* pIdentifier = [pLanguage identifier];
-		
+/*
+		{
+			if (!pLanguageDict)
+				pLanguageDict = [NSMutableDictionary dictionary];
+			NSString *pNode = [pLanguageDict objectForKey:pIdentifier];
+			if (!pNode)
+			{
+				[pLanguageDict setObject:@"" forKey:pIdentifier];
+				XCFixinLog(@"Language: %@\n", pIdentifier);
+			}
+		}
+*/		
 		BOOL bSupportedLanguage = false;
 
 		if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage."])
 			bSupportedLanguage = true;
+		
+		NSMutableDictionary *pExtraDefaultKeywords = nil;
+		NSMutableDictionary *pExtraDefaultKeywords2 = nil;
+		NSMutableDictionary *pExtraDefaultKeywords3 = nil;
+
+		if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage.C-Plus-Plus"] || [pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage.Objective-C-Plus-Plus"])
+		{
+			pExtraDefaultKeywords = pDefaultKeywords_Cpp;
+			pExtraDefaultKeywords2 = pDefaultKeywords_C;
+			pExtraDefaultKeywords3 = pDefaultKeywords_CLike;
+		}
+		else if ([pIdentifier compare:@"Xcode.SourceCodeLanguage.C"] == NSOrderedSame || [pIdentifier compare:@"Xcode.SourceCodeLanguage.Objective-C"] == NSOrderedSame)
+		{
+			pExtraDefaultKeywords = pDefaultKeywords_C;
+			pExtraDefaultKeywords2 = pDefaultKeywords_CLike;
+		}
+		else if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage.JavaScript"])
+		{
+			pExtraDefaultKeywords = pDefaultKeywords_JS;
+			pExtraDefaultKeywords2 = pDefaultKeywords_CLike;
+			bJS = true;
+		}
+		else if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage.CSS"])
+			pExtraDefaultKeywords = pDefaultKeywords_CSS;
+
+		
+//		if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage. "])
+//			bSupportedLanguage = true;
 
 		if (!bSupportedLanguage)
 		{
 //			XCFixinLog(@"Language not supported: %@\n", pIdentifier);
-			return fs_GetColor(textStorage, NodeType);
+			return fs_GetColor(textStorage, NodeType, bJS);
 		}
 
 		NSArray* pViews = [textStorage _associatedTextViews];
@@ -537,7 +584,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		
 		if (!pTextView)
 		{
-			return fs_GetColor(textStorage, NodeType);
+			return fs_GetColor(textStorage, NodeType, bJS);
 		}
 		
 		NSLayoutManager* pLayoutManager = [pTextView layoutManager];
@@ -557,7 +604,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		if (NodeType == NodeType_Comment || NodeType == NodeType_CommentDoc || NodeType == NodeType_CommentDocKeyword || NodeType == NodeType_URL)
 		{
 			//parseAwayWhitespace(pString, Length, _pEffectiveRange);
-			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType), NSIntersectionRange(*_pEffectiveRange, Bounds), true, pViewState);
+			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType, bJS), NSIntersectionRange(*_pEffectiveRange, Bounds), true, pViewState);
 		}
 		if (NodeType == NodeType_Number)
 		{
@@ -570,12 +617,12 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				++iChar;
 			}
 			_pEffectiveRange->length = iChar - _pEffectiveRange->location;
-			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType), NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType, bJS), NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
 		}
 		if (NodeType == NodeType_String || NodeType == NodeType_Character)
 		{
 			// Don't color strings, numbers and characters
-			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType), NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+			return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType, bJS), NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
 		}
 		
 		NSUInteger iChar = _Index;
@@ -627,7 +674,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 					SafeRange.length -= _Index - SafeRange.location;
 					SafeRange.location = _Index;
 				}
-				return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType), NSIntersectionRange(SafeRange, Bounds), false, pViewState);
+				return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType, bJS), NSIntersectionRange(SafeRange, Bounds), false, pViewState);
 			}
 			else if ([pPreprocessorOperatorCharacters characterIsMember:Character])
 			{
@@ -704,7 +751,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				Range.length = iChar - iStart;
 				
 				*_pEffectiveRange = Range;
-				return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType_Number), NSIntersectionRange(Range, Bounds), false, pViewState);
+				return FixupCommentBackground2(pTextView, fs_GetColor(textStorage, NodeType_Number, bJS), NSIntersectionRange(Range, Bounds), false, pViewState);
 			}*/
 			else if ([pStartIdentifierCharacterSet characterIsMember:Character])
 			{
@@ -725,7 +772,16 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 
 				NSString *pIdentifier = [pString substringWithRange: Range];
 				
-				NSColor* pColor = [pDefaultKeywords objectForKey:pIdentifier];
+				NSColor* pColor = nil;
+				
+				if (!pColor && pExtraDefaultKeywords)
+					pColor = [pExtraDefaultKeywords objectForKey:pIdentifier];
+				if (!pColor && pExtraDefaultKeywords2)
+					pColor = [pExtraDefaultKeywords2 objectForKey:pIdentifier];
+				if (!pColor && pExtraDefaultKeywords3)
+					pColor = [pExtraDefaultKeywords3 objectForKey:pIdentifier];
+				if (!pColor)
+					pColor = [pDefaultKeywords objectForKey:pIdentifier];
 
 //				XCFixinLog(@"Parsed Identifier (%@)\n", pIdentifier);
 				
@@ -791,7 +847,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			SafeRange.location = _Index;
 		}
 		
-		NSColor *pColor = fs_GetColor(textStorage, NodeType);
+		NSColor *pColor = fs_GetColor(textStorage, NodeType, bJS);
 		
 /*		CGFloat Red;
 		CGFloat Green;
@@ -803,7 +859,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		return FixupCommentBackground2(pTextView, pColor, NSIntersectionRange(SafeRange, Bounds), false, pViewState);
 	}
 
-	return fs_GetColor(textStorage, NodeType);
+	return fs_GetColor(textStorage, NodeType, bJS);
 }
 
 
@@ -872,6 +928,8 @@ static NSColor* pKeywordOther = NULL;
 static NSColor* pKeywordTypeSpecification = NULL;
 static NSColor* pKeywordNamespace = NULL;
 static NSColor* pKeywordTemplate = NULL;
+static NSColor* pKeywordFunction = NULL;
+static NSColor* pKeywordIn = NULL;
 static NSColor* pKeywordTypedef = NULL;
 static NSColor* pKeywordUsing = NULL;
 static NSColor* pKeywordThis = NULL;
@@ -1075,6 +1133,31 @@ static void AddDefaultKeyword(NSString* _pKeyword, NSColor* _pColor)
 	[pDefaultKeywords setObject:_pColor forKey:_pKeyword];
 }
 
+static void AddDefaultKeyword_Cpp(NSString* _pKeyword, NSColor* _pColor)
+{
+	[pDefaultKeywords_Cpp setObject:_pColor forKey:_pKeyword];
+}
+
+static void AddDefaultKeyword_CLike(NSString* _pKeyword, NSColor* _pColor)
+{
+	[pDefaultKeywords_CLike setObject:_pColor forKey:_pKeyword];
+}
+
+static void AddDefaultKeyword_C(NSString* _pKeyword, NSColor* _pColor)
+{
+	[pDefaultKeywords_C setObject:_pColor forKey:_pKeyword];
+}
+
+static void AddDefaultKeyword_JS(NSString* _pKeyword, NSColor* _pColor)
+{
+	[pDefaultKeywords_JS setObject:_pColor forKey:_pKeyword];
+}
+
+static void AddDefaultKeyword_CSS(NSString* _pKeyword, NSColor* _pColor)
+{
+	[pDefaultKeywords_CSS setObject:_pColor forKey:_pKeyword];
+}
+
 static NSColor* CreateColor(unsigned int _Color)
 {
 	CGFloat Colors[] = {((_Color >> 16) & 0xFF)/255.0, ((_Color >> 8) & 0xFF)/255.0, ((_Color >> 0) & 0xFF)/255.0, 1.0};
@@ -1241,6 +1324,12 @@ static void fs_GenerateHTML()
 static void AddDefaultKeywords()
 {
 	pDefaultKeywords = [[NSMutableDictionary alloc] init];
+	pDefaultKeywords_Cpp = [[NSMutableDictionary alloc] init];
+	pDefaultKeywords_C = [[NSMutableDictionary alloc] init];
+	pDefaultKeywords_CLike = [[NSMutableDictionary alloc] init];
+	pDefaultKeywords_JS = [[NSMutableDictionary alloc] init];
+	pDefaultKeywords_CSS = [[NSMutableDictionary alloc] init];
+
 
 
 #if 0
@@ -1456,6 +1545,8 @@ static void AddDefaultKeywords()
 	pKeywordTypeSpecification = pKeywordDefault;
 	pKeywordNamespace = pKeywordDefault;
 	pKeywordTemplate = pKeywordDefault;
+	pKeywordFunction = pKeywordDefault;
+	pKeywordIn = pKeywordDefault;
 	pKeywordTypedef = pKeywordDefault;
 	pKeywordUsing = pKeywordDefault;
 	pKeywordThis = pKeywordDefault;
@@ -1467,787 +1558,1090 @@ static void AddDefaultKeywords()
 		
 	
 	// Qualifiers
-	AddDefaultKeyword(@"const", pKeywordQualifier);
-	AddDefaultKeyword(@"volatile", pKeywordQualifier);
+	AddDefaultKeyword_C(@"const", pKeywordQualifier);
+	AddDefaultKeyword_C(@"volatile", pKeywordQualifier);
 
 	// Storage class
-	AddDefaultKeyword(@"register", pKeywordStorageClass);
-	AddDefaultKeyword(@"static", pKeywordStorageClass);
-	AddDefaultKeyword(@"extern", pKeywordStorageClass);
-	AddDefaultKeyword(@"mutable", pKeywordStorageClass);
+	AddDefaultKeyword_C(@"register", pKeywordStorageClass);
+	AddDefaultKeyword_C(@"static", pKeywordStorageClass);
+	AddDefaultKeyword_C(@"extern", pKeywordStorageClass);
+	AddDefaultKeyword_C(@"mutable", pKeywordStorageClass);
 
 	// built in types
-	AddDefaultKeyword(@"bool", pKeywordBulitInTypes);
-	AddDefaultKeyword(@"void", pKeywordBulitInTypes);
-	AddDefaultKeyword(@"bint", pKeywordBulitInTypes);
-	AddDefaultKeyword(@"zbint", pKeywordBulitInTypes);
-	AddDefaultKeyword(@"zbool", pKeywordBulitInTypes);
+	AddDefaultKeyword_C(@"bool", pKeywordBulitInTypes);
+	AddDefaultKeyword_CLike(@"void", pKeywordBulitInTypes);
+	AddDefaultKeyword_C(@"bint", pKeywordBulitInTypes);
+	AddDefaultKeyword_C(@"zbint", pKeywordBulitInTypes);
+	AddDefaultKeyword_C(@"zbool", pKeywordBulitInTypes);
 
 	// built in character types
-	AddDefaultKeyword(@"char", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"__wchar_t", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"wchar_t", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"ch8", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"ch16", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"ch32", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"char", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"__wchar_t", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"wchar_t", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"ch8", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"ch16", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"ch32", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"uch8", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"uch16", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"uch32", pKeywordBulitInCharacterTypes);
 
-	AddDefaultKeyword(@"zch8", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"zch16", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"zch32", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"zuch8", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"zuch16", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"zuch32", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"char16_t", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"char32_t", pKeywordBulitInCharacterTypes);
-	AddDefaultKeyword(@"zuch32", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"zch8", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"zch16", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"zch32", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"zuch8", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"zuch16", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"zuch32", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"char16_t", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"char32_t", pKeywordBulitInCharacterTypes);
+	AddDefaultKeyword_C(@"zuch32", pKeywordBulitInCharacterTypes);
 
 
 	// built in integer types
-	AddDefaultKeyword(@"int", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"size_t", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"__int16", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"__int32", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"__int64", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"__int8", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"size_t", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"__int16", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"__int32", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"__int64", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"__int8", pKeywordBulitInIntegerTypes);
 
-	AddDefaultKeyword(@"int8", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int16", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int32", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int64", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int80", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int128", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int160", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int256", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int512", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int1024", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int2048", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int4096", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"int8192", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int8", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int16", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int32", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int64", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int80", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int128", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int160", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int256", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int512", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int1024", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int2048", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int4096", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int8192", pKeywordBulitInIntegerTypes);
 
 
-	AddDefaultKeyword(@"uint8", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint16", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint32", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint64", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint80", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint128", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint160", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint256", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint512", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint1024", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint2048", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint4096", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uint8192", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint8", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint16", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint32", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint64", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint80", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint128", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint160", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint256", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint512", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint1024", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint2048", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint4096", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint8192", pKeywordBulitInIntegerTypes);
 
-	AddDefaultKeyword(@"zint8", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint8", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint16", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint16", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint32", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint32", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint64", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint64", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint80", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint80", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint128", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint128", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint160", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint160", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint256", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint256", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint512", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint512", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint1024", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint1024", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint2048", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint2048", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint4096", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint4096", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zint8192", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuint8192", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint8", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint8", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint16", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint16", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint32", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint32", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint64", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint64", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint80", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint80", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint128", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint128", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint160", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint160", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint256", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint256", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint512", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint512", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint1024", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint1024", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint2048", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint2048", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint4096", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint4096", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint8192", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint8192", pKeywordBulitInIntegerTypes);
 
-	AddDefaultKeyword(@"mint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"smint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"umint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"aint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"uaint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"mint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"smint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"umint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"aint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uaint", pKeywordBulitInIntegerTypes);
 
-	AddDefaultKeyword(@"zmint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zumint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zsmint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zamint", pKeywordBulitInIntegerTypes);
-	AddDefaultKeyword(@"zuamint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zmint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zumint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zsmint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zamint", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuamint", pKeywordBulitInIntegerTypes);
 
 
 	// builtin type modifiers
-	AddDefaultKeyword(@"long", pKeywordBulitInTypeModifiers);
-	AddDefaultKeyword(@"short", pKeywordBulitInTypeModifiers);
-	AddDefaultKeyword(@"signed", pKeywordBulitInTypeModifiers);
-	AddDefaultKeyword(@"unsigned", pKeywordBulitInTypeModifiers);
+	AddDefaultKeyword_C(@"long", pKeywordBulitInTypeModifiers);
+	AddDefaultKeyword_C(@"short", pKeywordBulitInTypeModifiers);
+	AddDefaultKeyword_C(@"signed", pKeywordBulitInTypeModifiers);
+	AddDefaultKeyword_C(@"unsigned", pKeywordBulitInTypeModifiers);
 
 	// built in vector types
-	AddDefaultKeyword(@"__m128", pKeywordBulitInVectorTypes);
-	AddDefaultKeyword(@"__m64", pKeywordBulitInVectorTypes);
-	AddDefaultKeyword(@"__w64", pKeywordBulitInVectorTypes);
-	AddDefaultKeyword(@"__m128i", pKeywordBulitInVectorTypes);
-	AddDefaultKeyword(@"__m128d", pKeywordBulitInVectorTypes);
+	AddDefaultKeyword_C(@"__m128", pKeywordBulitInVectorTypes);
+	AddDefaultKeyword_C(@"__m64", pKeywordBulitInVectorTypes);
+	AddDefaultKeyword_C(@"__w64", pKeywordBulitInVectorTypes);
+	AddDefaultKeyword_C(@"__m128i", pKeywordBulitInVectorTypes);
+	AddDefaultKeyword_C(@"__m128d", pKeywordBulitInVectorTypes);
 
 	// built in floating point types
-	AddDefaultKeyword(@"float", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"double", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"float", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"double", pKeywordBulitInFloatTypes);
 
-	AddDefaultKeyword(@"fp8", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp16", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp32", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp64", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp80", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp128", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp256", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp512", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp1024", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp2048", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"fp4096", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp8", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp16", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp32", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp64", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp80", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp128", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp256", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp512", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp1024", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp2048", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"ufp4096", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp8", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp16", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp32", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp64", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp80", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp128", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp256", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp512", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp1024", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp2048", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"fp4096", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp8", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp16", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp32", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp64", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp80", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp128", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp256", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp512", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp1024", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp2048", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"ufp4096", pKeywordBulitInFloatTypes);
 
-	AddDefaultKeyword(@"zfp8", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp16", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp32", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp64", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp80", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp128", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp256", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp512", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp1024", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp2048", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zfp4096", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp8", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp16", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp32", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp64", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp80", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp128", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp256", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp512", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp1024", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp2048", pKeywordBulitInFloatTypes);
-	AddDefaultKeyword(@"zufp4096", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp8", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp16", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp32", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp64", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp80", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp128", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp256", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp512", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp1024", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp2048", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zfp4096", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp8", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp16", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp32", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp64", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp80", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp128", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp256", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp512", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp1024", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp2048", pKeywordBulitInFloatTypes);
+	AddDefaultKeyword_C(@"zufp4096", pKeywordBulitInFloatTypes);
 
 	// bult in constants
 	AddDefaultKeyword(@"false", pKeywordBulitInConstants);
 	AddDefaultKeyword(@"true", pKeywordBulitInConstants);
-	AddDefaultKeyword(@"nullptr", pKeywordBulitInConstants);
-	AddDefaultKeyword(@"NULL", pKeywordBulitInConstants);
+	AddDefaultKeyword_C(@"nullptr", pKeywordBulitInConstants);
+	AddDefaultKeyword_C(@"NULL", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"null", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"undefined", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"Infinity", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"NaN", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"E", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"LN2", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"LN10", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"LOG2E", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"LOG10E", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"MAX_VALUE", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"MIN_VALUE", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"NEGATIVE_INFINITY", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"PI", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"POSITIVE_INFINITY", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"SQRT1_2", pKeywordBulitInConstants);
+	AddDefaultKeyword_JS(@"SQRT2", pKeywordBulitInConstants);
+	
 
 	// Exception handling
-	AddDefaultKeyword(@"try", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"throw", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"catch", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"__try", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"__except", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"__finally", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"__leave", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"__raise", pKeywordExceptionHandling);
-	AddDefaultKeyword(@"finally", pKeywordExceptionHandling);
+	AddDefaultKeyword_CLike(@"try", pKeywordExceptionHandling);
+	AddDefaultKeyword_CLike(@"throw", pKeywordExceptionHandling);
+	AddDefaultKeyword_CLike(@"catch", pKeywordExceptionHandling);
+	AddDefaultKeyword_C(@"__try", pKeywordExceptionHandling);
+	AddDefaultKeyword_C(@"__except", pKeywordExceptionHandling);
+	AddDefaultKeyword_C(@"__finally", pKeywordExceptionHandling);
+	AddDefaultKeyword_C(@"__leave", pKeywordExceptionHandling);
+	AddDefaultKeyword_C(@"__raise", pKeywordExceptionHandling);
+	AddDefaultKeyword_CLike(@"finally", pKeywordExceptionHandling);
 
 	// Type introspection/type traits
-	AddDefaultKeyword(@"__alignof", pKeywordIntrospection);
-	AddDefaultKeyword(@"sizeof", pKeywordIntrospection);
-	AddDefaultKeyword(@"decltype", pKeywordIntrospection);
-	AddDefaultKeyword(@"__uuidof", pKeywordIntrospection);
-	AddDefaultKeyword(@"typeid", pKeywordIntrospection);
+	AddDefaultKeyword_C(@"__alignof", pKeywordIntrospection);
+	AddDefaultKeyword_C(@"sizeof", pKeywordIntrospection);
+	AddDefaultKeyword_C(@"decltype", pKeywordIntrospection);
+	AddDefaultKeyword_JS(@"typeof", pKeywordIntrospection);
+	AddDefaultKeyword_JS(@"instanceof", pKeywordIntrospection);
+	AddDefaultKeyword_C(@"__uuidof", pKeywordIntrospection);
+	AddDefaultKeyword_C(@"typeid", pKeywordIntrospection);
 
 	// Static assert
-	AddDefaultKeyword(@"static_assert", pKeywordStaticAssert);
+	AddDefaultKeyword_C(@"static_assert", pKeywordStaticAssert);
 
 	// Control statements
-	AddDefaultKeyword(@"while", pKeywordControlStatement);
-	AddDefaultKeyword(@"for", pKeywordControlStatement);
-	AddDefaultKeyword(@"goto", pKeywordControlStatement);
-	AddDefaultKeyword(@"if", pKeywordControlStatement);
-	AddDefaultKeyword(@"do", pKeywordControlStatement);
-	AddDefaultKeyword(@"break", pKeywordControlStatement);
-	AddDefaultKeyword(@"case", pKeywordControlStatement);
-	AddDefaultKeyword(@"continue", pKeywordControlStatement);
-	AddDefaultKeyword(@"default", pKeywordControlStatement);
-	AddDefaultKeyword(@"else", pKeywordControlStatement);
-	AddDefaultKeyword(@"return", pKeywordControlStatement);
-	AddDefaultKeyword(@"switch", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"while", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"for", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"goto", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"if", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"do", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"break", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"case", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"continue", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"default", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"else", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"return", pKeywordControlStatement);
+	AddDefaultKeyword_CLike(@"switch", pKeywordControlStatement);
 
-	AddDefaultKeyword(@"likely", pKeywordControlStatement);
-	AddDefaultKeyword(@"unlikely", pKeywordControlStatement);
-	AddDefaultKeyword(@"assume", pKeywordControlStatement);
+	AddDefaultKeyword_C(@"likely", pKeywordControlStatement);
+	AddDefaultKeyword_C(@"unlikely", pKeywordControlStatement);
+	AddDefaultKeyword_C(@"assume", pKeywordControlStatement);
 	
-	AddDefaultKeyword(@"yield_cpu", pKeywordControlStatement);
-	
-
-	AddDefaultKeyword(@"constant_int64", pKeywordControlStatement);
-	AddDefaultKeyword(@"constant_uint64", pKeywordControlStatement);
+	AddDefaultKeyword_C(@"yield_cpu", pKeywordControlStatement);
 	
 
+	AddDefaultKeyword_C(@"constant_int64", pKeywordControlStatement);
+	AddDefaultKeyword_C(@"constant_uint64", pKeywordControlStatement);
+	
 	// Optimization
-	AddDefaultKeyword(@"__asm", pKeywordOptimization);
-	AddDefaultKeyword(@"__assume", pKeywordOptimization);
+	AddDefaultKeyword_C(@"__asm", pKeywordOptimization);
+	AddDefaultKeyword_C(@"__assume", pKeywordOptimization);
 
 	// Property modifiers
-	AddDefaultKeyword(@"__unaligned", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__declspec", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__based", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"deprecated", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"dllexport", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"dllimport", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"naked", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"noinline", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"noreturn", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"nothrow", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"noexcept", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"novtable", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"property", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"selectany", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"thread", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"uuid", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"explicit", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__forceinline", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__inline", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__cdecl", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__thiscall", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__fastcall", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__stdcall", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"calling_convention_c", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"cdecl", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"stdcall", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"fastcall", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_small", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_always", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_never", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_never_debug", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_medium", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_large", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_extralarge", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"inline_always_debug", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"module_export", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"module_import", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"only_parameters_aliased", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"return_not_aliased", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"function_does_not_return", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"variable_not_aliased", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"constexpr", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__pragma", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__attribute__", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"__restrict__", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"assure_used", pKeywordPropertyModifiers);                
-	AddDefaultKeyword(@"align_cacheline", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"intrinsic", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__unaligned", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__declspec", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__based", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"deprecated", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"dllexport", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"dllimport", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"naked", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"noinline", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"noreturn", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"nothrow", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"noexcept", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"novtable", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"property", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"selectany", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"thread", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"uuid", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"explicit", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__forceinline", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__inline", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__cdecl", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__thiscall", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__fastcall", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__stdcall", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"calling_convention_c", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"cdecl", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"stdcall", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"fastcall", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_small", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_always", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_never", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_never_debug", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_medium", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_large", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_extralarge", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"inline_always_debug", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"module_export", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"module_import", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"only_parameters_aliased", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"return_not_aliased", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"function_does_not_return", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"variable_not_aliased", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"constexpr", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__pragma", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__attribute__", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"__restrict__", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"assure_used", pKeywordPropertyModifiers);                
+	AddDefaultKeyword_C(@"align_cacheline", pKeywordPropertyModifiers);
+	AddDefaultKeyword_C(@"intrinsic", pKeywordPropertyModifiers);
 
 	// new/delete operators
-	AddDefaultKeyword(@"delete", pKeywordNewDelete);
-	AddDefaultKeyword(@"new", pKeywordNewDelete);
+	AddDefaultKeyword_CLike(@"delete", pKeywordNewDelete);
+	AddDefaultKeyword_CLike(@"new", pKeywordNewDelete);
 
 	// CLR
-	AddDefaultKeyword(@"__abstract", pKeywordCLR);
-	AddDefaultKeyword(@"abstract", pKeywordCLR);
-	AddDefaultKeyword(@"__box", pKeywordCLR);
-	AddDefaultKeyword(@"__delegate", pKeywordCLR);
-	AddDefaultKeyword(@"__gc", pKeywordCLR);
-	AddDefaultKeyword(@"__hook", pKeywordCLR);
-	AddDefaultKeyword(@"__nogc", pKeywordCLR);
-	AddDefaultKeyword(@"__pin", pKeywordCLR);
-	AddDefaultKeyword(@"__property", pKeywordCLR);
-	AddDefaultKeyword(@"__sealed", pKeywordCLR);
-	AddDefaultKeyword(@"__try_cast", pKeywordCLR);
-	AddDefaultKeyword(@"__unhook", pKeywordCLR);
-	AddDefaultKeyword(@"__value", pKeywordCLR);
-	// AddDefaultKeyword(@"array", pKeywordCLR); // used in stdlib
-	// AddDefaultKeyword(@"delegate", pKeywordCLR); // too generic
-	AddDefaultKeyword(@"event", pKeywordCLR);
-	AddDefaultKeyword(@"__identifier", pKeywordCLR);
-	AddDefaultKeyword(@"friend_as", pKeywordCLR);
-	AddDefaultKeyword(@"interface", pKeywordCLR);
-	AddDefaultKeyword(@"interior_ptr", pKeywordCLR);
-	AddDefaultKeyword(@"gcnew", pKeywordCLR);
-	AddDefaultKeyword(@"generic", pKeywordCLR);
-	AddDefaultKeyword(@"initonly", pKeywordCLR);
-	AddDefaultKeyword(@"literal", pKeywordCLR);
-	AddDefaultKeyword(@"ref", pKeywordCLR);
-	AddDefaultKeyword(@"safecast", pKeywordCLR);
-//	AddDefaultKeyword(@"value", pKeywordCLR); // used in stdlib
+	AddDefaultKeyword_C(@"__abstract", pKeywordCLR);
+	AddDefaultKeyword_C(@"abstract", pKeywordCLR);
+	AddDefaultKeyword_C(@"__box", pKeywordCLR);
+	AddDefaultKeyword_C(@"__delegate", pKeywordCLR);
+	AddDefaultKeyword_C(@"__gc", pKeywordCLR);
+	AddDefaultKeyword_C(@"__hook", pKeywordCLR);
+	AddDefaultKeyword_C(@"__nogc", pKeywordCLR);
+	AddDefaultKeyword_C(@"__pin", pKeywordCLR);
+	AddDefaultKeyword_C(@"__property", pKeywordCLR);
+	AddDefaultKeyword_C(@"__sealed", pKeywordCLR);
+	AddDefaultKeyword_C(@"__try_cast", pKeywordCLR);
+	AddDefaultKeyword_C(@"__unhook", pKeywordCLR);
+	AddDefaultKeyword_C(@"__value", pKeywordCLR);
+	// AddDefaultKeyword_C(@"array", pKeywordCLR); // used in stdlib
+	// AddDefaultKeyword_C(@"delegate", pKeywordCLR); // too generic
+	AddDefaultKeyword_C(@"event", pKeywordCLR);
+	AddDefaultKeyword_C(@"__identifier", pKeywordCLR);
+	AddDefaultKeyword_C(@"friend_as", pKeywordCLR);
+	AddDefaultKeyword_C(@"interface", pKeywordCLR);
+	AddDefaultKeyword_C(@"interior_ptr", pKeywordCLR);
+	AddDefaultKeyword_C(@"gcnew", pKeywordCLR);
+	AddDefaultKeyword_C(@"generic", pKeywordCLR);
+	AddDefaultKeyword_C(@"initonly", pKeywordCLR);
+	AddDefaultKeyword_C(@"literal", pKeywordCLR);
+	AddDefaultKeyword_C(@"ref", pKeywordCLR);
+	AddDefaultKeyword_C(@"safecast", pKeywordCLR);
+//	AddDefaultKeyword_C(@"value", pKeywordCLR); // used in stdlib
 
 	// Other keywords
-	AddDefaultKeyword(@"__event", pKeywordOther);
-	AddDefaultKeyword(@"__if_exists", pKeywordOther);
-	AddDefaultKeyword(@"__if_not_exists", pKeywordOther);
-	AddDefaultKeyword(@"__interface", pKeywordOther);
-	AddDefaultKeyword(@"__multiple_inheritance", pKeywordOther);
-	AddDefaultKeyword(@"__single_inheritance", pKeywordOther);
-	AddDefaultKeyword(@"__virtual_inheritance", pKeywordOther);
-	AddDefaultKeyword(@"__super", pKeywordOther);
-	AddDefaultKeyword(@"__noop", pKeywordOther);
+	AddDefaultKeyword_C(@"__event", pKeywordOther);
+	AddDefaultKeyword_C(@"__if_exists", pKeywordOther);
+	AddDefaultKeyword_C(@"__if_not_exists", pKeywordOther);
+	AddDefaultKeyword_C(@"__interface", pKeywordOther);
+	AddDefaultKeyword_C(@"__multiple_inheritance", pKeywordOther);
+	AddDefaultKeyword_C(@"__single_inheritance", pKeywordOther);
+	AddDefaultKeyword_C(@"__virtual_inheritance", pKeywordOther);
+	AddDefaultKeyword_C(@"__super", pKeywordOther);
+	AddDefaultKeyword_C(@"__noop", pKeywordOther);
 
 	// Type specification keywords
-	AddDefaultKeyword(@"union", pKeywordTypeSpecification);
-	AddDefaultKeyword(@"class", pKeywordTypeSpecification);
-	AddDefaultKeyword(@"enum", pKeywordTypeSpecification);
-	AddDefaultKeyword(@"struct", pKeywordTypeSpecification);
+	AddDefaultKeyword_C(@"union", pKeywordTypeSpecification);
+	AddDefaultKeyword_C(@"class", pKeywordTypeSpecification);
+	AddDefaultKeyword_C(@"enum", pKeywordTypeSpecification);
+	AddDefaultKeyword_C(@"struct", pKeywordTypeSpecification);
 
 	// namespace
-	AddDefaultKeyword(@"namespace", pKeywordNamespace);
+	AddDefaultKeyword_C(@"namespace", pKeywordNamespace);
 
 	// typename
-	AddDefaultKeyword(@"typename", pKeywordTypename);
+	AddDefaultKeyword_C(@"typename", pKeywordTypename);
 
 	// template
-	AddDefaultKeyword(@"template", pKeywordTemplate);
+	AddDefaultKeyword_C(@"template", pKeywordTemplate);
+
+	// function
+	AddDefaultKeyword_JS(@"function", pKeywordFunction);
+
+	// in
+	AddDefaultKeyword_JS(@"in", pKeywordIn);
 
 	// typedef
-	AddDefaultKeyword(@"typedef", pKeywordTypedef);
+	AddDefaultKeyword_C(@"typedef", pKeywordTypedef);
 
 	// using
-	AddDefaultKeyword(@"using", pKeywordUsing);
+	AddDefaultKeyword_C(@"using", pKeywordUsing);
 
 	// auto
-	AddDefaultKeyword(@"auto", pKeywordAuto);
+	AddDefaultKeyword_Cpp(@"auto", pKeywordAuto);
+	AddDefaultKeyword_JS(@"var", pKeywordAuto);
 
 	// this
-	AddDefaultKeyword(@"this", pKeywordThis);
+	AddDefaultKeyword_CLike(@"this", pKeywordThis);
 
 	// operator
-	AddDefaultKeyword(@"operator", pKeywordOperator);
+	AddDefaultKeyword_CLike(@"operator", pKeywordOperator);
 
 	// Access keywords
-	AddDefaultKeyword(@"friend", pKeywordAccess);
-	AddDefaultKeyword(@"private", pKeywordAccess);
-	AddDefaultKeyword(@"public", pKeywordAccess);
-	AddDefaultKeyword(@"protected", pKeywordAccess);
+	AddDefaultKeyword_C(@"friend", pKeywordAccess);
+	AddDefaultKeyword_C(@"private", pKeywordAccess);
+	AddDefaultKeyword_C(@"public", pKeywordAccess);
+	AddDefaultKeyword_C(@"protected", pKeywordAccess);
 
 	// Virtual keywords
-	AddDefaultKeyword(@"final", pKeywordVirtual);
-	AddDefaultKeyword(@"sealed", pKeywordVirtual);
-	AddDefaultKeyword(@"override", pKeywordVirtual);
-	AddDefaultKeyword(@"virtual", pKeywordVirtual);
-	AddDefaultKeyword(@"pure", pKeywordPure);
+	AddDefaultKeyword_C(@"final", pKeywordVirtual);
+	AddDefaultKeyword_C(@"sealed", pKeywordVirtual);
+	AddDefaultKeyword_C(@"override", pKeywordVirtual);
+	AddDefaultKeyword_C(@"virtual", pKeywordVirtual);
+	AddDefaultKeyword_C(@"pure", pKeywordPure);
 
 	// casts
-	AddDefaultKeyword(@"const_cast", pKeywordCasts);
-	AddDefaultKeyword(@"dynamic_cast", pKeywordCasts);
-	AddDefaultKeyword(@"reinterpret_cast", pKeywordCasts);
-	AddDefaultKeyword(@"static_cast", pKeywordCasts);
+	AddDefaultKeyword_C(@"const_cast", pKeywordCasts);
+	AddDefaultKeyword_C(@"dynamic_cast", pKeywordCasts);
+	AddDefaultKeyword_C(@"reinterpret_cast", pKeywordCasts);
+	AddDefaultKeyword_C(@"static_cast", pKeywordCasts);
 
 	// ignore
-	AddDefaultKeyword(@"ignore", CreateColor(0x707070));
+	AddDefaultKeyword_C(@"ignore", CreateColor(0x707070));
 
 	NSColor *pPreprocessorDirective = CreateColor(0xFFFFFF);
 	// Preprocessor directive
-	AddDefaultKeyword(@"#define", pPreprocessorDirective);
-	AddDefaultKeyword(@"#error", pPreprocessorDirective);
-	AddDefaultKeyword(@"#import", pPreprocessorDirective);
-	AddDefaultKeyword(@"#undef", pPreprocessorDirective);
-	AddDefaultKeyword(@"#elif", pPreprocessorDirective);
-	AddDefaultKeyword(@"#if", pPreprocessorDirective);
-	AddDefaultKeyword(@"#include", pPreprocessorDirective);
-	AddDefaultKeyword(@"#using", pPreprocessorDirective);
-	AddDefaultKeyword(@"#else", pPreprocessorDirective);
-	AddDefaultKeyword(@"#ifdef", pPreprocessorDirective);
-	AddDefaultKeyword(@"#line", pPreprocessorDirective);
-	AddDefaultKeyword(@"#endif", pPreprocessorDirective);
-	AddDefaultKeyword(@"#ifndef", pPreprocessorDirective);
-	AddDefaultKeyword(@"#pragma", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#define", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#error", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#import", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#undef", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#elif", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#if", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#include", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#using", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#else", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#ifdef", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#line", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#endif", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#ifndef", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"#pragma", pPreprocessorDirective);
 
-	AddDefaultKeyword(@"define", pPreprocessorDirective);
-	AddDefaultKeyword(@"error", pPreprocessorDirective);
-	AddDefaultKeyword(@"import", pPreprocessorDirective);
-	AddDefaultKeyword(@"undef", pPreprocessorDirective);
-	AddDefaultKeyword(@"elif", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"define", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"error", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"import", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"undef", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"elif", pPreprocessorDirective);
 	//AddDefaultKeyword(@"if", pPreprocessorDirective);
-	AddDefaultKeyword(@"include", pPreprocessorDirective);
-	AddDefaultKeyword(@"once", pPreprocessorDirective);
-	AddDefaultKeyword(@"defined", pPreprocessorDirective);
-	AddDefaultKeyword(@"using", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"include", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"once", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"defined", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"using", pPreprocessorDirective);
 	//AddDefaultKeyword(@"else", pPreprocessorDirective);
-	AddDefaultKeyword(@"ifdef", pPreprocessorDirective);
-	AddDefaultKeyword(@"line", pPreprocessorDirective);
-	AddDefaultKeyword(@"endif", pPreprocessorDirective);
-	AddDefaultKeyword(@"ifndef", pPreprocessorDirective);
-	AddDefaultKeyword(@"pragma", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"ifdef", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"line", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"endif", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"ifndef", pPreprocessorDirective);
+	AddDefaultKeyword_C(@"pragma", pPreprocessorDirective);
 
+	AddDefaultKeyword_JS(@"use", pPreprocessorDirective);
+	AddDefaultKeyword_JS(@"strict", pPreprocessorDirective);
+	
+	// JS
+
+	// Type and namespace
+	AddDefaultKeyword_JS(@"object", pType);
+	AddDefaultKeyword_JS(@"Array", pType);
+	AddDefaultKeyword_JS(@"ArrayBuffer", pType);
+	AddDefaultKeyword_JS(@"arguments", pFunctionParameter_Pack);
+	AddDefaultKeyword_JS(@"Boolean", pType);
+	AddDefaultKeyword_JS(@"DataView", pType);
+	AddDefaultKeyword_JS(@"Date", pType);
+	AddDefaultKeyword_JS(@"Debug", pType);
+	AddDefaultKeyword_JS(@"Enumerator", pType);
+	AddDefaultKeyword_JS(@"Error", pType);
+	AddDefaultKeyword_JS(@"Float32Array", pType);
+	AddDefaultKeyword_JS(@"Float64Array", pType);
+	AddDefaultKeyword_JS(@"Function", pType);
+	AddDefaultKeyword_JS(@"Global", pNamespace);
+	AddDefaultKeyword_JS(@"Int8Array", pType);
+	AddDefaultKeyword_JS(@"Int16Array", pType);
+	AddDefaultKeyword_JS(@"Intl", pNamespace);
+	AddDefaultKeyword_JS(@"Collator", pType);
+	AddDefaultKeyword_JS(@"DateTimeFormat", pType);
+	AddDefaultKeyword_JS(@"NumberFormat", pType);
+	AddDefaultKeyword_JS(@"JSON", pNamespace);
+	AddDefaultKeyword_JS(@"Map", pType);
+	AddDefaultKeyword_JS(@"Math", pNamespace);
+	AddDefaultKeyword_JS(@"Number", pType);
+	AddDefaultKeyword_JS(@"Object", pType);
+	AddDefaultKeyword_JS(@"Promise", pType);
+	AddDefaultKeyword_JS(@"RegExp", pType);
+	AddDefaultKeyword_JS(@"Set", pType);
+	AddDefaultKeyword_JS(@"String", pType);
+	AddDefaultKeyword_JS(@"Uint8Array", pType);
+	AddDefaultKeyword_JS(@"Uint16Array", pType);
+	AddDefaultKeyword_JS(@"Uint32Array", pType);
+	AddDefaultKeyword_JS(@"Uint8ClampedArray", pType);
+	AddDefaultKeyword_JS(@"VBArray", pType);
+	AddDefaultKeyword_JS(@"WeakMap", pType);
+	
+	// Properties
+	AddDefaultKeyword_JS(@"__proto__", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"__proto__", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$1", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$2", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$3", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$4", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$5", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$6", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$7", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$8", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"$9", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"callee", pMemberVariablePublic_Functor);
+	AddDefaultKeyword_JS(@"caller", pMemberVariablePublic_Functor);
+	AddDefaultKeyword_JS(@"constructor", pMemberVariablePublic_Functor);
+	AddDefaultKeyword_JS(@"description", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"global", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"ignoreCase", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"index", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"input", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"lastIndex", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"lastMatch", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"lastParen", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"leftContext", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"length", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"message", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"multiline", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"name", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"number", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"prototype", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"rightContext", pMemberVariablePublic);
+	AddDefaultKeyword_JS(@"source", pMemberVariablePublic);
+	
+	// Functions
+	AddDefaultKeyword_JS(@"source", pFunction);
+	AddDefaultKeyword_JS(@"abs", pFunction);
+	AddDefaultKeyword_JS(@"acos", pFunction);
+	AddDefaultKeyword_JS(@"asin", pFunction);
+	AddDefaultKeyword_JS(@"atan", pFunction);
+	AddDefaultKeyword_JS(@"atan2", pFunction);
+	AddDefaultKeyword_JS(@"ceil", pFunction);
+	AddDefaultKeyword_JS(@"cos", pFunction);
+	AddDefaultKeyword_JS(@"create", pFunction);
+	AddDefaultKeyword_JS(@"decodeURI", pFunction);
+	AddDefaultKeyword_JS(@"decodeURIComponent", pFunction);
+	AddDefaultKeyword_JS(@"defineProperties", pFunction);
+	AddDefaultKeyword_JS(@"defineProperty", pFunction);
+	AddDefaultKeyword_JS(@"encodeURI", pFunction);
+	AddDefaultKeyword_JS(@"encodeURIComponent", pFunction);
+	AddDefaultKeyword_JS(@"escape", pFunction);
+	AddDefaultKeyword_JS(@"eval", pFunction);
+	AddDefaultKeyword_JS(@"exp", pFunction);
+	AddDefaultKeyword_JS(@"floor", pFunction);
+	AddDefaultKeyword_JS(@"freeze", pFunction);
+	AddDefaultKeyword_JS(@"fromCharCode", pFunction);
+	AddDefaultKeyword_JS(@"GetObject", pFunction);
+	AddDefaultKeyword_JS(@"getOwnPropertyDescriptor", pFunction);
+	AddDefaultKeyword_JS(@"getOwnPropertyNames", pFunction);
+	AddDefaultKeyword_JS(@"getPrototypeOf", pFunction);
+	AddDefaultKeyword_JS(@"isArray", pFunction);
+	AddDefaultKeyword_JS(@"isExtensible", pFunction);
+	AddDefaultKeyword_JS(@"isFinite", pFunction);
+	AddDefaultKeyword_JS(@"isFrozen", pFunction);
+	AddDefaultKeyword_JS(@"isNaN", pFunction);
+	AddDefaultKeyword_JS(@"isSealed", pFunction);
+	AddDefaultKeyword_JS(@"keys", pFunction);
+	AddDefaultKeyword_JS(@"log", pFunction);
+	AddDefaultKeyword_JS(@"max", pFunction);
+	AddDefaultKeyword_JS(@"min", pFunction);
+	AddDefaultKeyword_JS(@"now", pFunction);
+	AddDefaultKeyword_JS(@"parse", pFunction);
+	AddDefaultKeyword_JS(@"parse", pFunction);
+	AddDefaultKeyword_JS(@"parseFloat", pFunction);
+	AddDefaultKeyword_JS(@"parseInt", pFunction);
+	AddDefaultKeyword_JS(@"pow", pFunction);
+	AddDefaultKeyword_JS(@"preventExtensions", pFunction);
+	AddDefaultKeyword_JS(@"random", pFunction);
+	AddDefaultKeyword_JS(@"round", pFunction);
+	AddDefaultKeyword_JS(@"ScriptEngine", pFunction);
+	AddDefaultKeyword_JS(@"ScriptEngineBuildVersion", pFunction);
+	AddDefaultKeyword_JS(@"ScriptEngineMajorVersion", pFunction);
+	AddDefaultKeyword_JS(@"ScriptEngineMinorVersion", pFunction);
+	AddDefaultKeyword_JS(@"seal", pFunction);
+	AddDefaultKeyword_JS(@"sin", pFunction);
+	AddDefaultKeyword_JS(@"sqrt", pFunction);
+	AddDefaultKeyword_JS(@"stringify", pFunction);
+	AddDefaultKeyword_JS(@"tan", pFunction);
+	AddDefaultKeyword_JS(@"unescape", pFunction);
+	AddDefaultKeyword_JS(@"UTC", pFunction);
+	AddDefaultKeyword_JS(@"write", pFunction);
+	AddDefaultKeyword_JS(@"writeln", pFunction);
+	
+	// Methods
+	
+	AddDefaultKeyword_JS(@"anchor", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"apply", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"atEnd", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"big", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"bind", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"blink", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"bold", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"call", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"charAt", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"charCodeAt", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"compile", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"concat", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"dimensions", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"every", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"exec", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"filter", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"fixed", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"fontcolor", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"fontsize", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"forEach", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getDate", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getDay", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getFullYear", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getHours", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getItem", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getMilliseconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getMinutes", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getMonth", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getSeconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getTime", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getTimezoneOffset", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCDate", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCDay", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCFullYear", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCHours", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCMilliseconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCMinutes", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCMonth", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getUTCSeconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getVarDate", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getYear", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"hasOwnProperty", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"indexOf", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"isPrototypeOf", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"italics", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"item", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"join", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"lastIndexOf", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"lbound", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"link", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"localeCompare", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"map", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"match", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"moveFirst", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"moveNext", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"pop", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"propertyIsEnumerable", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"push", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"reduce", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"reduceRight", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"replace", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"reverse", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"search", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setDate", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setFullYear", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setHours", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setMilliseconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setMinutes", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setMonth", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setSeconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setTime", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setUTCDate", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setUTCFullYear", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setUTCHours", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setUTCMilliseconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setUTCMinutes", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setUTCMonth", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setUTCSeconds", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setYear", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"shift", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"slice", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"small", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"some", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"sort", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"splice", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"split", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"strike", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"sub", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"substr", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"substring", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"sup", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"test", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toArray", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toDateString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toExponential", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toFixed", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toGMTString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toISOString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toJSON", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toLocaleDateString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toLocaleLowerCase", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toLocaleString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toLocaleTimeString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toLocaleUpperCase", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toLowerCase", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toPrecision", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toTimeString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toUpperCase", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"toUTCString", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"trim", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"ubound", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"unshift", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"valueOf", pMemberFunctionPublic);
+	
+	// Meteor
+	AddDefaultKeyword_JS(@"Meteor", pNamespace);
+	AddDefaultKeyword_JS(@"Router", pNamespace);
+	AddDefaultKeyword_JS(@"Template", pNamespace);
+	AddDefaultKeyword_JS(@"FastClick", pType);
+	
+	AddDefaultKeyword_JS(@"window", pGlobalVariable);
+	AddDefaultKeyword_JS(@"console", pGlobalVariable);
+	AddDefaultKeyword_JS(@"Session", pGlobalVariable);
+
+	AddDefaultKeyword_JS(@"render", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"get", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"set", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"setDefault", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"userId", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"insert", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"getKey", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"attach", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"events", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"helpers", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"route", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"startup", pMemberFunctionPublic);
+	AddDefaultKeyword_JS(@"helpers", pMemberFunctionPublic);
+	
 	// std lib
-	AddDefaultKeyword(@"std", pNamespace);
-	AddDefaultKeyword(@"atomic", pTemplateType);
-	AddDefaultKeyword(@"set", pTemplateType);
-	AddDefaultKeyword(@"multiset", pTemplateType);
-	AddDefaultKeyword(@"map", pTemplateType);
-	AddDefaultKeyword(@"multimap", pTemplateType);
-	AddDefaultKeyword(@"unordered_set", pTemplateType);
-	AddDefaultKeyword(@"unordered_multiset", pTemplateType);
-	AddDefaultKeyword(@"unordered_map", pTemplateType);
-	AddDefaultKeyword(@"unordered_multimap", pTemplateType);
-	AddDefaultKeyword(@"list", pTemplateType);
-	AddDefaultKeyword(@"vector", pTemplateType);
-	AddDefaultKeyword(@"queue", pTemplateType);
-	AddDefaultKeyword(@"priority_queue", pTemplateType);
-	AddDefaultKeyword(@"forward_list", pTemplateType);
-	AddDefaultKeyword(@"deque", pTemplateType);
-	AddDefaultKeyword(@"array", pTemplateType);
-	AddDefaultKeyword(@"stack", pTemplateType);
-	AddDefaultKeyword(@"basic_ifstream", pTemplateType);
-	AddDefaultKeyword(@"basic_ofstream", pTemplateType);
-	AddDefaultKeyword(@"basic_fstream", pTemplateType);
-	AddDefaultKeyword(@"basic_filebuf", pTemplateType);
-	AddDefaultKeyword(@"basic_string", pTemplateType);
-	AddDefaultKeyword(@"char_traits", pTemplateType);
-	AddDefaultKeyword(@"tuple", pTemplateType);
-	AddDefaultKeyword(@"pair", pTemplateType);
+	AddDefaultKeyword_Cpp(@"std", pNamespace);
+	AddDefaultKeyword_Cpp(@"atomic", pTemplateType);
+	AddDefaultKeyword_Cpp(@"set", pTemplateType);
+	AddDefaultKeyword_Cpp(@"multiset", pTemplateType);
+	AddDefaultKeyword_Cpp(@"map", pTemplateType);
+	AddDefaultKeyword_Cpp(@"multimap", pTemplateType);
+	AddDefaultKeyword_Cpp(@"unordered_set", pTemplateType);
+	AddDefaultKeyword_Cpp(@"unordered_multiset", pTemplateType);
+	AddDefaultKeyword_Cpp(@"unordered_map", pTemplateType);
+	AddDefaultKeyword_Cpp(@"unordered_multimap", pTemplateType);
+	AddDefaultKeyword_Cpp(@"list", pTemplateType);
+	AddDefaultKeyword_Cpp(@"vector", pTemplateType);
+	AddDefaultKeyword_Cpp(@"queue", pTemplateType);
+	AddDefaultKeyword_Cpp(@"priority_queue", pTemplateType);
+	AddDefaultKeyword_Cpp(@"forward_list", pTemplateType);
+	AddDefaultKeyword_Cpp(@"deque", pTemplateType);
+	AddDefaultKeyword_Cpp(@"array", pTemplateType);
+	AddDefaultKeyword_Cpp(@"stack", pTemplateType);
+	AddDefaultKeyword_Cpp(@"basic_ifstream", pTemplateType);
+	AddDefaultKeyword_Cpp(@"basic_ofstream", pTemplateType);
+	AddDefaultKeyword_Cpp(@"basic_fstream", pTemplateType);
+	AddDefaultKeyword_Cpp(@"basic_filebuf", pTemplateType);
+	AddDefaultKeyword_Cpp(@"basic_string", pTemplateType);
+	AddDefaultKeyword_Cpp(@"char_traits", pTemplateType);
+	AddDefaultKeyword_Cpp(@"tuple", pTemplateType);
+	AddDefaultKeyword_Cpp(@"pair", pTemplateType);
 
-	AddDefaultKeyword(@"string", pType);
-	AddDefaultKeyword(@"u16string", pType);
-	AddDefaultKeyword(@"u32string", pType);
-	AddDefaultKeyword(@"wstring", pType);
-	AddDefaultKeyword(@"ifstream", pType);
-	AddDefaultKeyword(@"ofstream", pType);
-	AddDefaultKeyword(@"fstream", pType);
-	AddDefaultKeyword(@"filebuf", pType);
-	AddDefaultKeyword(@"wifstream", pType);
-	AddDefaultKeyword(@"wofstream", pType);
-	AddDefaultKeyword(@"wfstream", pType);
-	AddDefaultKeyword(@"wfilebuf", pType);
-	AddDefaultKeyword(@"atomic_flag", pType);
-	AddDefaultKeyword(@"iterator", pType);
-	AddDefaultKeyword(@"const_iterator", pType);
-	AddDefaultKeyword(@"value_type", pType);
-	AddDefaultKeyword(@"allocator_type", pType);
-	AddDefaultKeyword(@"type", pType);
-	AddDefaultKeyword(@"reference", pType);
-	AddDefaultKeyword(@"const_reference", pType);
-	AddDefaultKeyword(@"pointer", pType);
-	AddDefaultKeyword(@"const_pointer", pType);
-	AddDefaultKeyword(@"reverse_iterator", pType);
-	AddDefaultKeyword(@"const_reverse_iterator", pType);
-	AddDefaultKeyword(@"difference_type", pType);
-	AddDefaultKeyword(@"size_type", pType);
-	AddDefaultKeyword(@"key_compare", pType);
-	AddDefaultKeyword(@"value_compare", pType);
-	AddDefaultKeyword(@"key_type", pType);
-	AddDefaultKeyword(@"mapped_type", pType);
-	AddDefaultKeyword(@"hasher", pType);
-	AddDefaultKeyword(@"key_equal", pType);
-	AddDefaultKeyword(@"local_iterator", pType);
-	AddDefaultKeyword(@"const_local_iterator", pType);
-	AddDefaultKeyword(@"char_type", pType);
-	AddDefaultKeyword(@"traits_type", pType);
-	AddDefaultKeyword(@"int_type", pType);
-	AddDefaultKeyword(@"pos_type", pType);
-	AddDefaultKeyword(@"off_type", pType);
-	AddDefaultKeyword(@"state_type", pType);
+	AddDefaultKeyword_Cpp(@"string", pType);
+	AddDefaultKeyword_Cpp(@"u16string", pType);
+	AddDefaultKeyword_Cpp(@"u32string", pType);
+	AddDefaultKeyword_Cpp(@"wstring", pType);
+	AddDefaultKeyword_Cpp(@"ifstream", pType);
+	AddDefaultKeyword_Cpp(@"ofstream", pType);
+	AddDefaultKeyword_Cpp(@"fstream", pType);
+	AddDefaultKeyword_Cpp(@"filebuf", pType);
+	AddDefaultKeyword_Cpp(@"wifstream", pType);
+	AddDefaultKeyword_Cpp(@"wofstream", pType);
+	AddDefaultKeyword_Cpp(@"wfstream", pType);
+	AddDefaultKeyword_Cpp(@"wfilebuf", pType);
+	AddDefaultKeyword_Cpp(@"atomic_flag", pType);
+	AddDefaultKeyword_Cpp(@"iterator", pType);
+	AddDefaultKeyword_Cpp(@"const_iterator", pType);
+	AddDefaultKeyword_Cpp(@"value_type", pType);
+	AddDefaultKeyword_Cpp(@"allocator_type", pType);
+	AddDefaultKeyword_Cpp(@"type", pType);
+	AddDefaultKeyword_Cpp(@"reference", pType);
+	AddDefaultKeyword_Cpp(@"const_reference", pType);
+	AddDefaultKeyword_Cpp(@"pointer", pType);
+	AddDefaultKeyword_Cpp(@"const_pointer", pType);
+	AddDefaultKeyword_Cpp(@"reverse_iterator", pType);
+	AddDefaultKeyword_Cpp(@"const_reverse_iterator", pType);
+	AddDefaultKeyword_Cpp(@"difference_type", pType);
+	AddDefaultKeyword_Cpp(@"size_type", pType);
+	AddDefaultKeyword_Cpp(@"key_compare", pType);
+	AddDefaultKeyword_Cpp(@"value_compare", pType);
+	AddDefaultKeyword_Cpp(@"key_type", pType);
+	AddDefaultKeyword_Cpp(@"mapped_type", pType);
+	AddDefaultKeyword_Cpp(@"hasher", pType);
+	AddDefaultKeyword_Cpp(@"key_equal", pType);
+	AddDefaultKeyword_Cpp(@"local_iterator", pType);
+	AddDefaultKeyword_Cpp(@"const_local_iterator", pType);
+	AddDefaultKeyword_Cpp(@"char_type", pType);
+	AddDefaultKeyword_Cpp(@"traits_type", pType);
+	AddDefaultKeyword_Cpp(@"int_type", pType);
+	AddDefaultKeyword_Cpp(@"pos_type", pType);
+	AddDefaultKeyword_Cpp(@"off_type", pType);
+	AddDefaultKeyword_Cpp(@"state_type", pType);
 	
 
-	AddDefaultKeyword(@"length", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fill", pMemberFunctionPublic);
-	AddDefaultKeyword(@"data", pMemberFunctionPublic);
-	AddDefaultKeyword(@"size", pMemberFunctionPublic);
-	AddDefaultKeyword(@"empty", pMemberFunctionPublic);
-	AddDefaultKeyword(@"max_size", pMemberFunctionPublic);
-	AddDefaultKeyword(@"at", pMemberFunctionPublic);
-	AddDefaultKeyword(@"insert", pMemberFunctionPublic);
-	AddDefaultKeyword(@"erase", pMemberFunctionPublic);
-	AddDefaultKeyword(@"clear", pMemberFunctionPublic);
-	AddDefaultKeyword(@"emplace", pMemberFunctionPublic);
-	AddDefaultKeyword(@"emplace_hint", pMemberFunctionPublic);
-	AddDefaultKeyword(@"key_comp", pMemberFunctionPublic);
-	AddDefaultKeyword(@"value_comp", pMemberFunctionPublic);
-	AddDefaultKeyword(@"find", pMemberFunctionPublic);
-	AddDefaultKeyword(@"count", pMemberFunctionPublic);
-	AddDefaultKeyword(@"lower_bound", pMemberFunctionPublic);
-	AddDefaultKeyword(@"upper_bound", pMemberFunctionPublic);
-	AddDefaultKeyword(@"equal_range", pMemberFunctionPublic);
-	AddDefaultKeyword(@"get_allocator", pMemberFunctionPublic);
-	AddDefaultKeyword(@"front", pMemberFunctionPublic);
-	AddDefaultKeyword(@"back", pMemberFunctionPublic);
-	AddDefaultKeyword(@"push", pMemberFunctionPublic);
-	AddDefaultKeyword(@"pop", pMemberFunctionPublic);
-	AddDefaultKeyword(@"top", pMemberFunctionPublic);
-	AddDefaultKeyword(@"assign", pMemberFunctionPublic);
-	AddDefaultKeyword(@"emplace_front", pMemberFunctionPublic);
-	AddDefaultKeyword(@"emplace_back", pMemberFunctionPublic);
-	AddDefaultKeyword(@"push_front", pMemberFunctionPublic);
-	AddDefaultKeyword(@"push_back", pMemberFunctionPublic);
-	AddDefaultKeyword(@"pop_front", pMemberFunctionPublic);
-	AddDefaultKeyword(@"pop_back", pMemberFunctionPublic);
-	AddDefaultKeyword(@"resize", pMemberFunctionPublic);
-	AddDefaultKeyword(@"splice", pMemberFunctionPublic);
-	AddDefaultKeyword(@"remove", pMemberFunctionPublic);
-	AddDefaultKeyword(@"remove_if", pMemberFunctionPublic);
-	AddDefaultKeyword(@"unique", pMemberFunctionPublic);
-	AddDefaultKeyword(@"merge", pMemberFunctionPublic);
-	AddDefaultKeyword(@"sort", pMemberFunctionPublic);
-	AddDefaultKeyword(@"reverse", pMemberFunctionPublic);
-	AddDefaultKeyword(@"before_begin", pMemberFunctionPublic);
-	AddDefaultKeyword(@"cbefore_begin", pMemberFunctionPublic);
-	AddDefaultKeyword(@"emplace_after", pMemberFunctionPublic);
-	AddDefaultKeyword(@"insert_after", pMemberFunctionPublic);
-	AddDefaultKeyword(@"erase_after", pMemberFunctionPublic);
-	AddDefaultKeyword(@"splice_after", pMemberFunctionPublic);
-	AddDefaultKeyword(@"shrink_to_fit", pMemberFunctionPublic);
-	AddDefaultKeyword(@"bucket_count", pMemberFunctionPublic);
-	AddDefaultKeyword(@"bucket_size", pMemberFunctionPublic);
-	AddDefaultKeyword(@"bucket", pMemberFunctionPublic);
-	AddDefaultKeyword(@"max_bucket_count", pMemberFunctionPublic);
-	AddDefaultKeyword(@"load_factor", pMemberFunctionPublic);
-	AddDefaultKeyword(@"max_load_factor", pMemberFunctionPublic);
-	AddDefaultKeyword(@"rehash", pMemberFunctionPublic);
-	AddDefaultKeyword(@"reserve", pMemberFunctionPublic);
-	AddDefaultKeyword(@"hash_fuction", pMemberFunctionPublic);
-	AddDefaultKeyword(@"key_eq", pMemberFunctionPublic);
-	AddDefaultKeyword(@"capacity", pMemberFunctionPublic);
-	AddDefaultKeyword(@"c_str", pMemberFunctionPublic);
-	AddDefaultKeyword(@"find", pMemberFunctionPublic);
-	AddDefaultKeyword(@"rfind", pMemberFunctionPublic);
-	AddDefaultKeyword(@"copy", pMemberFunctionPublic);
-	AddDefaultKeyword(@"find_first_of", pMemberFunctionPublic);
-	AddDefaultKeyword(@"find_last_of", pMemberFunctionPublic);
-	AddDefaultKeyword(@"find_first_not_of", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fint_last_not_of", pMemberFunctionPublic);
-	AddDefaultKeyword(@"substr", pMemberFunctionPublic);
-	AddDefaultKeyword(@"compare", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"length", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fill", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"data", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"size", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"empty", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"max_size", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"at", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"insert", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"erase", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"clear", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"emplace", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"emplace_hint", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"key_comp", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"value_comp", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"find", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"count", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"lower_bound", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"upper_bound", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"equal_range", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"get_allocator", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"front", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"back", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"push", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"pop", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"top", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"assign", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"emplace_front", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"emplace_back", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"push_front", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"push_back", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"pop_front", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"pop_back", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"resize", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"splice", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"remove", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"remove_if", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"unique", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"merge", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"sort", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"reverse", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"before_begin", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"cbefore_begin", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"emplace_after", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"insert_after", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"erase_after", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"splice_after", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"shrink_to_fit", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"bucket_count", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"bucket_size", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"bucket", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"max_bucket_count", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"load_factor", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"max_load_factor", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"rehash", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"reserve", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"hash_fuction", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"key_eq", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"capacity", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"c_str", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"find", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"rfind", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"copy", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"find_first_of", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"find_last_of", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"find_first_not_of", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fint_last_not_of", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"substr", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"compare", pMemberFunctionPublic);
 
-	AddDefaultKeyword(@"memory_order", pEnum);
-	AddDefaultKeyword(@"memory_order_relaxed", pEnumerator);
-	AddDefaultKeyword(@"memory_order_consume", pEnumerator);
-	AddDefaultKeyword(@"memory_order_acquire", pEnumerator);
-	AddDefaultKeyword(@"memory_order_release", pEnumerator);
-	AddDefaultKeyword(@"memory_order_acq_rel", pEnumerator);
-	AddDefaultKeyword(@"memory_order_seq_cst", pEnumerator);
+	AddDefaultKeyword_Cpp(@"memory_order", pEnum);
+	AddDefaultKeyword_Cpp(@"memory_order_relaxed", pEnumerator);
+	AddDefaultKeyword_Cpp(@"memory_order_consume", pEnumerator);
+	AddDefaultKeyword_Cpp(@"memory_order_acquire", pEnumerator);
+	AddDefaultKeyword_Cpp(@"memory_order_release", pEnumerator);
+	AddDefaultKeyword_Cpp(@"memory_order_acq_rel", pEnumerator);
+	AddDefaultKeyword_Cpp(@"memory_order_seq_cst", pEnumerator);
 	
-	AddDefaultKeyword(@"is_lock_free", pMemberFunctionPublic);
-	AddDefaultKeyword(@"store", pMemberFunctionPublic);
-	AddDefaultKeyword(@"load", pMemberFunctionPublic);
-	AddDefaultKeyword(@"exchange", pMemberFunctionPublic);
-	AddDefaultKeyword(@"compare_exchange_weak", pMemberFunctionPublic);
-	AddDefaultKeyword(@"compare_exchange_strong", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fetch_add", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fetch_sub", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fetch_and", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fetch_or", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fetch_xor", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"is_lock_free", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"store", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"load", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"exchange", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"compare_exchange_weak", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"compare_exchange_strong", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fetch_add", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fetch_sub", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fetch_and", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fetch_or", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fetch_xor", pMemberFunctionPublic);
 
-	AddDefaultKeyword(@"tie", pFunction);
-	AddDefaultKeyword(@"make_tuple", pFunction);
-	AddDefaultKeyword(@"forward_as_tuple", pFunction);
-	AddDefaultKeyword(@"tuple_cat", pFunction);
+	AddDefaultKeyword_Cpp(@"tie", pFunction);
+	AddDefaultKeyword_Cpp(@"make_tuple", pFunction);
+	AddDefaultKeyword_Cpp(@"forward_as_tuple", pFunction);
+	AddDefaultKeyword_Cpp(@"tuple_cat", pFunction);
 
-	AddDefaultKeyword(@"npos", pMemberConstantPublic);
-	AddDefaultKeyword(@"value", pMemberConstantPublic);
-	AddDefaultKeyword(@"getline", pFunction);
-	AddDefaultKeyword(@"min", pFunction);
-	AddDefaultKeyword(@"max", pFunction);
-	AddDefaultKeyword(@"assert", pMacro);
+	AddDefaultKeyword_Cpp(@"npos", pMemberConstantPublic);
+	AddDefaultKeyword_Cpp(@"value", pMemberConstantPublic);
+	AddDefaultKeyword_Cpp(@"getline", pFunction);
+	AddDefaultKeyword_Cpp(@"min", pFunction);
+	AddDefaultKeyword_Cpp(@"max", pFunction);
+	AddDefaultKeyword_Cpp(@"assert", pMacro);
 	
-	AddDefaultKeyword(@"integral_constant", pTemplateType);
-	AddDefaultKeyword(@"true_type", pType);
-	AddDefaultKeyword(@"false_type", pType);
+	AddDefaultKeyword_Cpp(@"integral_constant", pTemplateType);
+	AddDefaultKeyword_Cpp(@"true_type", pType);
+	AddDefaultKeyword_Cpp(@"false_type", pType);
 
-	AddDefaultKeyword(@"is_array", pTemplateType);
-	AddDefaultKeyword(@"is_class", pTemplateType);
-	AddDefaultKeyword(@"is_enum", pTemplateType);
-	AddDefaultKeyword(@"is_floating_point", pTemplateType);
-	AddDefaultKeyword(@"is_function", pTemplateType);
-	AddDefaultKeyword(@"is_integral", pTemplateType);
-	AddDefaultKeyword(@"is_lvalue_reference", pTemplateType);
-	AddDefaultKeyword(@"is_member_function_pointer", pTemplateType);
-	AddDefaultKeyword(@"is_member_object_pointer", pTemplateType);
-	AddDefaultKeyword(@"is_pointer", pTemplateType);
-	AddDefaultKeyword(@"is_rvalue_reference", pTemplateType);
-	AddDefaultKeyword(@"is_union", pTemplateType);
-	AddDefaultKeyword(@"is_void", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_array", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_class", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_enum", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_floating_point", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_function", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_integral", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_lvalue_reference", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_member_function_pointer", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_member_object_pointer", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_pointer", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_rvalue_reference", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_union", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_void", pTemplateType);
 
-	AddDefaultKeyword(@"is_arithmetic", pTemplateType);
-	AddDefaultKeyword(@"is_compound", pTemplateType);
-	AddDefaultKeyword(@"is_fundamental", pTemplateType);
-	AddDefaultKeyword(@"is_member_pointer", pTemplateType);
-	AddDefaultKeyword(@"is_object", pTemplateType);
-	AddDefaultKeyword(@"is_reference", pTemplateType);
-	AddDefaultKeyword(@"is_scalar", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_arithmetic", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_compound", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_fundamental", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_member_pointer", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_object", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_reference", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_scalar", pTemplateType);
 
-	AddDefaultKeyword(@"is_abstract", pTemplateType);
-	AddDefaultKeyword(@"is_const", pTemplateType);
-	AddDefaultKeyword(@"is_empty", pTemplateType);
-	AddDefaultKeyword(@"is_literal_type", pTemplateType);
-	AddDefaultKeyword(@"is_pod", pTemplateType);
-	AddDefaultKeyword(@"is_polymorphic", pTemplateType);
-	AddDefaultKeyword(@"is_signed", pTemplateType);
-	AddDefaultKeyword(@"is_standard_layout", pTemplateType);
-	AddDefaultKeyword(@"is_trivial", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_copyable", pTemplateType);
-	AddDefaultKeyword(@"is_unsigned", pTemplateType);
-	AddDefaultKeyword(@"is_volatile", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_abstract", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_const", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_empty", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_literal_type", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_pod", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_polymorphic", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_signed", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_standard_layout", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivial", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_copyable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_unsigned", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_volatile", pTemplateType);
 
-	AddDefaultKeyword(@"has_virtual_destructor", pTemplateType);
-	AddDefaultKeyword(@"is_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_copy_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_copy_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_destructible", pTemplateType);
-	AddDefaultKeyword(@"is_default_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_move_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_move_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_copy_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_copy_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_destructible", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_default_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_move_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_trivially_move_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_copy_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_copy_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_destructible", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_default_constructible", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_move_assignable", pTemplateType);
-	AddDefaultKeyword(@"is_nothrow_move_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"has_virtual_destructor", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_copy_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_copy_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_destructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_default_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_move_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_move_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_copy_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_copy_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_destructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_default_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_move_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_trivially_move_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_copy_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_copy_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_destructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_default_constructible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_move_assignable", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_nothrow_move_constructible", pTemplateType);
 
-	AddDefaultKeyword(@"is_base_of", pTemplateType);
-	AddDefaultKeyword(@"is_convertible", pTemplateType);
-	AddDefaultKeyword(@"is_same", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_base_of", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_convertible", pTemplateType);
+	AddDefaultKeyword_Cpp(@"is_same", pTemplateType);
 
-	AddDefaultKeyword(@"alignment_of", pTemplateType);
-	AddDefaultKeyword(@"extent", pTemplateType);
-	AddDefaultKeyword(@"rank", pTemplateType);
+	AddDefaultKeyword_Cpp(@"alignment_of", pTemplateType);
+	AddDefaultKeyword_Cpp(@"extent", pTemplateType);
+	AddDefaultKeyword_Cpp(@"rank", pTemplateType);
 
 
-	AddDefaultKeyword(@"add_const", pTemplateType);
-	AddDefaultKeyword(@"add_cv", pTemplateType);
-	AddDefaultKeyword(@"add_volatile", pTemplateType);
-	AddDefaultKeyword(@"remove_const", pTemplateType);
-	AddDefaultKeyword(@"remove_cv", pTemplateType);
-	AddDefaultKeyword(@"remove_volatile", pTemplateType);
+	AddDefaultKeyword_Cpp(@"add_const", pTemplateType);
+	AddDefaultKeyword_Cpp(@"add_cv", pTemplateType);
+	AddDefaultKeyword_Cpp(@"add_volatile", pTemplateType);
+	AddDefaultKeyword_Cpp(@"remove_const", pTemplateType);
+	AddDefaultKeyword_Cpp(@"remove_cv", pTemplateType);
+	AddDefaultKeyword_Cpp(@"remove_volatile", pTemplateType);
 
-	AddDefaultKeyword(@"add_pointer", pTemplateType);
-	AddDefaultKeyword(@"add_lvalue_reference", pTemplateType);
-	AddDefaultKeyword(@"add_rvalue_reference", pTemplateType);
-	AddDefaultKeyword(@"decay", pTemplateType);
-	AddDefaultKeyword(@"make_signed", pTemplateType);
-	AddDefaultKeyword(@"make_unsigned", pTemplateType);
-	AddDefaultKeyword(@"remove_all_extents", pTemplateType);
-	AddDefaultKeyword(@"remove_extent", pTemplateType);
-	AddDefaultKeyword(@"remove_pointer", pTemplateType);
-	AddDefaultKeyword(@"remove_reference", pTemplateType);
-	AddDefaultKeyword(@"underlying_type", pTemplateType);
+	AddDefaultKeyword_Cpp(@"add_pointer", pTemplateType);
+	AddDefaultKeyword_Cpp(@"add_lvalue_reference", pTemplateType);
+	AddDefaultKeyword_Cpp(@"add_rvalue_reference", pTemplateType);
+	AddDefaultKeyword_Cpp(@"decay", pTemplateType);
+	AddDefaultKeyword_Cpp(@"make_signed", pTemplateType);
+	AddDefaultKeyword_Cpp(@"make_unsigned", pTemplateType);
+	AddDefaultKeyword_Cpp(@"remove_all_extents", pTemplateType);
+	AddDefaultKeyword_Cpp(@"remove_extent", pTemplateType);
+	AddDefaultKeyword_Cpp(@"remove_pointer", pTemplateType);
+	AddDefaultKeyword_Cpp(@"remove_reference", pTemplateType);
+	AddDefaultKeyword_Cpp(@"underlying_type", pTemplateType);
 
-	AddDefaultKeyword(@"aligned_storage", pTemplateType);
-	AddDefaultKeyword(@"aligned_union", pTemplateType);
-	AddDefaultKeyword(@"common_type", pTemplateType);
-	AddDefaultKeyword(@"conditional", pTemplateType);
-	AddDefaultKeyword(@"enable_if", pTemplateType);
-	AddDefaultKeyword(@"result_of", pTemplateType);
+	AddDefaultKeyword_Cpp(@"aligned_storage", pTemplateType);
+	AddDefaultKeyword_Cpp(@"aligned_union", pTemplateType);
+	AddDefaultKeyword_Cpp(@"common_type", pTemplateType);
+	AddDefaultKeyword_Cpp(@"conditional", pTemplateType);
+	AddDefaultKeyword_Cpp(@"enable_if", pTemplateType);
+	AddDefaultKeyword_Cpp(@"result_of", pTemplateType);
 
 	
-	AddDefaultKeyword(@"make_pair", pFunction);
-	AddDefaultKeyword(@"forward", pFunction);
-	AddDefaultKeyword(@"move", pFunction);
-	AddDefaultKeyword(@"move_if_noexcept", pFunction);
-	AddDefaultKeyword(@"declval", pFunction);
+	AddDefaultKeyword_Cpp(@"make_pair", pFunction);
+	AddDefaultKeyword_Cpp(@"forward", pFunction);
+	AddDefaultKeyword_Cpp(@"move", pFunction);
+	AddDefaultKeyword_Cpp(@"move_if_noexcept", pFunction);
+	AddDefaultKeyword_Cpp(@"declval", pFunction);
 	
-	AddDefaultKeyword(@"bind", pFunction);
-	AddDefaultKeyword(@"function", pTemplateType);
+	AddDefaultKeyword_Cpp(@"bind", pFunction);
+	AddDefaultKeyword_Cpp(@"function", pTemplateType);
 	
-	AddDefaultKeyword(@"allocator", pTemplateType);
-	AddDefaultKeyword(@"auto_ptr_ref", pTemplateType);
-	AddDefaultKeyword(@"shared_ptr", pTemplateType);
-	AddDefaultKeyword(@"weak_ptr", pTemplateType);
-	AddDefaultKeyword(@"unique_ptr", pTemplateType);
-	AddDefaultKeyword(@"default_delete", pTemplateType);
+	AddDefaultKeyword_Cpp(@"allocator", pTemplateType);
+	AddDefaultKeyword_Cpp(@"auto_ptr_ref", pTemplateType);
+	AddDefaultKeyword_Cpp(@"shared_ptr", pTemplateType);
+	AddDefaultKeyword_Cpp(@"weak_ptr", pTemplateType);
+	AddDefaultKeyword_Cpp(@"unique_ptr", pTemplateType);
+	AddDefaultKeyword_Cpp(@"default_delete", pTemplateType);
 	
-	AddDefaultKeyword(@"make_shared", pFunction);
-	AddDefaultKeyword(@"allocate_shared", pFunction);
-	AddDefaultKeyword(@"static_pointer_cast", pFunction);
-	AddDefaultKeyword(@"dynamic_pointer_cast", pFunction);
-	AddDefaultKeyword(@"const_pointer_cast", pFunction);
-	AddDefaultKeyword(@"get_deleter", pFunction);
+	AddDefaultKeyword_Cpp(@"make_shared", pFunction);
+	AddDefaultKeyword_Cpp(@"allocate_shared", pFunction);
+	AddDefaultKeyword_Cpp(@"static_pointer_cast", pFunction);
+	AddDefaultKeyword_Cpp(@"dynamic_pointer_cast", pFunction);
+	AddDefaultKeyword_Cpp(@"const_pointer_cast", pFunction);
+	AddDefaultKeyword_Cpp(@"get_deleter", pFunction);
 
-	AddDefaultKeyword(@"owner_less", pTemplateType);
-	AddDefaultKeyword(@"enable_shared_from_this", pTemplateType);
+	AddDefaultKeyword_Cpp(@"owner_less", pTemplateType);
+	AddDefaultKeyword_Cpp(@"enable_shared_from_this", pTemplateType);
 	
-	AddDefaultKeyword(@"CFStr", pType);
-	AddDefaultKeyword(@"CFWStr", pType);
-	AddDefaultKeyword(@"CFUStr", pType);
+	AddDefaultKeyword_Cpp(@"CFStr", pType);
+	AddDefaultKeyword_Cpp(@"CFWStr", pType);
+	AddDefaultKeyword_Cpp(@"CFUStr", pType);
 	
-	AddDefaultKeyword(@"str_utf8", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"str_utf16", pKeywordPropertyModifiers);
-	AddDefaultKeyword(@"str_utf32", pKeywordPropertyModifiers);
+	AddDefaultKeyword_Cpp(@"str_utf8", pKeywordPropertyModifiers);
+	AddDefaultKeyword_Cpp(@"str_utf16", pKeywordPropertyModifiers);
+	AddDefaultKeyword_Cpp(@"str_utf32", pKeywordPropertyModifiers);
 
 #if 0
 	// Let's not pollute the namespace here
-	AddDefaultKeyword(@"event_callback", pType_Function);
-	AddDefaultKeyword(@"failure", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fmtflags", pEnum);
-	AddDefaultKeyword(@"iostate", pEnum);
-	AddDefaultKeyword(@"openmode", pEnum);
-	AddDefaultKeyword(@"seekdir", pEnum);
-	AddDefaultKeyword(@"sentry", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"event_callback", pType_Function);
+	AddDefaultKeyword_Cpp(@"failure", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fmtflags", pEnum);
+	AddDefaultKeyword_Cpp(@"iostate", pEnum);
+	AddDefaultKeyword_Cpp(@"openmode", pEnum);
+	AddDefaultKeyword_Cpp(@"seekdir", pEnum);
+	AddDefaultKeyword_Cpp(@"sentry", pMemberFunctionPublic);
 
-	AddDefaultKeyword(@"open", pMemberFunctionPublic);
-	AddDefaultKeyword(@"is_open", pMemberFunctionPublic);
-	AddDefaultKeyword(@"close", pMemberFunctionPublic);
-	AddDefaultKeyword(@"rdbuf", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"open", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"is_open", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"close", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"rdbuf", pMemberFunctionPublic);
 
-	AddDefaultKeyword(@"gcount", pMemberFunctionPublic);
-	AddDefaultKeyword(@"getline", pMemberFunctionPublic);
-	AddDefaultKeyword(@"peek", pMemberFunctionPublic);
-	AddDefaultKeyword(@"read", pMemberFunctionPublic);
-	AddDefaultKeyword(@"readsome", pMemberFunctionPublic);
-	AddDefaultKeyword(@"putback", pMemberFunctionPublic);
-	AddDefaultKeyword(@"unget", pMemberFunctionPublic);
-	AddDefaultKeyword(@"tellg", pMemberFunctionPublic);
-	AddDefaultKeyword(@"seekg", pMemberFunctionPublic);
-	AddDefaultKeyword(@"sync", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"gcount", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"getline", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"peek", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"read", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"readsome", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"putback", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"unget", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"tellg", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"seekg", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"sync", pMemberFunctionPublic);
 
-	AddDefaultKeyword(@"good", pMemberFunctionPublic);
-	AddDefaultKeyword(@"eof", pMemberFunctionPublic);
-	AddDefaultKeyword(@"fail", pMemberFunctionPublic);
-	AddDefaultKeyword(@"bad", pMemberFunctionPublic);
-	AddDefaultKeyword(@"rdstate", pMemberFunctionPublic);
-	AddDefaultKeyword(@"setstate", pMemberFunctionPublic);
-	AddDefaultKeyword(@"copyfmt", pMemberFunctionPublic);
-	AddDefaultKeyword(@"exceptions", pMemberFunctionPublic);
-	AddDefaultKeyword(@"imbue", pMemberFunctionPublic);
-	AddDefaultKeyword(@"tie", pMemberFunctionPublic);
-	AddDefaultKeyword(@"rdbuf", pMemberFunctionPublic);
-	AddDefaultKeyword(@"narrow", pMemberFunctionPublic);
-	AddDefaultKeyword(@"widen", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"good", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"eof", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"fail", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"bad", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"rdstate", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"setstate", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"copyfmt", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"exceptions", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"imbue", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"tie", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"rdbuf", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"narrow", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"widen", pMemberFunctionPublic);
 
-	AddDefaultKeyword(@"flags", pMemberFunctionPublic);
-	AddDefaultKeyword(@"setf", pMemberFunctionPublic);
-	AddDefaultKeyword(@"unsetf", pMemberFunctionPublic);
-	AddDefaultKeyword(@"precision", pMemberFunctionPublic);
-	AddDefaultKeyword(@"width", pMemberFunctionPublic);
-	AddDefaultKeyword(@"imbue", pMemberFunctionPublic);
-	AddDefaultKeyword(@"getloc", pMemberFunctionPublic);
-	AddDefaultKeyword(@"xalloc", pMemberFunctionPublic);
-	AddDefaultKeyword(@"iword", pMemberFunctionPublic);
-	AddDefaultKeyword(@"pword", pMemberFunctionPublic);
-	AddDefaultKeyword(@"register_callback", pMemberFunctionPublic);
-	AddDefaultKeyword(@"sync_with_stdio", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"flags", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"setf", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"unsetf", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"precision", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"width", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"imbue", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"getloc", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"xalloc", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"iword", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"pword", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"register_callback", pMemberFunctionPublic);
+	AddDefaultKeyword_Cpp(@"sync_with_stdio", pMemberFunctionPublic);
 	
-	AddDefaultKeyword(@"begin", pFunction);
-	AddDefaultKeyword(@"end", pFunction);
-	AddDefaultKeyword(@"rbegin", pFunction);
-	AddDefaultKeyword(@"rend", pFunction);
-	AddDefaultKeyword(@"cbegin", pFunction);
-	AddDefaultKeyword(@"cend", pFunction);
-	AddDefaultKeyword(@"crbegin", pFunction);
-	AddDefaultKeyword(@"crend", pFunction);
-	AddDefaultKeyword(@"swap", pFunction);
-	AddDefaultKeyword(@"get", pFunction);
+	AddDefaultKeyword_Cpp(@"begin", pFunction);
+	AddDefaultKeyword_Cpp(@"end", pFunction);
+	AddDefaultKeyword_Cpp(@"rbegin", pFunction);
+	AddDefaultKeyword_Cpp(@"rend", pFunction);
+	AddDefaultKeyword_Cpp(@"cbegin", pFunction);
+	AddDefaultKeyword_Cpp(@"cend", pFunction);
+	AddDefaultKeyword_Cpp(@"crbegin", pFunction);
+	AddDefaultKeyword_Cpp(@"crend", pFunction);
+	AddDefaultKeyword_Cpp(@"swap", pFunction);
+	AddDefaultKeyword_Cpp(@"get", pFunction);
 #endif
 	
 	fs_CreatePrefixMap();
@@ -2268,6 +2662,11 @@ static NSCharacterSet *pWhitespaceChars = nil;
 static NSCharacterSet *pWhitespaceNoNewLineChars = nil;
 static NSCharacterSet *pNewLineChars = nil;
 static NSMutableDictionary *pDefaultKeywords = nil;
+static NSMutableDictionary *pDefaultKeywords_Cpp = nil;
+static NSMutableDictionary *pDefaultKeywords_C = nil;
+static NSMutableDictionary *pDefaultKeywords_CLike = nil;
+static NSMutableDictionary *pDefaultKeywords_JS = nil;
+static NSMutableDictionary *pDefaultKeywords_CSS = nil;
 
 + (void) pluginDidLoad: (NSBundle*)plugin
 {
@@ -2304,7 +2703,7 @@ static NSMutableDictionary *pDefaultKeywords = nil;
 	
 	{
 		pValidConceptCharacters = [[NSMutableCharacterSet alloc] init];
-		[pValidConceptCharacters addCharactersInString:@"bcfinp"];
+		[pValidConceptCharacters addCharactersInString:@"bcfinpt"];
 	}
 	{
 		pOperatorCharacters = [[NSMutableCharacterSet alloc] init];

@@ -675,10 +675,10 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				else if 
 					(
 						((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask)
-						|| ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSAlternateKeyMask)
+						|| ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == (NSCommandKeyMask | NSControlKeyMask))
 					)
 				{
-					bool bExpandNext = (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSAlternateKeyMask;
+					bool bExpandNext = (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == (NSCommandKeyMask | NSControlKeyMask);
 					bool bIsValid = m_pActiveView && [m_pActiveView isValid];
 					if (g_pLastConsoleTextView)
 						g_pLastConsoleTextView = getConsoleTextView([g_pLastConsoleTextView window]);

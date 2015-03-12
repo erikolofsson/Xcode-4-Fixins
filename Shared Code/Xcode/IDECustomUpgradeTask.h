@@ -5,10 +5,10 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-#import "IDEUpgradeTask.h"
+#import <IDEFoundation/IDEUpgradeTask.h>
 
 @interface IDECustomUpgradeTask : IDEUpgradeTask
 {

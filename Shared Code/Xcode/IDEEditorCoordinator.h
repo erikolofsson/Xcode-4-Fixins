@@ -5,8 +5,10 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
+
+#import "Shared.h"
 
 @interface IDEEditorCoordinator : NSObject
 {
@@ -25,6 +27,9 @@
 + (void)_openNavigationHUDSelection:(id)arg1 forWorkspaceDocument:(id)arg2 documentURL:(id)arg3 usingBlock:(CDUnknownBlockType)arg4;
 + (void)openEditorHistoryItem:(id)arg1 forEditor:(id)arg2 takeFocus:(int)arg3;
 + (id)openEditorOpenSpecifier:(id)arg1 forEditor:(id)arg2 eventType:(unsigned long long)arg3;
++ (void)_openEditorOpenSpecifierInNavigationHUD:(id)arg1 forWorkspaceTabController:(id)arg2;
++ (void)_openEditorOpenSpecifierInNewTab:(id)arg1 forWorkspaceTabController:(id)arg2;
++ (void)_openEditorOpenSpecifierInNewWindow:(id)arg1 forWorkspaceTabController:(id)arg2;
 + (id)_openEditorOpenSpecifier:(id)arg1 forEditor:(id)arg2 eventBehavior:(int)arg3;
 + (id)openEditorOpenSpecifier:(id)arg1 forWorkspaceTabController:(id)arg2 eventType:(unsigned long long)arg3;
 + (void)_openEditorOpenSpecifier:(id)arg1 forWorkspaceTabController:(id)arg2 target:(int)arg3 takeFocus:(int)arg4;

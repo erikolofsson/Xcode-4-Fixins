@@ -5,15 +5,15 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
+
+#import "Shared.h"
 
 #import "DVTCompletingTextView.h"
 
 #import "DVTSourceTextScrollViewDelegate-Protocol.h"
 #import "DVTSourceTextViewDelegate-Protocol.h"
-
-typedef void (^CDUnknownBlockType)(void); // return type and parameters are unknown
 
 @class DVTAnnotationManager, DVTHashTable, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSColor, NSDictionary, NSMutableArray, NSString, NSTimer, NSView, NSWindow;
 
@@ -274,7 +274,6 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 - (void)mouseMoved:(id)arg1;
 - (void)_mouseInside:(id)arg1;
 - (void)resetCursorRects;
-- (struct CGRect)visibleRect;
 - (void)removeFromSuperview;
 - (void)viewDidMoveToWindow;
 - (void)_refreshScrollerMarkers;
@@ -282,6 +281,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 - (void)setUsesMarkedScrollbar:(BOOL)arg1;
 - (id)attributedStringForCompletionPlaceholderCell:(id)arg1 atCharacterIndex:(unsigned long long)arg2 withDefaultAttributes:(id)arg3;
 - (void)clickedOnCell:(id)arg1 inRect:(struct CGRect)arg2 atIndexInToken:(unsigned long long)arg3;
+- (void)_showTemporaryLinkForExpressionUnderMouse:(BOOL)arg1 isAlternate:(BOOL)arg2;
 - (void)_didClickOnTemporaryLinkWithEvent:(id)arg1;
 - (void)_updateTemporaryLinkUnderMouseForEvent:(id)arg1;
 - (unsigned long long)_nonBlankCharIndexUnderMouse;
@@ -368,7 +368,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

@@ -5,8 +5,10 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
+
+#import "Shared.h"
 
 #import "DVTModelObject.h"
 
@@ -15,9 +17,10 @@
 #import "IDEIntegrityLogDataSource-Protocol.h"
 #import "IDEReadOnlyItem-Protocol.h"
 #import "IDEUpgradeableItem-Protocol.h"
-#import "IDEContainerCore-Protocol.h"
 
 @class DVTExtension, DVTFilePath, DVTMapTable, DVTOperation, DVTStackBacktrace, IDEActivityLogSection, IDEGroup, IDEWorkspace, NSDictionary, NSMapTable, NSMutableDictionary, NSMutableSet, NSString, NSTimer, NSURL;
+
+@protocol IDEContainerCore;
 
 @interface IDEContainer : DVTModelObject <DVTInvalidation, IDEIntegrityLogDataSource, IDEReadOnlyItem, DVTDirectoryBasedCustomDataStoreDelegate, IDEUpgradeableItem>
 {
@@ -192,7 +195,7 @@
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;

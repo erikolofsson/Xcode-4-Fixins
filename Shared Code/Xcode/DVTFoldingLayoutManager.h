@@ -5,10 +5,11 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTFoldingManagerDelegate-Protocol.h"
+#import "DVTTextStorage.h"
 
 @class DVTFoldingManager, DVTTextFoldInlineTokenAttachmentCell, DVTTextStorage, NSCell, NSString;
 
@@ -38,13 +39,13 @@
 - (struct _NSRange)paragraphRangeForLineRange:(struct _NSRange)arg1;
 - (struct CGSize)layoutSizeForFoldAtCharacterIndex:(unsigned long long)arg1;
 - (BOOL)foldsAreValid:(id)arg1;
-@property DVTTextStorage *textStorage;
+@property (assign) DVTTextStorage *textStorage;
 - (void)enableTextFolding:(BOOL)arg1;
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

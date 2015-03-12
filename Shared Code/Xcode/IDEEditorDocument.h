@@ -5,14 +5,15 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
+
+#import "Shared.h"
 
 #import "DVTUndoManagerDelegate-Protocol.h"
 #import "IDEReadOnlyItem-Protocol.h"
 #import "DVTCancellable-Protocol.h"
-
-typedef void (^CDUnknownBlockType)(void); // return type and parameters are unknown
+#import "DVTUndoManager.h"
 
 @class DVTDispatchLock, DVTExtension, DVTFileDataType, DVTFilePath, DVTMapTable, DVTNotificationToken, DVTStackBacktrace, DVTUndoManager, NSDictionary, NSMutableArray, NSMutableSet, NSSet, NSString, NSURL;
 
@@ -45,7 +46,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
     NSMutableSet *_documentEditors;
     NSURL *_ide_representedURL;
     id <DVTCancellable> _closeAfterDelayToken;
-    CDUnknownBlockType _filePresenterWriter;
+    void (^_filePresenterWriter)(void);
     BOOL _cachedHasRecentChanges;
     BOOL _didDisableAutomaticTermination;
     BOOL _ide_isTemporaryDocument;
@@ -201,7 +202,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

@@ -5,10 +5,10 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-@class DVTAnnotation, DVTTextAnnotation, DVTTextSidebarView, NSArray, NSEvent, NSSet;
+@class DVTAnnotation, DVTTextAnnotation, DVTTextSidebarView, NSArray, NSEvent, NSGestureRecognizer, NSSet;
 
 @protocol DVTTextAnnotationDelegate <NSObject>
 
@@ -18,6 +18,7 @@
 - (double)sidebarMarkerOpacityForAnnotation:(DVTTextAnnotation *)arg1;
 - (BOOL)shouldMoveCursorForAnnotation:(DVTTextAnnotation *)arg1;
 - (NSArray *)contextMenuItemsForAnnotation:(DVTTextAnnotation *)arg1 inTextSidebarView:(DVTTextSidebarView *)arg2;
+- (void)didRecognizeGestureInAnnotation:(DVTTextAnnotation *)arg1 inTextSidebarView:(DVTTextSidebarView *)arg2 recognizer:(NSGestureRecognizer *)arg3;
 - (void)didDeleteOrReplaceParagraphForAnnotation:(DVTTextAnnotation *)arg1;
 - (void)didRemoveAnnotation:(DVTAnnotation *)arg1;
 - (void)didMoveAnnotation:(DVTAnnotation *)arg1;

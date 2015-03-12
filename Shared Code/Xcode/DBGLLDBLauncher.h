@@ -5,32 +5,24 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "IDERunOperationPathWorker.h"
 
 #import "IDEConsoleAdaptorDelegateProtocol-Protocol.h"
 
-struct SBProcess
-{
-};
-struct SBTarget
-{
-};
-struct SBDebugger
-{
-};
-struct SBError
-{
-};
+@class DBGLLDBSession, DVTDispatchLock, NSString;
+@protocol OS_dispatch_queue;
 
-@class DBGLLDBSession, DVTDispatchLock;
+struct SBProcess {};
+struct SBTarget {};
+struct SBError {};
 
 __attribute__((visibility("hidden")))
 @interface DBGLLDBLauncher : IDERunOperationPathWorker <IDEConsoleAdaptorDelegateProtocol>
 {
-    struct SBDebugger _lldbDebugger;
+	struct SBDebugger {} _lldbDebugger;
     DBGLLDBSession *_debugSession;
     NSString *_lastKnownDebuggerPrompt;
     BOOL _ignorePromptOnce;

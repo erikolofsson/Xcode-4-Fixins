@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "IDEOutlineBasedNavigator.h"
@@ -13,8 +13,8 @@
 #import "IDETemplateSupportingNavigator-Protocol.h"
 #import "IDETestingSelection-Protocol.h"
 
-@protocol IDEStructureEditingDropTarget;
 @class DVTObservingToken, IDENavigatorDataCell, NSDictionary, NSMutableSet, NSSet, NSString, NSTableColumn;
+@protocol IDEStructureEditingDropTarget;
 
 @interface IDEStructureNavigator : IDEOutlineBasedNavigator <NSMenuDelegate, IDETemplateSupportingNavigator, IDETestingSelection>
 {
@@ -101,8 +101,15 @@
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (id)domainIdentifier;
+- (void)_replaceItemsInMenu:(id)arg1 withItemsInMenu:(id)arg2;
 - (void)loadView;
 - (void)menuNeedsUpdate:(id)arg1;
+- (void)openInAdjacentEditorWithShiftPlusAlternate:(id)arg1;
+- (void)openInNewWindow:(id)arg1;
+- (void)openInNewTab:(id)arg1;
+- (id)_openSpecifierForNavigableItem:(id)arg1;
+- (id)_itemFromContextualClickedRows;
+- (BOOL)_isSelectionFileReferenceNavigableItem;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (void)contextMenu_showFileInspector:(id)arg1;
 - (void)contextMenu_delete:(id)arg1;
@@ -147,7 +154,7 @@
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
 @property(copy) NSSet *expandedItems; // @dynamic expandedItems;
-@property(readonly) unsigned long long hash;
+
 @property(readonly, copy) NSMutableSet *mutableExpandedItems; // @dynamic mutableExpandedItems;
 @property(readonly) Class superclass;
 

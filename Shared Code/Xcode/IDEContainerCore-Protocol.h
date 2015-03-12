@@ -5,10 +5,10 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-#import "DVTInvalidation-Protocol.h"
+#import "DVTInvalidation.h"
 
 @class DVTExtension, DVTFileDataType, DVTFilePath, NSArray;
 
@@ -19,7 +19,7 @@
 - (int)currentActivity;
 - (DVTExtension *)containerExtension;
 - (DVTFilePath *)filePath;
-- (id )rootGroup;
+- (id <IDEContainerGroupCore>)rootGroup;
 - (void)releaseContainerCore;
 - (void)retainContainerCore;
 - (id)initWithFilePath:(DVTFilePath *)arg1 extension:(DVTExtension *)arg2 error:(id *)arg3;

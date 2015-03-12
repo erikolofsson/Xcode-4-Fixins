@@ -5,13 +5,8 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
-
-struct sqlite3_stmt;
-struct CDStruct_70511ce9
-{
-};
 
 @class IDEIndexDBTempTable, NSArray;
 
@@ -21,6 +16,9 @@ struct CDStruct_70511ce9
     NSArray *_instantiatedRows;
     Class _expectedClass;
 }
+
+struct sqlite3_stmt {};
+struct CDStruct_70511ce9{};
 
 @property(readonly, nonatomic) IDEIndexDBTempTable *tempTable; // @synthesize tempTable=_tempTable;
 - (id)uniqueObjects;

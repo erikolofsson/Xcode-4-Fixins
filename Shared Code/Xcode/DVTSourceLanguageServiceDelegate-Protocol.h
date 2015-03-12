@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 @class DVTSourceCodeLanguage, DVTSourceLandmarkItem, DVTSourceModelItem, NSDictionary, NSString;
@@ -14,6 +14,7 @@
 @property(readonly, nonatomic) NSDictionary *sourceLanguageServiceContext;
 - (void)serviceAvailabilityNotification:(BOOL)arg1 message:(NSString *)arg2;
 - (void)scheduleLazyInvalidationForRange:(struct _NSRange)arg1;
+- (void)updateAttributesInRange:(struct _NSRange)arg1;
 - (void)invalidateAllLandmarks;
 - (DVTSourceLandmarkItem *)sourceLandmarkAtCharacterIndex:(unsigned long long)arg1;
 - (long long)syntaxTypeForItem:(DVTSourceModelItem *)arg1 context:(NSDictionary *)arg2;

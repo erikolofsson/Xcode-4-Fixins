@@ -5,14 +5,14 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTInvalidation-Protocol.h"
 #import "DVTXMLUnarchiving-Protocol.h"
-#import "IDEInternalBreakpointDelegate-Protocol.h"
 
 @class DVTMapTable, DVTStackBacktrace, IDEBreakpointBucket, NSArray, NSMutableArray, NSString;
+@protocol IDEInternalBreakpointDelegate;
 
 @interface IDEBreakpoint : NSObject <DVTXMLUnarchiving, NSCopying, DVTInvalidation>
 {
@@ -75,7 +75,7 @@
 @property(copy) NSArray *actions; // @dynamic actions;
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) NSArray *locations; // @dynamic locations;
 @property(readonly) NSMutableArray *mutableActions; // @dynamic mutableActions;

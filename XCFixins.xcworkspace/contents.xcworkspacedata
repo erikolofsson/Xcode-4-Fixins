@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Shared Code/Xcode/Shared.h">
+   </FileRef>
+   <FileRef
       location = "group:XCFixin_Highlight/XCFixin_Highlight.xcodeproj">
    </FileRef>
    <FileRef

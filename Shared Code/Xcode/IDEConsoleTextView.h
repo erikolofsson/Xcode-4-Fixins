@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTCompletingTextView.h"
@@ -13,8 +13,9 @@
 #import "DVTFindBarFindable-Protocol.h"
 #import "DVTInvalidation-Protocol.h"
 #import "DVTTextFindable-Protocol.h"
-#import "IDEConsoleTextViewObjectiveCExpressionRangeDelegate-Protocol.h"
-#import "IDEConsoleTextViewStandardIODelegate-Protocol.h"
+
+@protocol IDEConsoleTextViewStandardIODelegate;
+@protocol IDEConsoleTextViewObjectiveCExpressionRangeDelegate;
 
 @class DVTObservingToken, DVTStackBacktrace, DVTTextCompletionDataSource, NSDictionary, NSMutableArray, NSString;
 
@@ -109,7 +110,7 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
 @property unsigned long long supportedMatchingOptions;

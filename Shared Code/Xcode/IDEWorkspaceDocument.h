@@ -5,8 +5,10 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
+
+#import "Shared.h"
 
 #import "DVTStateRepositoryDelegate-Protocol.h"
 #import "DVTStatefulObject-Protocol.h"
@@ -59,6 +61,7 @@
     DVTSystemActivityToken *_systemActivityToken;
     DVTObservingToken *_executionTrackerIsFinishedObservingToken;
     DVTObservingToken *_executionEnvironmentCurrentBuildOperationObservingToken;
+    DVTObservingToken *_simpleFilesFocusedObservingToken;
     DVTStackBacktrace *_creationBacktrace;
 }
 
@@ -138,6 +141,7 @@
 - (void)_setLaunchSessionToIntensiveFileIODoneStateIfNecessary:(id)arg1;
 - (void)presentedItemDidChange;
 - (void)presentedItemDidMoveToURL:(id)arg1;
+- (BOOL)_isExpendableAsUnsavedDocument;
 - (void)_handleDocumentFileChanges:(id)arg1;
 - (BOOL)revertToContentsOfURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 - (BOOL)readFromURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
@@ -188,6 +192,7 @@
 @property(readonly, getter=isClosed) BOOL closed;
 - (id)_openingPerformanceMetricIdentifier;
 - (void)dvt_shouldDeallocate;
+- (BOOL)_isLocatedByURL:(id)arg1 becauseOfAutosavedContentsFile:(char *)arg2;
 - (id)initForURL:(id)arg1 withContentsOfURL:(id)arg2 ofType:(id)arg3 error:(id *)arg4;
 - (id)initWithType:(id)arg1 error:(id *)arg2;
 - (id)initWithWorkspace:(id)arg1;
@@ -227,7 +232,7 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

@@ -1168,7 +1168,8 @@ static NSColor* CreateColor(unsigned int _Color)
 static void fs_GenerateHTMLTableStart()
 {
 //	printf("<div>%s</div>\n", _pHeading);
-	printf("<div style=\"background-color:black;color:white\"><font face=\"Unbroken,Menlo,Consolas,monospace\" style=\"font-size:10px\"><table border=\"0\" cellspacing=\"0\" style=\"margin-left:2px;border-spacing:5px\"><tbody>\n");
+	//printf("<div style=\"background-color:black;color:white\"><font face=\"Unbroken,Menlo,Consolas,monospace\" style=\"font-size:10px\"><table border=\"0\" cellspacing=\"0\" style=\"margin-left:2px;border-spacing:5px\"><tbody>\n");
+	printf("<div class=\"code_table\"><font face=\"Unbroken,Menlo,Consolas,monospace\" style=\"font-size:10px\"><table border=\"0\" cellspacing=\"0\" style=\"margin-left:2px;border-spacing:5px\"><tbody>\n");
 }
 
 static void fs_GenerateHTMLSectionStart(char const *_pHeading)

@@ -10,6 +10,9 @@
 
 @class IDEIndexDBTempTable, NSArray;
 
+struct sqlite3_stmt {};
+struct CDStruct_70511ce9 {};
+
 @interface IDEIndexCollection : NSObject <NSFastEnumeration>
 {
     IDEIndexDBTempTable *_tempTable;
@@ -17,10 +20,8 @@
     Class _expectedClass;
 }
 
-struct sqlite3_stmt {};
-struct CDStruct_70511ce9{};
-
 @property(readonly, nonatomic) IDEIndexDBTempTable *tempTable; // @synthesize tempTable=_tempTable;
+
 - (id)uniqueObjects;
 - (id)onlyObject;
 - (id)firstObject;

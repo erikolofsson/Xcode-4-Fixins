@@ -9,10 +9,10 @@
 //
 
 #import "IDEViewController.h"
+#import "DVTTextFindable-Protocol.h"
+#import "IDEEditorDelegate-Protocol.h"
 
 @class DVTFindBar, DVTNotificationToken, DVTObservingToken, DVTScopeBarsManager, IDEEditorContext, IDEEditorDocument, IDEFileTextSettings, NSScrollView;
-@protocol DVTTextFindable;
-@protocol IDEEditorDelegate;
 
 @interface IDEEditor : IDEViewController
 {
@@ -37,6 +37,7 @@
 @property(retain) IDEEditorDocument *document; // @synthesize document=_document;
 @property(retain, nonatomic) IDEEditorDocument *documentForNavBarStructure; // @synthesize documentForNavBarStructure=_documentForNavBarStructure;
 @property BOOL discardsFindResultsWhenContentChanges; // @synthesize discardsFindResultsWhenContentChanges=_discardsFindResultsWhenContentChanges;
+
 - (id)relatedMenuItemsForNavItem:(id)arg1;
 - (void)didSetupEditor;
 - (void)navigateToAnnotationWithRepresentedObject:(id)arg1 wantsIndicatorAnimation:(BOOL)arg2 exploreAnnotationRepresentedObject:(id)arg3;

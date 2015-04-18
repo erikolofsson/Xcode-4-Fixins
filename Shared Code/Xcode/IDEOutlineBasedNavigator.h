@@ -9,9 +9,9 @@
 //
 
 #import "IDENavigator.h"
+#import "IDEOpenRequest-Protocol.h"
 
 @class IDENavigatorOutlineView, NSArray, NSMutableArray;
-@protocol IDEOpenRequest;
 
 @interface IDEOutlineBasedNavigator : IDENavigator
 {
@@ -26,6 +26,7 @@
 @property(retain) id <IDEOpenRequest> lastOpenRequest; // @synthesize lastOpenRequest=_lastOpenRequest;
 @property(retain) NSArray *objects; // @synthesize objects=_objects;
 @property(retain) IDENavigatorOutlineView *outlineView; // @synthesize outlineView=_outlineView;
+
 - (id)contextMenuSelection;
 - (void)primitiveInvalidate;
 - (void)updateBoundContent;

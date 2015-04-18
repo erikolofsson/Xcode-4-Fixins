@@ -9,10 +9,10 @@
 //
 
 #import "DVTInvalidation-Protocol.h"
+#import "IDERunOperationWorkerDelegate-Protocol.h"
+#import "IDERunOperationWorkerTracker-Protocol.h"
 
 @class DVTDispatchLock, DVTStackBacktrace, IDELaunchSession, NSString;
-@protocol IDERunOperationWorkerDelegate;
-@protocol IDERunOperationWorkerTracker;
 
 @interface IDERunOperationWorker : NSObject <DVTInvalidation>
 {
@@ -27,9 +27,11 @@
 @property(retain) id <IDERunOperationWorkerTracker> runnableTracker; // @synthesize runnableTracker=_runnableTracker;
 @property(readonly) IDELaunchSession *launchSession; // @synthesize launchSession=_launchSession;
 @property(readonly) NSString *extensionIdentifier; // @synthesize extensionIdentifier=_extensionIdentifier;
+
 - (void)primitiveInvalidate;
 @property(readonly, copy) NSString *description;
 - (void)terminate;
+- (id)notFinishedReasonWithDepth:(unsigned long long)arg1;
 - (void)finishedWithError:(id)arg1;
 - (void)start;
 - (void)setRunOperation:(id)arg1;
@@ -38,7 +40,6 @@
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;

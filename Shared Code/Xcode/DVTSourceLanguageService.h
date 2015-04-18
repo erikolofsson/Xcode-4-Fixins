@@ -8,17 +8,18 @@
 // SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
+#import "DVTInvalidation-Protocol.h"
 #import "Shared.h"
-
-#import "DVTInvalidation.h"
 
 @class DVTSourceCodeLanguage, DVTStackBacktrace, NSCharacterSet, NSString;
 
 @interface DVTSourceLanguageService : NSObject <DVTInvalidation>
 {
+    BOOL _semanticsDisabled;
     DVTSourceCodeLanguage *_language;
     id <DVTSourceLanguageServiceDelegate> _delegate;
     CDUnknownBlockType _contentGenerationCompletionBlock;
+    long long _status;
 }
 
 + (id)methodOrFunctionSourceLandmarkItemForSourceLandmarkItem:(id)arg1;
@@ -29,6 +30,8 @@
 + (void)initialize;
 + (Class)sourceLanguageServiceClassForLanguage:(id)arg1;
 + (id)sourceLanguageServiceForLanguage:(id)arg1 withDelegate:(id)arg2;
+@property(getter=isSemanticsDisabled) BOOL semanticsDisabled; // @synthesize semanticsDisabled=_semanticsDisabled;
+@property long long status; // @synthesize status=_status;
 @property(copy) CDUnknownBlockType contentGenerationCompletionBlock; // @synthesize contentGenerationCompletionBlock=_contentGenerationCompletionBlock;
 @property(nonatomic) id <DVTSourceLanguageServiceDelegate> delegate; // @synthesize delegate=_delegate;
 @property(readonly) DVTSourceCodeLanguage *language; // @synthesize language=_language;
@@ -78,7 +81,6 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;

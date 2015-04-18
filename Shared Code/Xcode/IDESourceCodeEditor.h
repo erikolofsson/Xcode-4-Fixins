@@ -9,6 +9,7 @@
 //
 
 #import "Shared.h"
+
 #import "IDEEditor.h"
 
 #import "DVTFindBarFindable-Protocol.h"
@@ -21,8 +22,8 @@
 #import "IDETestingSelection-Protocol.h"
 #import "IDETextVisualizationHost-Protocol.h"
 
-@class DVTDispatchLock, DVTLayoutManager, DVTNotificationToken, DVTObservingToken, DVTOperation, DVTSDK, DVTScopeBarController, DVTSourceExpression, DVTSourceLanguageService, DVTSourceTextView, DVTStackBacktrace, DVTTextDocumentLocation, DVTTextSidebarView, DVTWeakInterposer, IDEAnalyzerResultsExplorer, IDENoteAnnotationExplorer, IDESingleFileProcessingToolbarController, IDESourceCodeDocument, IDESourceCodeEditorAnnotationProvider, IDESourceCodeEditorContainerView, IDESourceCodeHelpNavigationRequest, IDESourceCodeNavigationRequest, IDESourceCodeSingleLineBlameProvider, IDESourceControlLogDetailViewController, IDEViewController, NSArray, NSDictionary, NSMutableArray, NSOperationQueue, NSPopover, NSProgressIndicator, NSScrollView, NSString, NSTimer, NSTrackingArea, NSView;
-@protocol IDESourceEditorViewControllerHost;
+@protocol OS_dispatch_queue, IDESourceEditorViewControllerHost;
+@class DVTDispatchLock, DVTLayoutManager, DVTNotificationToken, DVTObservingToken, DVTOperation, DVTSDK, DVTScopeBarController, DVTSourceExpression, DVTSourceLanguageService, DVTSourceTextView, DVTStackBacktrace, DVTTextDocumentLocation, DVTTextSidebarView, DVTWeakInterposer, IDEAnalyzerResultsExplorer, IDENoteAnnotationExplorer, IDESingleFileProcessingToolbarController, IDESourceCodeDocument, IDESourceCodeEditorAnnotationProvider, IDESourceCodeEditorContainerView, IDESourceCodeHelpNavigationRequest, IDESourceCodeNavigationRequest, IDESourceCodeSingleLineBlameProvider, IDESourceControlLogDetailViewController, IDESourceLanguageEditorExtension, IDEViewController, NSArray, NSDictionary, NSImmediateActionGestureRecognizer, NSMutableArray, NSOperationQueue, NSPopover, NSProgressIndicator, NSPulseGestureRecognizer, NSScrollView, NSString, NSTimer, NSTrackingArea, NSView;
 
 @interface IDESourceCodeEditor : IDEEditor <NSTextViewDelegate, NSMenuDelegate, NSPopoverDelegate, DVTSourceTextViewDelegate, DVTFindBarFindable, IDESourceExpressionSource, IDERefactoringExpressionSource, IDETextVisualizationHost, IDEOpenQuicklyJumpToSupport, IDEComparisonEditorHostContext, IDESourceControlLogDetailDelegate, IDETestingSelection>
 {
@@ -48,12 +49,14 @@
     DVTObservingToken *_diagnosticItemsObserverToken;
     NSOperationQueue *_diagnoseRelatedFilesQueue;
     DVTOperation *_findRelatedFilesOperation;
+    DVTOperation *_scheduleDiagnoticsForRelatedFilesOperation;
     DVTObservingToken *_sessionInProgressObserverToken;
     DVTNotificationToken *_blueprintDidChangeNotificationObservingToken;
     DVTNotificationToken *_textStorageDidProcessEndingObserver;
     DVTNotificationToken *_textViewBoundsDidChangeObservingToken;
     DVTNotificationToken *_sourceCodeDocumentDidSaveNotificationToken;
     DVTNotificationToken *_indexDidChangeNotificationToken;
+    DVTObservingToken *_semanticsDisabledObservingToken;
     IDESourceCodeEditorAnnotationProvider *_annotationProvider;
     IDEAnalyzerResultsExplorer *_analyzerResultsExplorer;
     DVTWeakInterposer *_analyzerResultsScopeBar_dvtWeakInterposer;
@@ -91,6 +94,10 @@
     BOOL _initialSetupDone;
     BOOL _nodeTypesPrefetchingStarted;
     BOOL _isUninstalling;
+    NSPulseGestureRecognizer *_recognizeGestureInSideBarView;
+    NSImmediateActionGestureRecognizer *_immediateActionRecognizer;
+    IDESourceLanguageEditorExtension *_editorExtension;
+    DVTScopeBarController *_languageServiceStatusScopeBarController;
 }
 
 + (id)keyPathsForValuesAffectingIsWorkspaceBuilding;
@@ -98,6 +105,10 @@
 + (void)commitStateToDictionary:(id)arg1 withSourceTextView:(id)arg2;
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
+@property(retain) DVTScopeBarController *languageServiceStatusScopeBarController; // @synthesize languageServiceStatusScopeBarController=_languageServiceStatusScopeBarController;
+@property(retain) IDESourceLanguageEditorExtension *editorExtension; // @synthesize editorExtension=_editorExtension;
+@property(retain) NSImmediateActionGestureRecognizer *immediateActionRecognizer; // @synthesize immediateActionRecognizer=_immediateActionRecognizer;
+@property(retain) NSPulseGestureRecognizer *recognizeGestureInSideBarView; // @synthesize recognizeGestureInSideBarView=_recognizeGestureInSideBarView;
 @property(retain) IDESingleFileProcessingToolbarController *singleFileProcessingToolbarController; // @synthesize singleFileProcessingToolbarController=_singleFileProcessingToolbarController;
 @property struct _NSRange lastEditedCharacterRange; // @synthesize lastEditedCharacterRange=_lastEditedCharRange;
 @property(retain) IDEAnalyzerResultsExplorer *analyzerResultsExplorer; // @synthesize analyzerResultsExplorer=_analyzerResultsExplorer;
@@ -106,12 +117,13 @@
 @property(retain) DVTLayoutManager *layoutManager; // @synthesize layoutManager=_layoutManager;
 @property(retain) DVTSourceTextView *textView; // @synthesize textView=_textView;
 @property(retain) NSScrollView *scrollView; // @synthesize scrollView=_scrollView;
+
 - (BOOL)editorDocumentIsCurrentRevision;
 - (BOOL)editorIsHostedInComparisonEditor;
 - (id)_documentLocationForLineNumber:(long long)arg1;
 - (void)_createFileBreakpointAtLocation:(long long)arg1;
 - (id)_breakpointManager;
-- (long long)_currentOneBasedLineNubmer;
+- (long long)_currentOneBasedLineNumber;
 - (id)currentEditorContext;
 - (id)documentLocationForOpenQuicklyQuery:(id)arg1;
 - (void)openQuicklyScoped:(id)arg1;
@@ -126,8 +138,11 @@
 - (void)jumpBetweenSourceFileAndGeneratedFile:(id)arg1;
 - (void)jumpToDefinitionWithShiftPlusAlternate:(id)arg1;
 - (void)jumpToDefinitionWithAlternate:(id)arg1;
-- (void)jumpToDefinition:(id)arg1;
+- (void)copyQualifiedSymbolName:(id)arg1;
+- (void)copySymbolName:(id)arg1;
+- (void)_copyQualifiedSymbolName:(BOOL)arg1;
 - (void)_jumpToExpression:(id)arg1;
+- (void)jumpToDefinition:(id)arg1;
 - (void)revealInSymbolNavigator:(id)arg1;
 - (unsigned long long)_insertionIndexUnderMouse;
 - (id)_documentLocationUnderMouse;
@@ -176,6 +191,10 @@
 - (void)_askToPromoteToUnicodeSheetDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)_askToPromoteToUnicode;
 - (void)_applyPerFileTextSettings;
+- (void)recognizerDidDismissAnimation:(id)arg1;
+- (void)recognizerDidCompleteAnimation:(id)arg1;
+- (void)recognizerDidCancelAnimation:(id)arg1;
+- (void)recognizerWillBeginAnimation:(id)arg1;
 - (void)textView:(id)arg1 doubleClickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
 - (void)textView:(id)arg1 clickedOnCell:(id)arg2 inRect:(struct CGRect)arg3 atIndex:(unsigned long long)arg4;
 - (void)contextMenu_toggleIssueShown:(id)arg1;
@@ -239,6 +258,8 @@
 - (void)textViewBoundsDidChange:(id)arg1;
 - (void)textView:(id)arg1 handleMouseDidExitSidebar:(id)arg2;
 - (void)textView:(id)arg1 handleMouseDidMoveOverSidebar:(id)arg2 atLineNumber:(unsigned long long)arg3;
+- (void)recognizeImmediateActionGesture:(id)arg1;
+- (void)recognizeGestureInSideBarView:(id)arg1;
 - (void)uninstallBreakpointGestureRecognizers;
 - (void)_replaceItemsInMenu:(id)arg1 withItemsInMenu:(id)arg2;
 - (void)installBreakpointGestureRecognizersInView:(id)arg1;
@@ -303,7 +324,6 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) DVTSDK *sdk;
 @property(readonly) Class superclass;

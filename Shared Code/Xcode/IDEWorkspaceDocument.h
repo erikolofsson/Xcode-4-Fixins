@@ -39,6 +39,7 @@
     DVTObservingToken *_isWorkspaceIdleToken;
     DVTObservingToken *_launchSessionsObservingToken;
     DVTObservingToken *_launchSessionsRunnablePIDObservingToken;
+    DVTNotificationToken *_launchSessionErrorToken;
     DVTObservingToken *_currentDebugSessionObserverToken;
     DVTNotificationToken *_applicationIsQuittingNotificationToken;
     DVTObservingToken *_currentExecutionTrackerObservingToken;
@@ -87,6 +88,7 @@
 @property(nonatomic) int debuggingWindowBehavior; // @synthesize debuggingWindowBehavior=_debuggingWindowBehavior;
 @property(retain) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
+
 - (id)dvtExtraBindings;
 - (id)storedRunDestinationSelectable;
 - (id)storedRunContextName;
@@ -163,6 +165,7 @@
 - (void)setupUISubsystems;
 - (void)_workspace:(id)arg1 failedToResolveContainerForProjectFile:(id)arg2;
 - (void)_setupLaunchSessionsObservation;
+- (void)_presentErrorForLaunch:(id)arg1;
 - (id)_firstErrorForExecutionTracker:(id)arg1;
 - (void)_recordWorkspaceStatisticsLater;
 - (void)_recordWorkspaceStatistics;
@@ -232,7 +235,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

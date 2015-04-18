@@ -9,12 +9,13 @@
 //
 
 #import "Shared.h"
+
 #import "DVTOutlineView.h"
 
 #import "DVTInvalidation-Protocol.h"
+#import "IDENavigatorOutlineViewLoadingDelegate-Protocol.h"
 
 @class DVTDelayedInvocation, DVTStackBacktrace, IDEOutlineViewGroupInfo, NSArray, NSHashTable, NSMutableArray, NSMutableIndexSet, NSPredicate, NSSet, NSString, _IDENavigatorOutlineViewDataSource;
-@protocol IDENavigatorOutlineViewLoadingDelegate;
 
 @interface IDENavigatorOutlineView : DVTOutlineView <DVTInvalidation>
 {
@@ -69,6 +70,7 @@
 @property(nonatomic) SEL keyAction; // @synthesize keyAction=_keyAction;
 @property(copy, nonatomic) NSPredicate *filterPredicate; // @synthesize filterPredicate=_filterPredicate;
 @property double groupHeaderRowHeight; // @synthesize groupHeaderRowHeight=_groupHeaderRowHeight;
+
 - (void)processPendingChanges;
 - (void)drawRect:(struct CGRect)arg1;
 - (void)scrollSelectionToVisible;
@@ -164,7 +166,6 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;

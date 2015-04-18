@@ -9,8 +9,9 @@
 //
 
 #import "Shared.h"
+#include <sys/stat.h>
+
 #import "IDEIndexDatabaseDelegate-Protocol.h"
-#include "sys/stat.h"
 
 @class DVTDispatchLock, DVTFilePath, IDEIndexDatabase, IDEIndexQPManager, IDEIndexingEngine, IDEIndexingPrebuildController, IDEWorkspace, NSDate, NSMutableDictionary, NSSet, NSString;
 
@@ -66,6 +67,7 @@
 @property(readonly, nonatomic) DVTFilePath *databaseFile; // @synthesize databaseFile=_databaseFile;
 @property(readonly, nonatomic) IDEIndexDatabase *database; // @synthesize database=_workspaceDatabase;
 @property(readonly, nonatomic) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
+
 - (id)symbolDumpForFile:(id)arg1;
 - (id)targetIdentifiersForFile:(id)arg1;
 - (id)mainFilesForFile:(id)arg1;

@@ -11,13 +11,14 @@
 #import "Shared.h"
 
 #import "IDEXMLPackageContainer.h"
+#import "IDEBatchFindManager.h"
 
 #import "IDEClientTracking-Protocol.h"
 #import "IDEIntegrityLogDataSource-Protocol.h"
+#import "IDEContinuousIntegrationBotMonitor-Protocol.h"
 
-@class DVTFilePath, DVTHashTable, DVTMapTable, DVTObservingToken, DVTStackBacktrace, IDEActivityLogSection, IDEBatchFindManager, IDEBreakpointManager, IDEConcreteClientTracker, IDEContainer, IDEContainer, IDEContainerQuery, IDEDeviceInstallWorkspaceMonitor, IDEExecutionEnvironment, IDEIndex, IDEIssueManager, IDELocalizationManager, IDELogManager, IDERefactoring, IDERunContextManager, IDESourceControlWorkspaceMonitor, IDETestManager, IDETextIndex, IDEWorkspaceArena, IDEWorkspaceSharedSettings, IDEWorkspaceSnapshotManager, IDEWorkspaceUpgradeTasksController, IDEWorkspaceUserSettings, NSArray, NSDictionary, NSHashTable, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSMutableSet, NSSet, NSString;
 @protocol IDECustomDataStoring;
-@protocol IDEContinuousIntegrationBotMonitor;
+@class DVTFilePath, DVTHashTable, DVTMapTable, DVTObservingToken, DVTStackBacktrace, IDEActivityLogSection, IDEBatchFindManager, IDEBreakpointManager, IDEConcreteClientTracker, IDEContainer, IDEContainerQuery, IDEDeviceInstallWorkspaceMonitor, IDEExecutionEnvironment, IDEIndex, IDEIssueManager, IDELocalizationManager, IDELogManager, IDERefactoring, IDERunContextManager, IDESourceControlWorkspaceMonitor, IDETestManager, IDETextIndex, IDEWorkspaceArena, IDEWorkspaceSharedSettings, IDEWorkspaceSnapshotManager, IDEWorkspaceUpgradeTasksController, IDEWorkspaceUserSettings, NSArray, NSDictionary, NSHashTable, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSMutableSet, NSSet, NSString;
 
 @interface IDEWorkspace : IDEXMLPackageContainer <IDEClientTracking, IDEIntegrityLogDataSource>
 {
@@ -60,10 +61,10 @@
     IDESourceControlWorkspaceMonitor *_sourceControlWorkspaceMonitor;
     IDEWorkspaceSnapshotManager *_snapshotManager;
     IDELocalizationManager *_localizationManager;
-    DVTFilePath *_wrappedXcode3ProjectPath;
-    IDEContainer<IDECustomDataStoring> *_wrappedXcode3Project;
-    DVTObservingToken *_wrappedXcode3ProjectValidObservingToken;
-    DVTObservingToken *_newWrappedXcode3ProjectObservingToken;
+    DVTFilePath *_wrappedContainerPath;
+    IDEContainer<IDECustomDataStoring> *_wrappedContainer;
+    DVTObservingToken *_wrappedContainerValidObservingToken;
+    DVTObservingToken *_newWrappedContainerObservingToken;
     NSHashTable *_pendingReferencedFileReferences;
     NSHashTable *_pendingReferencedContainers;
     IDEConcreteClientTracker *_clientTracker;
@@ -86,6 +87,9 @@
     BOOL _indexCreationInFlight;
     BOOL _didFinishBuildingInitialBlueprintProviderOrderedSet;
     NSMapTable *_pendingExecutionNotificationTokens;
+    BOOL _hostsOnlyWrappedContainer;
+    BOOL _hostsOnlyXcode3Project;
+    BOOL _hostsOnlyPlayground;
     BOOL _isPotentiallyClosing;
     long long _indexGenerationCounter;
     id <IDEContinuousIntegrationBotMonitor> _xcs2WorkspaceBotMonitor;
@@ -95,7 +99,8 @@
 
 + (BOOL)_shouldTrackReadOnlyStatus;
 + (id)keyPathsForValuesAffectingRepresentingCustomDataStore;
-+ (id)keyPathsForValuesAffectingHostOnlyXcode3Project;
++ (id)keyPathsForValuesAffectingHostsOnlyPlayground;
++ (id)keyPathsForValuesAffectingHostsOnlyXcode3Project;
 + (id)keyPathsForValuesAffectingRepresentingTitle;
 + (id)keyPathsForValuesAffectingRepresentingFilePath;
 + (id)keyPathsForValuesAffectingName;
@@ -104,14 +109,15 @@
 + (id)containerFileDataType;
 + (id)xmlArchiveFileName;
 + (id)rootElementName;
-+ (id)_wrappedWorkspacePathForProjectPath:(id)arg1;
-+ (BOOL)automaticallyNotifiesObserversOfWrappedXcode3ProjectPath;
 + (BOOL)_shouldLoadUISubsystems;
 + (BOOL)automaticallyNotifiesObserversOfFileRefsWithContainerLoadingIssues;
 + (void)initialize;
 @property(retain) IDEWorkspaceUpgradeTasksController *deferredUpgradeTasksController; // @synthesize deferredUpgradeTasksController=_deferredUpgradeTasksController;
 @property(retain) id <IDEActiveRunContextStoring> activeRunContextStore; // @synthesize activeRunContextStore=_activeRunContextStore;
 @property(nonatomic) BOOL isPotentiallyClosing; // @synthesize isPotentiallyClosing=_isPotentiallyClosing;
+@property BOOL hostsOnlyPlayground; // @synthesize hostsOnlyPlayground=_hostsOnlyPlayground;
+@property BOOL hostsOnlyXcode3Project; // @synthesize hostsOnlyXcode3Project=_hostsOnlyXcode3Project;
+@property BOOL hostsOnlyWrappedContainer; // @synthesize hostsOnlyWrappedContainer=_hostsOnlyWrappedContainer;
 @property(readonly, nonatomic) BOOL postLoadingPerformanceMetricsAllowed; // @synthesize postLoadingPerformanceMetricsAllowed=_postLoadingPerformanceMetricsAllowed;
 @property(retain, nonatomic) IDEWorkspaceSharedSettings *sharedSettings; // @synthesize sharedSettings=_sharedSettings;
 @property(retain, nonatomic) IDEWorkspaceUserSettings *userSettings; // @synthesize userSettings=_userSettings;
@@ -127,8 +133,9 @@
 @property(readonly) IDERefactoring *refactoring; // @synthesize refactoring=_refactoring;
 @property(retain) IDEIndex *index; // @synthesize index=_index;
 @property(retain, nonatomic) IDEWorkspaceArena *workspaceArena; // @synthesize workspaceArena=_workspaceArena;
-@property(readonly) DVTFilePath *wrappedXcode3ProjectPath; // @synthesize wrappedXcode3ProjectPath=_wrappedXcode3ProjectPath;
+@property(readonly) DVTFilePath *wrappedContainerPath; // @synthesize wrappedContainerPath=_wrappedContainerPath;
 @property(retain) IDERunContextManager *runContextManager; // @synthesize runContextManager=_runContextManager;
+
 - (id)buildableProductsForBaseName:(id)arg1;
 - (void)_handleIndexablesChange:(id)arg1;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
@@ -151,18 +158,17 @@
 - (void)_handleIndexableSourcesChange:(id)arg1;
 - (void)primitiveInvalidate;
 @property(readonly) IDEContainer<IDECustomDataStoring> *representingCustomDataStore;
-@property(readonly) IDEContainer *wrappedXcode3Project;
-- (void)_updateWrappedXcode3Project;
-- (void)_setWrappedXcode3Project:(id)arg1;
+- (void)_updateWrappedContainer;
+- (void)_setWrappedContainer:(id)arg1;
 @property(readonly, getter=isSimpleFilesFocused) BOOL simpleFilesFocused;
 - (void)_setSimpleFilesFocused:(BOOL)arg1;
 - (void)_primitiveSetSimpleFilesFocused:(BOOL)arg1;
 - (void)setSimpleFilesFocused:(BOOL)arg1;
-@property(readonly) BOOL hostsOnlyXcode3Project;
 @property(readonly) NSString *representingTitle;
 @property(readonly) DVTFilePath *representingFilePath;
 @property(retain) IDEExecutionEnvironment *executionEnvironment;
 - (void)_setupExecutionEnvironment;
+- (id)_subitemsForUnarchivedSubitems:(id)arg1;
 - (float)maxSupportedArchiveVersion;
 - (float)archiveVersion;
 - (id)displayName;
@@ -192,6 +198,7 @@
 - (void)_referencedTestablesOfProvider:(id)arg1 didChange:(id)arg2;
 - (void)_referencedBlueprintsDidUpdateForProvider:(id)arg1;
 - (id)buildableProductsForProductName:(id)arg1;
+- (void)_setupHeaderMapPath;
 - (void)_setupContainerQueries;
 - (void)_addBlueprintProviderToOrderedSet:(id)arg1;
 - (id)_Problem9887530_preferredStructurePathForContainerAtPath:(id)arg1;
@@ -214,8 +221,8 @@
 - (void)_changeContainerFilePath:(id)arg1 inContext:(id)arg2;
 - (BOOL)_configureWrappedWorkspaceWithError:(id *)arg1;
 - (id)_wrappingContainerPath;
-- (void)_setWrappedXcode3ProjectPath:(id)arg1;
-- (id)initWithFilePath:(id)arg1 extension:(id)arg2 workspace:(id)arg3 error:(id *)arg4;
+- (void)_setWrappedContainerPath:(id)arg1;
+- (id)initWithFilePath:(id)arg1 extension:(id)arg2 workspace:(id)arg3 options:(id)arg4 error:(id *)arg5;
 - (void)_buildProductsLocationDidChange;
 - (void)_containerDidLoad;
 - (void)_checkIfHasFinishedLoading;
@@ -262,7 +269,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

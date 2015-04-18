@@ -37,6 +37,7 @@
 @property(retain, nonatomic) IDEScheme *activeRunContext; // @synthesize activeRunContext=_activeRunContext;
 @property(readonly) NSArray *runContexts; // @synthesize runContexts=_runContexts;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
+
 - (void)setActiveRunContext:(id)arg1 andRunDestination:(id)arg2;
 - (BOOL)validateActiveRunContext:(id *)arg1 error:(id *)arg2;
 - (void)blueprintsDidBulkChange:(id)arg1;
@@ -79,7 +80,6 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;

@@ -46,7 +46,7 @@
     NSMutableSet *_documentEditors;
     NSURL *_ide_representedURL;
     id <DVTCancellable> _closeAfterDelayToken;
-    void (^_filePresenterWriter)(void);
+    CDUnknownBlockType _filePresenterWriter;
     BOOL _cachedHasRecentChanges;
     BOOL _didDisableAutomaticTermination;
     BOOL _ide_isTemporaryDocument;
@@ -84,6 +84,8 @@
 @property int readOnlyStatus; // @synthesize readOnlyStatus=_readOnlyStatus;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace; // @synthesize invalidationBacktrace=_invalidationBacktrace;
 @property BOOL trackFileSystemChanges; // @synthesize trackFileSystemChanges=_trackFileSystemChanges;
+
+- (id)derivedContentProviderForType:(id)arg1;
 - (void)restoreStateWithCoder:(id)arg1;
 - (void)encodeRestorableStateWithCoder:(id)arg1;
 - (void)restoreDocumentWindowWithIdentifier:(id)arg1 state:(id)arg2 completionHandler:(CDUnknownBlockType)arg3;
@@ -177,7 +179,7 @@
 @property(retain) DVTUndoManager *undoManager;
 - (void)ide_setUndoManager:(id)arg1;
 - (void)teardownUndoManager:(id)arg1;
-- (void)setupUndoManager:(id)arg1;
+- (void)setupUndoManager:(DVTUndoManager *)arg1;
 - (id)newUndoManager;
 - (void)_startUnlockIfNeededForWorkspace:(id)arg1 window:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (void)_unlockIfNeededCompletionBlock:(CDUnknownBlockType)arg1;
@@ -202,7 +204,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

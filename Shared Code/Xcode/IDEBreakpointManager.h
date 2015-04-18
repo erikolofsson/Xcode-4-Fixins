@@ -40,6 +40,7 @@
 @property(readonly) IDEBreakpointBucket *userWorkspaceBucket; // @synthesize userWorkspaceBucket=_userWorkspaceBucket;
 @property(retain, nonatomic) IDEBreakpointBucket *defaultBucket; // @synthesize defaultBucket=_defaultBucket;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
+
 - (void)primitiveInvalidate;
 - (void)internal_breakpointLocationsAdded:(id)arg1 removed:(id)arg2;
 - (void)internal_breakpointEnablementChanged:(id)arg1;
@@ -75,7 +76,6 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) NSMutableArray *mutableBreakpoints; // @dynamic mutableBreakpoints;
 @property(readonly) NSMutableArray *mutableSharedProjectBuckets; // @dynamic mutableSharedProjectBuckets;

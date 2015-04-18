@@ -11,6 +11,7 @@
 @class DVTTabbedWindowTabViewItem, DVTViewController, NSArray, NSString, NSView, NSWindow;
 
 @protocol DVTTabbedWindowControlling <NSObject>
+- (BOOL)isEnteringOrInFullScreenMode;
 - (BOOL)isInFullScreenMode;
 - (BOOL)closeKeyEquivalentClosesTab;
 - (void)_closeWindowIfNoTabs;
@@ -46,6 +47,6 @@
 - (BOOL)canCreateNewTab;
 - (BOOL)canCloseSelectedTab;
 - (void)toggleTabBar:(id)arg1;
-- (void)newTab:(id)arg1;
+- (void)newTabWithinWindow:(id)arg1;
 @end
 

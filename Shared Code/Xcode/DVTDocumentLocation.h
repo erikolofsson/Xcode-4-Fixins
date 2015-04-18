@@ -10,6 +10,7 @@
 
 #import "DVTSimpleSerialization-Protocol.h"
 #import "DVTStringRepresentationPersistable-Protocol.h"
+
 @class NSDictionary, NSNumber, NSString, NSURL;
 
 @interface DVTDocumentLocation : NSObject <NSSecureCoding, NSCopying, DVTStringRepresentationPersistable, DVTSimpleSerialization>
@@ -38,7 +39,6 @@
 @property(readonly, copy) NSString *description;
 - (BOOL)isEqualDisregardingTimestamp:(id)arg1;
 - (BOOL)isEqualToDocumentLocationDisregardingDocumentURL:(id)arg1;
-
 - (BOOL)isEqual:(id)arg1;
 - (id)copyWithURL:(id)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;

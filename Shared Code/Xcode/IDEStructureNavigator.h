@@ -8,13 +8,15 @@
 // SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
+#import "Shared.h"
+
 #import "IDEOutlineBasedNavigator.h"
 
 #import "IDETemplateSupportingNavigator-Protocol.h"
 #import "IDETestingSelection-Protocol.h"
+#import "IDEStructureEditingDropTarget-Protocol.h"
 
 @class DVTObservingToken, IDENavigatorDataCell, NSDictionary, NSMutableSet, NSSet, NSString, NSTableColumn;
-@protocol IDEStructureEditingDropTarget;
 
 @interface IDEStructureNavigator : IDEOutlineBasedNavigator <NSMenuDelegate, IDETemplateSupportingNavigator, IDETestingSelection>
 {
@@ -46,10 +48,10 @@
 + (void)initialize;
 @property(nonatomic) BOOL recentDocumentFilteringEnabled; // @synthesize recentDocumentFilteringEnabled=_recentDocumentFilteringEnabled;
 @property(copy, nonatomic) NSString *fileNamePatternString; // @synthesize fileNamePatternString=_fileNamePatternString;
+
 - (id)selectedTestsAndTestables;
 - (BOOL)outlineView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (void)_handleCancelAction;
-- (BOOL)_testOrDeleteItems:(BOOL)arg1 useContextualMenuSelection:(BOOL)arg2;
 - (BOOL)_isNavigableItem:(id)arg1 childOfNavigableItems:(id)arg2;
 - (id)outlineView:(id)arg1 toolTipForCell:(id)arg2 rect:(struct CGRect *)arg3 tableColumn:(id)arg4 item:(id)arg5 mouseLocation:(struct CGPoint)arg6;
 - (BOOL)outlineView:(id)arg1 shouldShowOutlineCellForItem:(id)arg2;
@@ -115,9 +117,12 @@
 - (void)contextMenu_delete:(id)arg1;
 - (void)delete:(id)arg1;
 - (void)contextMenu_newProject:(id)arg1;
-- (void)contextMenu_newDocument:(id)arg1;
+- (void)contextMenu_newFile:(id)arg1;
+- (void)newDocument:(id)arg1;
 - (void)newTemplateWithTemplateKind:(id)arg1 useContextualMenuSelection:(BOOL)arg2;
+- (id)_titleForNewGroupOrFolderMenuItemUsingContextualMenuSelection:(BOOL)arg1;
 - (id)_titleForAddFilesMenuItemUsingContextualMenuSelection:(BOOL)arg1;
+- (id)_titleForNewFileMenuItemUsingContextualMenuSelection:(BOOL)arg1;
 - (id)_containerNameForNavigableItem:(id)arg1;
 - (void)contextMenu_addFiles:(id)arg1;
 - (void)addFiles:(id)arg1;
@@ -127,25 +132,29 @@
 - (void)sortFilesByName:(id)arg1;
 - (void)contextMenu_groupSelected:(id)arg1;
 - (void)groupSelected:(id)arg1;
-- (void)contextMenu_newGroup:(id)arg1;
-- (void)newGroup:(id)arg1;
-- (void)addTemplateInstantiatedItems:(id)arg1 primaryItem:(id)arg2;
+- (void)contextMenu_newGroupOrFolder:(id)arg1;
+- (void)newGroupOrFolder:(id)arg1;
+- (void)addTemplateInstantiatedItems:(id)arg1 primaryItem:(id)arg2 shouldEdit:(BOOL)arg3;
 - (void)expandInstantiatedTemplateItem:(id)arg1;
 - (void)setupTemplateContext:(id)arg1;
 - (id)defaultDestinationGroupForTemplateInstantiationWithDestinationIndex:(long long *)arg1;
-- (void)_setupTemplateContext:(id)arg1 useContextualMenuSelection:(BOOL)arg2;
+- (BOOL)_setupTemplateContext:(id)arg1 useContextualMenuSelection:(BOOL)arg2;
 - (id)_destinationGroupForSelectedItem:(id)arg1 destinationIndex:(long long *)arg2;
 - (void)focusedEditorDidSelectItem:(id)arg1;
 - (BOOL)shouldOpenNavigableItem:(id)arg1 eventType:(unsigned long long)arg2;
+- (BOOL)_shouldSupressContentDocumentLocationForURL:(id)arg1;
 - (void)_toggleExpandedStateOf:(id)arg1;
 - (id)openSpecifierForNavigableItem:(id)arg1 error:(id *)arg2;
+- (void)_editChildItemAtIndex:(unsigned long long)arg1 ofParentItem:(id)arg2;
+- (void)_editContainerItem:(id)arg1;
+- (void)_expandNavigableItem:(id)arg1;
+- (void)_expandOutlineViewItem:(id)arg1;
+- (BOOL)_askToRemoveFileURLs:(id)arg1 shouldRemoveReferences:(BOOL)arg2 willPerformRemoveBlock:(CDUnknownBlockType)arg3 didPerformRemoveBlock:(CDUnknownBlockType)arg4;
+- (BOOL)_testOrDeleteItems:(BOOL)arg1 useContextualMenuSelection:(BOOL)arg2;
 - (BOOL)_testOrAddFiles:(BOOL)arg1 useContextualMenuSelection:(BOOL)arg2;
 - (BOOL)_testOrSort:(BOOL)arg1 byNameOrByType:(BOOL)arg2 useContextualMenuSelection:(BOOL)arg3;
 - (BOOL)_testOrGroupSelected:(BOOL)arg1 useContextualMenuSelection:(BOOL)arg2;
-- (BOOL)_testOrAddNewGroup:(BOOL)arg1 useContextualMenuSelection:(BOOL)arg2;
-- (void)_editChildItemAtIndex:(unsigned long long)arg1 ofParentItem:(id)arg2;
-- (void)_expandNavigableItem:(id)arg1;
-- (void)_expandOutlineViewItem:(id)arg1;
+- (BOOL)_testOrAddNewGroupOrFolder:(BOOL)arg1 useContextualMenuSelection:(BOOL)arg2;
 - (id)_outlineViewItemForNavigableItem:(id)arg1;
 - (id)_navigableItemForOutlineViewItem:(id)arg1 representedObject:(id *)arg2;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
@@ -154,7 +163,6 @@
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
 @property(copy) NSSet *expandedItems; // @dynamic expandedItems;
-
 @property(readonly, copy) NSMutableSet *mutableExpandedItems; // @dynamic mutableExpandedItems;
 @property(readonly) Class superclass;
 

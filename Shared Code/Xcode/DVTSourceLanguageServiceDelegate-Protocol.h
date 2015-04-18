@@ -12,7 +12,6 @@
 
 @protocol DVTSourceLanguageServiceDelegate <NSObject>
 @property(readonly, nonatomic) NSDictionary *sourceLanguageServiceContext;
-- (void)serviceAvailabilityNotification:(BOOL)arg1 message:(NSString *)arg2;
 - (void)scheduleLazyInvalidationForRange:(struct _NSRange)arg1;
 - (void)updateAttributesInRange:(struct _NSRange)arg1;
 - (void)invalidateAllLandmarks;

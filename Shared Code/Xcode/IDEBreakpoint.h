@@ -10,9 +10,9 @@
 
 #import "DVTInvalidation-Protocol.h"
 #import "DVTXMLUnarchiving-Protocol.h"
+#import "IDEInternalBreakpointDelegate-Protocol.h"
 
 @class DVTMapTable, DVTStackBacktrace, IDEBreakpointBucket, NSArray, NSMutableArray, NSString;
-@protocol IDEInternalBreakpointDelegate;
 
 @interface IDEBreakpoint : NSObject <DVTXMLUnarchiving, NSCopying, DVTInvalidation>
 {
@@ -43,6 +43,7 @@
 @property(nonatomic) BOOL shouldBeEnabled; // @synthesize shouldBeEnabled=_shouldBeEnabled;
 @property(retain) IDEBreakpointBucket *bucket; // @synthesize bucket=_bucket;
 @property(copy) NSString *displayName; // @synthesize displayName=_displayName;
+
 - (void)primitiveInvalidate;
 - (void)addLocations:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addActions:(id)arg1 fromXMLUnarchiver:(id)arg2;
@@ -75,7 +76,6 @@
 @property(copy) NSArray *actions; // @dynamic actions;
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) NSArray *locations; // @dynamic locations;
 @property(readonly) NSMutableArray *mutableActions; // @dynamic mutableActions;

@@ -39,13 +39,13 @@
 - (struct _NSRange)paragraphRangeForLineRange:(struct _NSRange)arg1;
 - (struct CGSize)layoutSizeForFoldAtCharacterIndex:(unsigned long long)arg1;
 - (BOOL)foldsAreValid:(id)arg1;
-@property (assign) DVTTextStorage *textStorage;
+@property(assign) DVTTextStorage *textStorage;
 - (void)enableTextFolding:(BOOL)arg1;
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
+@property(readonly) NSUInteger hash;
 @property(readonly) Class superclass;
 
 @end

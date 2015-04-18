@@ -28,6 +28,7 @@
 - (void)close;
 - (struct CGRect)adjustedFrameForCascade:(struct CGRect)arg1 fromWindow:(id)arg2;
 - (struct CGRect)_adjustedFrameForSaving:(struct CGRect)arg1;
+- (void)cancelOperation:(id)arg1;
 - (void)toggleToolbarShown:(id)arg1;
 - (id)firstResponder;
 - (void)endSheet:(id)arg1 returnCode:(long long)arg2;

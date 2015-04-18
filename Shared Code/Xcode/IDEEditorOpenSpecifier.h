@@ -34,6 +34,7 @@
 @property(readonly) BOOL annotationWantsIndicatorAnimation; // @synthesize annotationWantsIndicatorAnimation=_annotationWantsIndicatorAnimation;
 @property(readonly) id exploreAnnotationRepresentedObject; // @synthesize exploreAnnotationRepresentedObject=_exploreAnnotationRepresentedObject;
 @property(readonly) id annotationRepresentedObject; // @synthesize annotationRepresentedObject=_annotationRepresentedObject;
+
 - (id)initWithNavigableItemArchivableRepresentation:(id)arg1 documentExtensionIdentifier:(id)arg2 error:(id *)arg3;
 - (id)initWithNavigableItemArchivableRepresentation:(id)arg1 locationToSelect:(id)arg2 error:(id *)arg3;
 - (id)initWithNavigableItemArchivableRepresentation:(id)arg1 error:(id *)arg2;

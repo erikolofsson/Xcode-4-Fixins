@@ -32,10 +32,10 @@
 }
 
 + (Class)navigableItemClassForModelObject:(id)arg1;
-+ (Class)registerInfoForClass:(Class)arg1 withExtension:(id)arg2;
++ (Class)_registerInfoForClass:(Class)arg1 withExtension:(id)arg2;
 + (void)_customizeNewNavigableItemClass:(Class)arg1 forModelObjectClass:(Class)arg2 extension:(id)arg3;
 + (id)_createExtraInfoObject;
-+ (id)classInfoByModelObjectClass;
++ (id)_classInfoByModelObjectClass;
 + (id)allNavigableItemExtensions;
 + (BOOL)automaticallyNotifiesObserversOfArrangedChildItems;
 + (BOOL)automaticallyNotifiesObserversOfParentItem;
@@ -50,6 +50,7 @@
 + (void)initialize;
 @property(readonly) IDENavigableItemCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_coordinator;
 @property(readonly) id representedObject; // @synthesize representedObject=_representedObject;
+
 - (id)contextualValueForProperty:(id)arg1;
 - (id)descendantItemForRepresentedObject:(id)arg1 stopAtClass:(Class)arg2;
 - (id)descendantItemForRepresentedObject:(id)arg1;
@@ -139,7 +140,6 @@
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
-
 @property(readonly) NSImage *image; // @dynamic image;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) NSString *name; // @dynamic name;

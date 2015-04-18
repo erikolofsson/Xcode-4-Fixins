@@ -30,6 +30,7 @@
 + (id)keyPathsForValuesAffectingImage;
 + (id)keyPathsForValuesAffectingName;
 + (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
++ (id)keyPathsForValuesAffectingLeaf;
 + (unsigned long long)countOfNavigableItemsForRepresentedObject:(id)arg1;
 + (id)navigableItemsForRepresentedObject:(id)arg1;
 + (id)keyPathsForValuesAffectingConflictStateForUpdateOrMerge;
@@ -40,6 +41,7 @@
 + (id)keyPathsForValuesAffectingSourceControlLocalStatusFlag;
 + (id)keyPathsForValuesAffectingSourceControlLocalStatus;
 + (id)keyPathsForValuesAffectingProgressValue;
+
 - (unsigned long long)indexOfChildItemForIdentifier:(id)arg1;
 - (id)identifierForChildItem:(id)arg1;
 - (BOOL)_automatic_isMajorGroup;

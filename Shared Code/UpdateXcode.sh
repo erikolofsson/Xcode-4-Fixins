@@ -13,11 +13,11 @@ popd
 CurrentPath=$PWD
 
 for File in $FilesToUpdate; do
-	echo $File 1>&2
 	if [[ "$File" == "./.DS_Store" ]] ; then
 		continue
 	else
-		if [ -f "$File" ]; then
+		if [ -e "XcodeDump/$File" ]; then
+			echo $File 1>&2
 			cp XcodeDump/$File Xcode/$File
 		fi
 	fi

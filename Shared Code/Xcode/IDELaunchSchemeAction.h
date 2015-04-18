@@ -9,6 +9,7 @@
 //
 
 #import "Shared.h"
+
 #import "IDESchemeAction.h"
 
 #import "DVTXMLUnarchiving-Protocol.h"
@@ -90,6 +91,7 @@
 @property(retain) IDEDeviceAppDataReference *deviceAppDataReference; // @synthesize deviceAppDataReference=_deviceAppDataReference;
 @property(retain) IDEFileReference *notificationPayloadFile; // @synthesize notificationPayloadFile=_notificationPayloadFile;
 @property(copy) NSString *selectedLauncherIdentifier; // @synthesize selectedLauncherIdentifier=_selectedLauncherIdentifier;
+
 @property int enableOpenGLPerformanceAnalysisMode;
 @property int enableOpenGLFrameCaptureMode;
 - (void)addRoutingCoverageFileReference:(id)arg1 fromXMLUnarchiver:(id)arg2;
@@ -177,7 +179,6 @@
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
 @property(copy) NSArray *environmentVariableEntries; // @dynamic environmentVariableEntries;
-
 @property(readonly) NSMutableArray *mutableAdditionalDSYMEntries; // @dynamic mutableAdditionalDSYMEntries;
 @property(readonly) NSMutableArray *mutableAdditionalSourceCodeEntries; // @dynamic mutableAdditionalSourceCodeEntries;
 @property(readonly) NSMutableArray *mutableCommandLineArgumentEntries; // @dynamic mutableCommandLineArgumentEntries;

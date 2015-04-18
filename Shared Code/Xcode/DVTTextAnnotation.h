@@ -9,7 +9,6 @@
 //
 
 #import "Shared.h"
-
 #import "DVTAnnotation.h"
 
 @class DVTMutableRangeArray, DVTSourceLandmarkItem, DVTTextDocumentLocation, NSArray, NSImage, NSMutableArray, NSMutableDictionary;
@@ -44,6 +43,7 @@
         unsigned int usesFirstLineFragmentMode:1;
     } _taFlags;
     BOOL _lazyInvalidation;
+    BOOL _hasCaretRanges;
     int _annotationStackPolicy;
     unsigned long long _scrollbarMarkerType;
 }
@@ -80,8 +80,10 @@
 - (BOOL)drawsLineHighlight;
 - (void)drawSidebarMarkerIconInRect:(struct CGRect)arg1 textView:(id)arg2;
 - (void)annotationWillDrawInTextView:(id)arg1;
+- (long long)compareParagraphRange:(id)arg1;
 @property(getter=isUserRemovable) BOOL userRemovable;
 @property(getter=isUserDraggable) BOOL userDraggable;
+@property(readonly) BOOL hasCaretRanges;
 - (void)synchronizeHighlightedRangesWithLocationsForTextStorage:(id)arg1;
 - (void)removeAllHighlightedRanges;
 - (void)removeHighlightedRange:(struct _NSRange)arg1;

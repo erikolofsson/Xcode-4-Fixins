@@ -13,7 +13,7 @@
 #import "DVTInvalidation-Protocol.h"
 #import "DVTXMLUnarchiving-Protocol.h"
 
-@class DVTStackBacktrace, IDEScheme, IDESchemeBuildableReference, NSArray, NSMutableArray, NSString;
+@class DVTStackBacktrace, IDEProfileOptimizationActionController, IDEScheme, IDESchemeBuildableReference, NSArray, NSMutableArray, NSString;
 
 @interface IDESchemeAction : NSObject <DVTXMLUnarchiving, DVTInvalidation>
 {
@@ -22,18 +22,15 @@
     NSMutableArray *_prePhaseExecutionActions;
     NSMutableArray *_postPhaseExecutionActions;
     IDESchemeBuildableReference *_buildableReferenceToUseForMacroExpansion;
+    IDEProfileOptimizationActionController *_pgoController;
 }
 
 + (BOOL)shouldAllowCustomPhaseActions;
 + (void)initialize;
+@property(retain) IDEProfileOptimizationActionController *pgoController; // @synthesize pgoController=_pgoController;
 @property(retain) IDESchemeBuildableReference *buildableReferenceToUseForMacroExpansion; // @synthesize buildableReferenceToUseForMacroExpansion=_buildableReferenceToUseForMacroExpansion;
 @property(readonly) IDEScheme *runContext; // @synthesize runContext=_runContext;
-- (void)notifyOptimizationProfileCreationFailedWithError:(id)arg1;
-- (void)notifyOptimizationProfileCreationSucceeded;
-- (void)addOptimizationProfileFromFilePath:(id)arg1 toContainer:(id)arg2;
-- (BOOL)mergeOptimizationProfilesFromDirectoryAtPath:(id)arg1 toFileAtPath:(id)arg2 forBuildableProduct:(id)arg3 buildParameters:(id)arg4 returningError:(id *)arg5;
-- (id)relevantBuildablesForOptimizationProfileGenerationForSchemeCommand:(id)arg1;
-- (BOOL)addOptimizationProfileFilePathToEnvironmentVariables:(id)arg1 forBuildableProduct:(id)arg2 buildParameters:(id)arg3 schemeActionRecord:(id)arg4 outError:(id *)arg5;
+
 - (void)updateSearchPathSettingsInEnvironment:(id)arg1 withBuildProducts:(id)arg2 runDestination:(id)arg3;
 - (void)addPostActions:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addPreActions:(id)arg1 fromXMLUnarchiver:(id)arg2;
@@ -75,7 +72,6 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) NSMutableArray *mutablePostPhaseExecutionActions; // @dynamic mutablePostPhaseExecutionActions;
 @property(readonly) NSMutableArray *mutablePrePhaseExecutionActions; // @dynamic mutablePrePhaseExecutionActions;

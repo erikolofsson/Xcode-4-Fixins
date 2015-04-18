@@ -8,17 +8,15 @@
 // SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-
-#import "Shared.h"
-
 #import "DVTCancellable-Protocol.h"
+#import "Shared.h"
 
 @class NSString;
 
 @interface _DVTAsynchronousRequest : NSObject <DVTCancellable>
 {
     long long _type;
-	void (^_block)(void);
+    CDUnknownBlockType _block;
 }
 
 + (id)_scheduledRequestWithOrder:(long long)arg1 modes:(id)arg2 block:(CDUnknownBlockType)arg3;

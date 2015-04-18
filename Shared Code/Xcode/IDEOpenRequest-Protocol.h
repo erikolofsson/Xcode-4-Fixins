@@ -8,12 +8,8 @@
 // SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-@protocol DVTTabbedWindowCreation;
-@class NSDocument, NSString;
-
-@protocol DVTTabbedWindowTabContentControlling <NSObject>
-@property(copy) NSString *userDefinedTabLabel;
-@property(readonly) NSString *tabLabel;
-@property(retain) NSDocument<DVTTabbedWindowCreation> *document;
+@protocol IDEOpenRequest <NSObject>
+@property(readonly) int requestState;
+- (void)cancel;
 @end
 

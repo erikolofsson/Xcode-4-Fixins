@@ -15,7 +15,7 @@
 #import "DVTSourceTextScrollViewDelegate-Protocol.h"
 #import "DVTSourceTextViewDelegate-Protocol.h"
 
-@class DVTAnnotationManager, DVTHashTable, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSColor, NSDictionary, NSMutableArray, NSString, NSTimer, NSView, NSWindow;
+@class DVTAnnotationManager, DVTHashTable, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSDictionary, NSMutableArray, NSString, NSTimer, NSView, NSWindow;
 
 @interface DVTSourceTextView : DVTCompletingTextView <NSAnimationDelegate, NSLayoutManagerDelegate, DVTSourceTextScrollViewDelegate>
 {
@@ -29,20 +29,12 @@
     NSArray *_clickedTemporaryLinkRanges;
     NSMutableArray *_clickedLinkProgressIndicators;
     struct _NSRange _ghostStringRange;
-    NSTimer *_autoHighlightTokenTimer;
-    DVTObservingToken *_autoHighlightTextCompletionObserver;
-    DVTMutableRangeArray *_autoHighlightTokenRanges;
     NSTimer *_autoHighlightTokenMenuTimer;
     struct _NSRange _autoHighlightTokenMenuRange;
     double _autoHighlightTokenMenuAnimationDuration;
     NSTimer *_autoHighlightTokenMenuAnimationTimer;
     double _autoHighlightTokenMenuAnimationStartTime;
     NSWindow *_autoHighlightTokenWindow;
-    DVTMutableRangeArray *_tokenizedEditingTokenRanges;
-    unsigned long long _tokenizedEditingEditedTokenIndex;
-    unsigned long long _tokenizedEditingDeferedOffset;
-    struct _NSRange _tokenizedEditingSelectionRange;
-    NSColor *_tokenizedEditingTokenColors[4];
     NSArray *_foundLocations;
     DVTTextDocumentLocation *_currentFoundLocation;
     NSMutableArray *_visualizations;
@@ -76,7 +68,6 @@
     BOOL _allowsCodeFolding;
     BOOL _showingCodeFocus;
     BOOL _lastMouseEventWasClick;
-    BOOL _autoHighlightTokens;
     BOOL _tokenizedEditingEnabled;
     BOOL _animatesCurrentScroll;
     BOOL _disableUpdatingInsertionPointCount;
@@ -85,8 +76,10 @@
     BOOL _wrapsLines;
     BOOL _postsLayoutManagerNotifications;
     BOOL _scrollingInScrollView;
+    DVTObservingToken *_autoHighlightTokenRangesObservingToken;
     BOOL _annotationLayoutScheduled;
     struct _NSRange _selectedRangeBeforeMouseDown;
+    BOOL _ensuringLayoutForScroll;
 }
 
 + (BOOL)isCompatibleWithResponsiveScrolling;
@@ -99,10 +92,6 @@
 @property BOOL postsLayoutManagerNotifications; // @synthesize postsLayoutManagerNotifications=_postsLayoutManagerNotifications;
 @property BOOL addedSpaceWhenAutoOpeningCloseBracket; // @synthesize addedSpaceWhenAutoOpeningCloseBracket=_addedSpaceWhenAutoOpeningCloseBracket;
 @property unsigned long long locationOfAutoOpenedCloseBracket; // @synthesize locationOfAutoOpenedCloseBracket=_locationOfAutoOpenedCloseBracket;
-@property(nonatomic, getter=isTokenizedEditingEnabled) BOOL tokenizedEditingEnabled; // @synthesize tokenizedEditingEnabled=_tokenizedEditingEnabled;
-@property struct _NSRange tokenizedEditingSelectionRange; // @synthesize tokenizedEditingSelectionRange=_tokenizedEditingSelectionRange;
-@property(readonly) NSArray *tokenizedEditingTokenRanges; // @synthesize tokenizedEditingTokenRanges=_tokenizedEditingTokenRanges;
-@property(nonatomic) BOOL autoHighlightTokens; // @synthesize autoHighlightTokens=_autoHighlightTokens;
 @property int findResultStyle; // @synthesize findResultStyle=_findResultStyle;
 @property(nonatomic) unsigned long long pageGuideColumn; // @synthesize pageGuideColumn=_pageGuideColumn;
 @property(readonly) NSArray *visualizations; // @synthesize visualizations=_visualizations;
@@ -188,18 +177,8 @@
 - (void)selectPreviousToken:(id)arg1;
 - (void)selectNextToken:(id)arg1;
 - (void)toggleTokenizedEditing:(id)arg1;
-@property(retain) NSColor *tokenizedEditingSelectedTokenBackgroundColor; // @dynamic tokenizedEditingSelectedTokenBackgroundColor;
-@property(retain) NSColor *tokenizedEditingSelectedTokenBorderColor; // @dynamic tokenizedEditingSelectedTokenBorderColor;
-@property(retain) NSColor *tokenizedEditingTokenBackgroundColor; // @dynamic tokenizedEditingTokenBackgroundColor;
-@property(retain) NSColor *tokenizedEditingTokenBorderColor; // @dynamic tokenizedEditingTokenBorderColor;
-- (id)tokenizedEditingTokenPathsForCharacterRange:(struct _NSRange)arg1;
-- (id)tokenPathsForCharacterRange:(struct _NSRange)arg1 displayOnly:(BOOL)arg2;
 - (void)textStorage:(id)arg1 didEndEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
 - (void)textStorage:(id)arg1 willEndEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
-- (unsigned long long)_indexOfTokenizedEditingRange:(struct _NSRange)arg1;
-- (void)updateTokenizedEditingRanges;
-- (void)_scheduleAutoHighlightTokenTimerIfNeeded;
-- (void)_autoHighlightTokenWithTimer:(id)arg1;
 - (void)tokenizableRangesWithRange:(struct _NSRange)arg1 completionBlock:(CDUnknownBlockType)arg2;
 - (void)_scheduleAutoHighlightTokenMenuTimerIfNeeded;
 - (void)_showAutoHighlightTokenMenuWithTimer:(id)arg1;
@@ -212,8 +191,6 @@
 - (void)_popUpTokenMenu:(id)arg1;
 - (id)_autoHighlightTokenMenu;
 - (void)_clearAutoHighlightTokenMenu;
-- (void)_clearDisplayForAutoHighlightTokens;
-- (void)_displayAutoHighlightTokens;
 - (void)removeStaticVisualizationView;
 - (void)addStaticVisualizationView:(id)arg1;
 - (void)removeVisualization:(id)arg1 fadeOut:(BOOL)arg2 completionBlock:(CDUnknownBlockType)arg3;
@@ -302,7 +279,6 @@
 - (void)toggleCodeFocus:(id)arg1;
 - (BOOL)codeFocusFollowsSelection;
 - (void)_drawViewBackgroundInRect:(struct CGRect)arg1;
-- (void)_drawTokensInRect:(struct CGRect)arg1;
 - (void)_drawCaretForTextAnnotationsInRect:(struct CGRect)arg1;
 - (void)drawTextAnnotationsInRect:(struct CGRect)arg1;
 - (long long)_drawRoundedBackgroundForFoldableBlockRangeAtLocation:(unsigned long long)arg1;
@@ -312,7 +288,7 @@
 - (struct _NSRange)foldingHoverRange;
 - (void)_loadColorsFromCurrentTheme;
 - (void)_themeColorsChanged:(id)arg1;
-- (void)_scheduleAnnotationLayoutAfterResize;
+- (void)_scheduleAnnotationLayout;
 - (void)drawRect:(struct CGRect)arg1;
 - (void)prepareContentInRect:(struct CGRect)arg1;
 - (unsigned long long)foldedCharacterIndexForPoint:(struct CGPoint)arg1;
@@ -354,13 +330,18 @@
 - (void)setAllowsCodeFolding:(BOOL)arg1;
 - (void)setTextStorage:(id)arg1;
 - (void)setTextStorage:(id)arg1 keepOldLayout:(BOOL)arg2;
-@property(retain) id <DVTSourceTextViewDelegate> delegate; // @dynamic delegate;
+- (void)setTextContainer:(id)arg1;
+@property(assign) id <DVTSourceTextViewDelegate> delegate; // @dynamic delegate;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1 textContainer:(id)arg2;
 - (void)_commonInitDVTSourceTextView;
 - (id)menuForEvent:(id)arg1;
 - (BOOL)shouldIndentPastedText:(id)arg1;
 - (void)indentUserChangeBy:(long long)arg1;
+- (id)accessibilityHitTest:(struct CGPoint)arg1;
+- (id)accessibilityAttributeValue:(id)arg1;
+- (id)accessibilityProxyForSelectedRange:(struct _NSRange)arg1;
+- (id)_accessibilityProxiesByRange;
 - (double)fmc_maxY;
 - (double)fmc_startOfLine:(long long)arg1;
 - (long long)fmc_lineNumberForPosition:(double)arg1;
@@ -368,7 +349,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

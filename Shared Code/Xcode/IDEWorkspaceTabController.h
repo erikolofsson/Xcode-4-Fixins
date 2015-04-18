@@ -9,6 +9,7 @@
 //
 
 #import "Shared.h"
+
 #import "IDEViewController.h"
 
 #import "DVTEditor-Protocol.h"
@@ -19,8 +20,8 @@
 #import "IDEStructureEditingWorkspaceTabContext-Protocol.h"
 #import "IDEWorkspaceDocumentProvider-Protocol.h"
 
-@class DVTFilePath, DVTMapTable, DVTMutableOrderedSet, DVTNotificationToken, DVTObservingToken, DVTReplacementView, DVTSplitView, DVTSplitViewItem, DVTStackBacktrace, IDEARCConversionAssistantContext, IDEAppChooserWindowController, IDEBuildAlertMonitor, IDEEditorArea, IDELaunchSession, IDENavigatorArea, IDEObjCModernizationAssistantContext, IDERunAlertMonitor, IDEUnitTestsModernizationAssistantContext, IDEWorkspace, IDEWorkspaceDocument, IDEWorkspaceWindowController, NSAlert, NSMutableArray, NSString;
 @protocol DVTTabbedWindowCreation;
+@class DVTFilePath, DVTMapTable, DVTMutableOrderedSet, DVTNotificationToken, DVTObservingToken, DVTReplacementView, DVTSplitView, DVTSplitViewItem, IDEARCConversionAssistantContext, IDEAppChooserWindowController, IDEBuildAlertMonitor, IDEEditorArea, IDELaunchSession, IDENavigatorArea, IDEObjCModernizationAssistantContext, IDERunAlertMonitor, IDESwiftMigrationAssistantContext, IDEUnitTestsModernizationAssistantContext, IDEWorkspace, IDEWorkspaceDocument, IDEWorkspaceWindowController, NSAlert, NSDocument, NSMutableArray, NSString;
 
 @interface IDEWorkspaceTabController : IDEViewController <NSTextViewDelegate, DVTTabbedWindowTabContentControlling, DVTStatefulObject, DVTReplacementViewDelegate, IDEEditorAreaContainer, IDEStructureEditingWorkspaceTabContext, IDEWorkspaceDocumentProvider, DVTEditor>
 {
@@ -63,6 +64,7 @@
     IDEBuildAlertMonitor *_buildAlertMonitor;
     IDERunAlertMonitor *_runAlertMonitor;
     IDEARCConversionAssistantContext *_conversionAssistantContext;
+    IDESwiftMigrationAssistantContext *_swiftMigrationAssistantContext;
     IDEObjCModernizationAssistantContext *_objcModernizationAssistantContext;
     IDEUnitTestsModernizationAssistantContext *_unitTestsModernizationAssistantContext;
     BOOL _isAnimatingUtilities;
@@ -106,13 +108,14 @@
 @property(nonatomic) BOOL userWantsUtilitiesVisible; // @synthesize userWantsUtilitiesVisible=_userWantsUtilitiesVisible;
 @property BOOL isAnimatingUtilities; // @synthesize isAnimatingUtilities=_isAnimatingUtilities;
 @property(nonatomic) int assistantEditorsLayout; // @synthesize assistantEditorsLayout=_assistantEditorsLayout;
+
 - (void)discardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
 @property(readonly) DVTFilePath *tabFilePath;
 @property(readonly) NSString *tabLabel;
 @property(retain) NSDocument<DVTTabbedWindowCreation> *document;
 - (void)codesignFailureNotification:(id)arg1 continuationBlock:(CDUnknownBlockType)arg2;
-- (id)_codesignResolutionActionContextProviderExtension;
+- (id)_codesigningInfoDelegateProvider;
 - (void)moveKeyboardFocusToPreviousArea:(id)arg1;
 - (void)moveKeyboardFocusToNextArea:(id)arg1;
 - (void)_moveKeyboardFocusToNextAreaForward:(BOOL)arg1;
@@ -127,6 +130,8 @@
 - (void)_setDebuggingWindowBehavior:(int)arg1;
 - (void)clearConsole:(id)arg1;
 - (void)viewMemory:(id)arg1;
+- (void)_swiftMigrationFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
+- (void)showSwiftMigrationAssistant:(id)arg1;
 - (void)_unitTestsModernizationFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)showModernUnitTestsConversionAssistant:(id)arg1;
 - (void)_objCModernizationFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
@@ -342,10 +347,8 @@
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
 // Remaining properties
-@property(readonly) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

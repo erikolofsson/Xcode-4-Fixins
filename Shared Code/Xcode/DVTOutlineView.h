@@ -111,6 +111,11 @@
 @property BOOL allowsSizingShorterThanClipView;
 @property BOOL breaksCyclicSortDescriptors;
 - (id)progressIndicatorForItem:(id)arg1 createIfNecessary:(BOOL)arg2 progressIndicatorStyle:(unsigned long long)arg3;
+- (void)_registerNibWithName:(id)arg1 usingIdentifier:(id)arg2;
+- (void)registerDVTTableRowViewNibUsingIdentifier:(id)arg1;
+- (void)registerDVTTableCellViewMultiLineNibUsingIdentifier:(id)arg1;
+- (void)registerDVTTableCellViewTwoLineNibUsingIdentifier:(id)arg1;
+- (void)registerDVTTableCellViewOneLineNibUsingIdentifier:(id)arg1;
 - (void)setDelegate:(id)arg1;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;
@@ -119,7 +124,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

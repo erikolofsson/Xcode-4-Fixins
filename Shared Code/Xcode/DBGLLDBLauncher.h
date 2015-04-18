@@ -12,11 +12,11 @@
 
 #import "IDEConsoleAdaptorDelegateProtocol-Protocol.h"
 
-@class DBGLLDBSession, DVTDispatchLock, NSString;
 @protocol OS_dispatch_queue;
+@class DBGLLDBSession, DVTDispatchLock, NSString;
 
-struct SBProcess {};
 struct SBTarget {};
+struct SBProcess {};
 struct SBError {};
 
 __attribute__((visibility("hidden")))

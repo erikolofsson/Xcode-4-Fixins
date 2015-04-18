@@ -10,7 +10,7 @@
 
 @class IDEWorkspace;
 
-@protocol IDEStructureEditingContext
+@protocol IDEStructureEditingContext <NSObject>
 @property(readonly) IDEWorkspace *structureEditWorkspace;
 @end
 

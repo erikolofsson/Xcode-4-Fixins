@@ -12,16 +12,15 @@
 
 #import "DVTStatefulObject-Protocol.h"
 #import "IDESelectionSource-Protocol.h"
+#import "IDEWorkspaceDocumentProvider-Protocol.h"
 
 @class DVTStateToken, IDESelection, IDEWorkspace, IDEWorkspaceDocument, IDEWorkspaceTabController, NSString;
-@protocol IDEWorkspaceDocumentProvider;
 
 @interface IDEViewController : DVTViewController <IDESelectionSource, DVTStatefulObject>
 {
     IDEWorkspaceTabController *_workspaceTabController;
     id <IDEWorkspaceDocumentProvider> _workspaceDocumentProvider;
     id _outputSelection;
-    id _contextMenuSelection;
     DVTStateToken *_stateToken;
 }
 
@@ -31,8 +30,8 @@
 + (id)keyPathsForValuesAffectingWorkspaceDocument;
 @property(readonly) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
 @property(retain, nonatomic) IDEWorkspaceTabController *workspaceTabController; // @synthesize workspaceTabController=_workspaceTabController;
-@property(copy) IDESelection *contextMenuSelection; // @synthesize contextMenuSelection=_contextMenuSelection;
 @property(copy) IDESelection *outputSelection; // @synthesize outputSelection=_outputSelection;
+
 - (void)setStateToken:(DVTStateToken *)arg1;
 - (BOOL)_knowsAboutInstalledState;
 - (void)revertState;
@@ -43,6 +42,7 @@
 @property(readonly) BOOL automaticallyInvalidatesChildViewControllers;
 - (void)_invalidateSubViewControllersForView:(id)arg1;
 - (id)supplementalTargetForAction:(SEL)arg1 sender:(id)arg2;
+@property(readonly, copy) IDESelection *contextMenuSelection;
 @property(readonly) IDEWorkspace *workspace;
 @property(readonly) IDEWorkspaceDocument *workspaceDocument;
 - (id)workspaceDocumentProvider;
@@ -54,7 +54,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

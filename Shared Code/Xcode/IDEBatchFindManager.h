@@ -8,24 +8,29 @@
 // SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-#import "DVTLayoutView_ML.h"
-
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTStackBacktrace, IDESourceCodeEditor, IDEViewController, NSString;
+@class DVTStackBacktrace, NSArray, NSMutableArray, NSString;
 
-@interface IDESourceCodeEditorContainerView : DVTLayoutView_ML <DVTInvalidation>
+@interface IDEBatchFindManager : NSObject <DVTInvalidation>
 {
-    IDESourceCodeEditor *_editor;
-    IDEViewController *_toolbarViewController;
+    NSMutableArray *_history;
+    unsigned long long _maxHistoryCount;
+    NSString *_archivePath;
 }
 
 + (void)initialize;
-@property(retain) IDESourceCodeEditor *editor; // @synthesize editor=_editor;
-
+@property(readonly) NSArray *findHistory; // @synthesize findHistory=_history;
+@property(nonatomic) unsigned long long maxHistoryCount; // @synthesize maxHistoryCount=_maxHistoryCount;
+- (void)loadHistory;
+- (void)saveHistory;
+- (id)historyItemForDescription:(id)arg1;
+- (void)clearHistory;
+- (void)_removeHistoryFile;
+- (void)addHistoryItem:(id)arg1;
+- (void)_removeExtraHistory;
 - (void)primitiveInvalidate;
-- (void)showToolbarWithViewController:(id)arg1;
-- (void)didCompleteLayout;
+- (id)initWithDerivedDataFolderPath:(id)arg1;
 
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;

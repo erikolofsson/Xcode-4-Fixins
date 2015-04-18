@@ -15,6 +15,7 @@
 @protocol DVTLayoutManagerDelegate <DVTFoldingLayoutManagerDelegate>
 
 @optional
+- (void)tokenizableRangesWithRange:(struct _NSRange)arg1 completionBlock:(void (^)(NSArray *))arg2;
 - (NSColor *)layoutManager:(DVTLayoutManager *)arg1 shouldUseTextBackgroundColor:(NSColor *)arg2 rectArray:(struct CGRect *)arg3 count:(unsigned long long)arg4 forCharacterRange:(struct _NSRange)arg5;
 @end
 

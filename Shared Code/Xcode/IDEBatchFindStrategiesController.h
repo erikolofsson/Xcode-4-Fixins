@@ -48,6 +48,7 @@
 @property(nonatomic) BOOL ignoresCase; // @synthesize ignoresCase=_ignoresCase;
 @property(nonatomic) int matchStyle; // @synthesize matchStyle=_matchStyle;
 @property(nonatomic) int findType; // @synthesize findType=_findType;
+
 - (BOOL)popoverShouldClose:(id)arg1;
 - (void)_validateCustomScopeSelection;
 - (id)getCustomScopes;
@@ -72,7 +73,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

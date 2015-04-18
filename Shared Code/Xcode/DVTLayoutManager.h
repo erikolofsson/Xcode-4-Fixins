@@ -12,7 +12,7 @@
 
 #import "DVTAnnotationManagerDelegate-Protocol.h"
 
-@class DVTMapTable, DVTPointerArray, NSArray, NSMutableArray, NSMutableSet, NSSet, NSString;
+@class DVTMapTable, DVTMutableRangeArray, DVTObservingToken, DVTPointerArray, NSArray, NSColor, NSMutableArray, NSMutableSet, NSSet, NSString, NSTimer;
 
 @interface DVTLayoutManager : DVTFoldingLayoutManager <DVTAnnotationManagerDelegate>
 {
@@ -22,10 +22,30 @@
     DVTMapTable *_messageBubblesForAnnotations;
     NSMutableSet *_accessoryAnnotations;
     NSArray *_sortedAccessoryAnnotations;
-	struct _DVTLayoutManagerFlags{} _lmFlags2;
+    NSTimer *_autoHighlightTokenTimer;
+    DVTObservingToken *_autoHighlightTextCompletionObserver;
+    DVTMutableRangeArray *_autoHighlightTokenRanges;
+    DVTMutableRangeArray *_tokenizedEditingTokenRanges;
+    unsigned long long _tokenizedEditingEditedTokenIndex;
+    unsigned long long _tokenizedEditingDeferedOffset;
+    struct _NSRange _tokenizedEditingSelectionRange;
+    NSColor *_tokenizedEditingTokenBorderColor;
+    NSColor *_tokenizedEditingTokenBackgroundColor;
+    NSColor *_tokenizedEditingSelectedTokenBorderColor;
+    NSColor *_tokenizedEditingSelectedTokenBackgroundColor;
+	struct _DVTLayoutManagerFlags {} _lmFlags2;
+    BOOL _tokenizedEditingEnabled;
 }
 
++ (Class)_dvtDefaultTypesetterClass;
 + (void)initialize;
+@property(copy) NSColor *tokenizedEditingSelectedTokenBackgroundColor; // @synthesize tokenizedEditingSelectedTokenBackgroundColor=_tokenizedEditingSelectedTokenBackgroundColor;
+@property(copy) NSColor *tokenizedEditingSelectedTokenBorderColor; // @synthesize tokenizedEditingSelectedTokenBorderColor=_tokenizedEditingSelectedTokenBorderColor;
+@property(copy) NSColor *tokenizedEditingTokenBackgroundColor; // @synthesize tokenizedEditingTokenBackgroundColor=_tokenizedEditingTokenBackgroundColor;
+@property(copy) NSColor *tokenizedEditingTokenBorderColor; // @synthesize tokenizedEditingTokenBorderColor=_tokenizedEditingTokenBorderColor;
+@property struct _NSRange tokenizedEditingSelectionRange; // @synthesize tokenizedEditingSelectionRange=_tokenizedEditingSelectionRange;
+@property(readonly, copy) NSArray *tokenizedEditingTokenRanges; // @synthesize tokenizedEditingTokenRanges=_tokenizedEditingTokenRanges;
+@property(readonly, copy) NSArray *autoHighlightTokenRanges; // @synthesize autoHighlightTokenRanges=_autoHighlightTokenRanges;
 @property(readonly) NSSet *accessoryAnnotations; // @synthesize accessoryAnnotations=_accessoryAnnotations;
 @property(readonly) NSArray *annotations; // @synthesize annotations=_annotations;
 @property(retain) NSArray *temporaryLinkRanges; // @synthesize temporaryLinkRanges=_temporaryLinkRanges;
@@ -35,11 +55,24 @@
 - (void)fillBackgroundRectArray:(struct CGRect *)arg1 count:(unsigned long long)arg2 forCharacterRange:(struct _NSRange)arg3 color:(id)arg4;
 - (void)textStorage:(id)arg1 didUpdateLineRange:(struct _NSRange)arg2 changeInLength:(long long)arg3 replacedCharacterRangeEndsOnLineTerminator:(BOOL)arg4 entireFirstLineReplaced:(BOOL)arg5;
 - (void)textStorageDidEndEditing:(id)arg1;
+- (void)textStorage:(id)arg1 didEndEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
+- (void)textStorage:(id)arg1 willEndEditRange:(struct _NSRange)arg2 changeInLength:(long long)arg3;
+- (void)textStorage:(id)arg1 didReplaceCharactersInRange:(struct _NSRange)arg2 withString:(id)arg3 changeInLength:(long long)arg4;
 - (void)textStorage:(id)arg1 willReplaceCharactersInRange:(struct _NSRange)arg2 withString:(id)arg3 changeInLength:(long long)arg4;
 - (void)foldingManager:(id)arg1 didUnfoldRange:(struct _NSRange)arg2;
 - (void)foldingManager:(id)arg1 didFoldRange:(struct _NSRange)arg2;
 - (void)didRemoveAnnotations:(id)arg1;
 - (void)didInsertAnnotations:(id)arg1;
+- (void)drawTokensForGlyphRange:(struct _NSRange)arg1 border:(BOOL)arg2 background:(BOOL)arg3;
+- (id)tokenizedEditingTokenPathsForCharacterRange:(struct _NSRange)arg1 displayOnly:(BOOL)arg2;
+- (void)updateTokenizedEditingTokenRanges;
+- (unsigned long long)indexOfTokenizedEditingTokenRange:(struct _NSRange)arg1;
+@property(getter=isTokenizedEditingEnabled) BOOL tokenizedEditingEnabled; // @synthesize tokenizedEditingEnabled=_tokenizedEditingEnabled;
+- (void)scheduleAutoHighlightTokenWithTextView:(id)arg1;
+- (void)_autoHighlightTokenWithTimer:(id)arg1;
+- (void)_clearAutoHighlightTokens;
+- (void)_displayAutoHighlightTokens;
+@property(getter=isAutoHighlightTokensEnabled) BOOL autoHighlightTokensEnabled;
 - (void)hideMessageBubblesInRange:(struct _NSRange)arg1;
 - (void)showMessageBubblesInRange:(struct _NSRange)arg1;
 @property(getter=isAnnotationAdjustmentEnabled) BOOL annotationAdjustmentEnabled;
@@ -64,6 +97,7 @@
 - (void)invalidateDisplayForCharacterRange:(struct _NSRange)arg1;
 - (void)_invalidateLayoutForMessageBubblesInCharacterRange:(struct _NSRange)arg1;
 - (unsigned long long)layoutOptions;
+- (void)setDelegate:(id)arg1;
 - (id)initWithCoder:(id)arg1;
 - (id)init;
 - (void)_layoutManagerCommonInit;
@@ -71,7 +105,7 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
+@property(readonly) NSUInteger hash;
 @property(readonly) Class superclass;
 
 @end

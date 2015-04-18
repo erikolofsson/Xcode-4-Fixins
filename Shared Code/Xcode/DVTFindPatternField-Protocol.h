@@ -8,9 +8,7 @@
 // SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-//#import "DVTFindPatternManager-Protocol.h"
 @protocol DVTFindPatternManager;
-
 @class DVTFindPattern, DVTFindPatternAttachmentCell, NSArray, NSMenu, NSString;
 
 @protocol DVTFindPatternField <NSObject>

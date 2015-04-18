@@ -8,7 +8,6 @@
 // SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-
 @class DVTCustomDataOwnership, DVTCustomDataSpecifier, NSArray, NSData, NSOperationQueue, NSString;
 
 @protocol DVTCustomDataStoring <NSObject>

@@ -67,6 +67,7 @@
 @property(retain) NSArray *selectedObjects; // @synthesize selectedObjects=_selectedObjects;
 @property BOOL allowsDelete; // @synthesize allowsDelete=_allowsDelete;
 @property BOOL showsStatusImage; // @synthesize showsStatusImage=_showsStatusImage;
+
 - (BOOL)outlineView:(id)arg1 shouldSelectItem:(id)arg2;
 - (id)outlineView:(id)arg1 selectionIndexesForProposedSelection:(id)arg2;
 - (void)outlineViewItemDidExpand:(id)arg1;
@@ -124,7 +125,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

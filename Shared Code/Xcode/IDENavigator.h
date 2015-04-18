@@ -32,6 +32,7 @@
 @property(retain, nonatomic) NSPredicate *filterPredicate; // @synthesize filterPredicate=_filterPredicate;
 @property(retain) NSView *_primaryFilterControl; // @synthesize _primaryFilterControl;
 @property(nonatomic, getter=isFilteringEnabled) BOOL filteringEnabled; // @synthesize filteringEnabled=_filteringEnabled;
+
 - (void)focusedEditorDidSelectItem:(id)arg1;
 - (id)navigableItemsForArchivedNavigableItems:(id)arg1;
 - (void)revealArchivedNavigableItems:(id)arg1;
@@ -55,7 +56,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

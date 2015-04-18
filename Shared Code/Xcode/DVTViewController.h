@@ -11,6 +11,7 @@
 #import "DVTControllerContentViewViewControllerAdditions-Protocol.h"
 #import "DVTEditor-Protocol.h"
 #import "DVTInvalidation-Protocol.h"
+#import "DVTControllerContentView.h"
 
 @class DVTControllerContentView, DVTExtension, DVTStackBacktrace, NSString;
 
@@ -35,7 +36,7 @@
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
 - (void)loadView;
-@property(retain) NSView *view;
+@property(retain) DVTControllerContentView *view;
 - (void)separateKeyViewLoops;
 - (BOOL)delegateFirstResponder;
 - (id)supplementalMainViewController;
@@ -50,7 +51,6 @@
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
-
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;

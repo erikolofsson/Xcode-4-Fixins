@@ -10,16 +10,15 @@
 
 #import "DVTSourceBufferProvider-Protocol.h"
 #import "DVTSourceLanguageServiceDelegate-Protocol.h"
-#import "DVTSourceLanguageSourceModelService-Protocol.h"
-#import "DVTSourceLanguageSyntaxTypeService-Protocol.h"
 #import "DVTTextStorageDelegate-Protocol.h"
 
-@class DVTFontAndColorTheme, DVTObservingToken, DVTSourceCodeLanguage, DVTSourceLandmarkItem, DVTSourceModel, NSDictionary, NSMutableAttributedString, NSString, NSTimer, _LazyInvalidationHelper;
+@protocol DVTSourceLanguageSourceModelService, DVTSourceLanguageSyntaxTypeService, DVTTextStorageDelegate;
+@class DVTFontAndColorTheme, DVTObservingToken, DVTSourceCodeLanguage, DVTSourceLandmarkItem, DVTSourceLanguageService, DVTSourceModel, NSDictionary, NSMutableAttributedString, NSString, NSTimer, _LazyInvalidationHelper;
 
 @interface DVTTextStorage : NSTextStorage <DVTSourceBufferProvider, DVTSourceLanguageServiceDelegate>
 {
     NSMutableAttributedString *_contents;
-	struct _DVTTextLineOffsetTable{} _lineOffsets;
+	struct _DVTTextLineOffsetTable {} _lineOffsets;
     unsigned long long _changeCapacity;
     unsigned long long _numChanges;
     struct _DVTTextChangeEntry *_changes;
@@ -56,7 +55,7 @@
         unsigned int languageServiceSupportsSourceModel:1;
     } _tsflags;
     _LazyInvalidationHelper *_lazyInvalidationHelper;
-    id<DVTSourceLanguageSyntaxTypeService> _sourceLanguageService;
+    DVTSourceLanguageService<DVTSourceLanguageSyntaxTypeService> *_sourceLanguageService;
     DVTObservingToken *_sourceLanguageServiceContextObservingToken;
 }
 
@@ -91,7 +90,7 @@
 - (struct _NSRange)methodDefinitionRangeAtIndex:(unsigned long long)arg1;
 - (struct _NSRange)methodCallRangeAtIndex:(unsigned long long)arg1;
 - (id)importStatementStringAtCharacterIndex:(unsigned long long)arg1;
-- (id)importStatementStringAtCharacterIndex:(unsigned long long)arg1 isModule:(char *)arg2;
+- (id)importStatementStringAtCharacterIndex:(unsigned long long)arg1 effectiveRange:(struct _NSRange *)arg2 isModule:(char *)arg3;
 - (id)symbolNameAtCharacterIndex:(unsigned long long)arg1 nameRanges:(id *)arg2;
 - (unsigned long long)nextExpressionFromIndex:(unsigned long long)arg1 forward:(BOOL)arg2;
 @property(getter=isExpressionMovement) BOOL expressionMovement;
@@ -111,9 +110,9 @@
 - (id)stringForItem:(id)arg1;
 @property(readonly) DVTSourceModel *sourceModelWithoutParsing;
 @property(readonly) DVTSourceModel *sourceModel;
-@property(readonly) id<DVTSourceLanguageSourceModelService> sourceModelService;
+@property(readonly) DVTSourceLanguageService<DVTSourceLanguageSourceModelService> *sourceModelService;
 @property(readonly, nonatomic) NSDictionary *sourceLanguageServiceContext;
-@property(readonly) id<DVTSourceLanguageSyntaxTypeService> languageService;
+@property(readonly) DVTSourceLanguageService<DVTSourceLanguageSyntaxTypeService> *languageService;
 @property(copy) DVTSourceCodeLanguage *language;
 - (void)didReplaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 changeInLength:(long long)arg3 replacedString:(id)arg4;
 - (void)willReplaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 changeInLength:(long long)arg3;
@@ -135,7 +134,6 @@
 - (struct _NSRange)characterRangeFromDocumentLocation:(id)arg1;
 - (void)_dumpLineOffsetsTable;
 - (id)_debugStringFromUnsignedIntegers:(const unsigned long long *)arg1 count:(unsigned long long)arg2;
-- (void)serviceAvailabilityNotification:(BOOL)arg1 message:(id)arg2;
 - (void)scheduleLazyInvalidationForRange:(struct _NSRange)arg1;
 - (void)_updateLazyInvalidationForEditedRange:(struct _NSRange)arg1 changeInLength:(long long)arg2;
 - (void)_processLazyInvalidation;
@@ -149,7 +147,7 @@
 - (void)fixAttributesInRange:(struct _NSRange)arg1;
 - (void)fixSyntaxColoringInRange:(struct _NSRange)arg1;
 - (void)fixAttachmentAttributeInRange:(struct _NSRange)arg1;
-@property (assign) id <DVTTextStorageDelegate> delegate;
+@property(assign) id <DVTTextStorageDelegate> delegate;
 - (id)_associatedTextViews;
 - (void)replaceCharactersInRange:(struct _NSRange)arg1 withAttributedString:(id)arg2 withUndoManager:(id)arg3;
 - (void)replaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 withUndoManager:(id)arg3;
@@ -226,7 +224,7 @@
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
-
+@property(readonly) NSUInteger hash;
 @property(readonly) Class superclass;
 
 @end

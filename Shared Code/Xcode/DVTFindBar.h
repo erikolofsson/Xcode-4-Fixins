@@ -12,16 +12,15 @@
 
 #import "DVTFindPatternManager-Protocol.h"
 #import "DVTScopeBarContentController-Protocol.h"
-#import "DVTFindBarOptionsCtrl.h"
-#import "DVTFindBarHostable-Protocol.h"
 
-@class DVTBorderedView, DVTFindBarOptionsCtrl, DVTFindPatternTextField, DVTLogAspect, DVTObservingToken, DVTSearchField, DVTSharedFindState, DVTStackView_AppKitAutolayout, NSAttributedString, NSLayoutConstraint, NSMutableArray, NSPopUpButton, NSSegmentedControl, NSString, NSTextField, NSTimer, NSView, DVTSearchField;
+@protocol DVTFindPatternField, DVTFindBarHostable, DVTFindPatternField;
+@class DVTBorderedView, DVTFindBarOptionsCtrl, DVTFindPatternTextField, DVTLogAspect, DVTObservingToken, DVTSearchField, DVTSharedFindState, DVTStackView_AppKitAutolayout, NSAttributedString, NSLayoutConstraint, NSMutableArray, NSPopUpButton, NSSegmentedControl, NSString, NSTextField, NSTimer, NSView;
 
 @interface DVTFindBar : DVTViewController <DVTFindPatternManager, DVTScopeBarContentController>
 {
     NSPopUpButton *_finderModePopUpButton;
-    DVTSearchField *_findStringField;
-    DVTFindPatternTextField *_replaceStringField;
+    DVTSearchField<DVTFindPatternField> *_findStringField;
+    DVTFindPatternTextField<DVTFindPatternField> *_replaceStringField;
     NSSegmentedControl *_segmentedControl;
     DVTStackView_AppKitAutolayout *_stackView;
     DVTBorderedView *_replaceModeView;
@@ -152,7 +151,6 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-
 @property(readonly) Class superclass;
 
 @end

@@ -61,6 +61,7 @@
 @property(nonatomic) BOOL recentFilteringEnabled; // @synthesize recentFilteringEnabled=_recentFilteringEnabled;
 @property(nonatomic) BOOL errorFilteringEnabled; // @synthesize errorFilteringEnabled=_errorFilteringEnabled;
 @property(copy, nonatomic) NSString *filterPatternString; // @synthesize filterPatternString=_filterPatternString;
+
 - (void)_revealNavigableItems:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)configureStateSavingObservers;

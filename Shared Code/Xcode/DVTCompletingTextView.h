@@ -5,15 +5,14 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTTextView.h"
 
 #import "DVTLayoutManagerDelegate-Protocol.h"
+#import "DVTCompletingTextViewDelegate-Protocol.h"
 #import "DVTLayoutManager.h"
-
-@protocol DVTCompletingTextViewDelegate;
 
 @class DVTFoldingLayoutManager, DVTFoldingManager, DVTLayoutManager, DVTSourceCodeLanguage, DVTTextCompletionController, DVTTextCompletionDataSource, DVTTextStorage, NSCharacterSet, NSColor, NSString;
 
@@ -132,7 +131,7 @@
 @property(readonly, copy) NSString *debugDescription;
 @property(retain) id <DVTCompletingTextViewDelegate> delegate; // @dynamic delegate;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

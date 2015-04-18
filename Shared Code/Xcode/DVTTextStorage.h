@@ -5,25 +5,21 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTSourceBufferProvider-Protocol.h"
 #import "DVTSourceLanguageServiceDelegate-Protocol.h"
-#import "DVTSourceLanguageService.h"
+#import "DVTSourceLanguageSourceModelService-Protocol.h"
+#import "DVTSourceLanguageSyntaxTypeService-Protocol.h"
 #import "DVTTextStorageDelegate-Protocol.h"
 
 @class DVTFontAndColorTheme, DVTObservingToken, DVTSourceCodeLanguage, DVTSourceLandmarkItem, DVTSourceModel, NSDictionary, NSMutableAttributedString, NSString, NSTimer, _LazyInvalidationHelper;
 
-struct _DVTTextLineOffsetTable
-{
-	int x;
-};
-
 @interface DVTTextStorage : NSTextStorage <DVTSourceBufferProvider, DVTSourceLanguageServiceDelegate>
 {
     NSMutableAttributedString *_contents;
-    struct _DVTTextLineOffsetTable _lineOffsets;
+	struct _DVTTextLineOffsetTable{} _lineOffsets;
     unsigned long long _changeCapacity;
     unsigned long long _numChanges;
     struct _DVTTextChangeEntry *_changes;
@@ -60,7 +56,7 @@ struct _DVTTextLineOffsetTable
         unsigned int languageServiceSupportsSourceModel:1;
     } _tsflags;
     _LazyInvalidationHelper *_lazyInvalidationHelper;
-    DVTSourceLanguageService *_sourceLanguageService;
+    id<DVTSourceLanguageSyntaxTypeService> _sourceLanguageService;
     DVTObservingToken *_sourceLanguageServiceContextObservingToken;
 }
 
@@ -115,9 +111,9 @@ struct _DVTTextLineOffsetTable
 - (id)stringForItem:(id)arg1;
 @property(readonly) DVTSourceModel *sourceModelWithoutParsing;
 @property(readonly) DVTSourceModel *sourceModel;
-@property(readonly) DVTSourceLanguageService *sourceModelService;
+@property(readonly) id<DVTSourceLanguageSourceModelService> sourceModelService;
 @property(readonly, nonatomic) NSDictionary *sourceLanguageServiceContext;
-@property(readonly) DVTSourceLanguageService *languageService;
+@property(readonly) id<DVTSourceLanguageSyntaxTypeService> languageService;
 @property(copy) DVTSourceCodeLanguage *language;
 - (void)didReplaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 changeInLength:(long long)arg3 replacedString:(id)arg4;
 - (void)willReplaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 changeInLength:(long long)arg3;
@@ -153,7 +149,7 @@ struct _DVTTextLineOffsetTable
 - (void)fixAttributesInRange:(struct _NSRange)arg1;
 - (void)fixSyntaxColoringInRange:(struct _NSRange)arg1;
 - (void)fixAttachmentAttributeInRange:(struct _NSRange)arg1;
-@property id <DVTTextStorageDelegate> delegate;
+@property (assign) id <DVTTextStorageDelegate> delegate;
 - (id)_associatedTextViews;
 - (void)replaceCharactersInRange:(struct _NSRange)arg1 withAttributedString:(id)arg2 withUndoManager:(id)arg3;
 - (void)replaceCharactersInRange:(struct _NSRange)arg1 withString:(id)arg2 withUndoManager:(id)arg3;
@@ -230,7 +226,7 @@ struct _DVTTextLineOffsetTable
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

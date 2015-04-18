@@ -5,16 +5,16 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTViewController.h"
 
 #import "DVTStatefulObject-Protocol.h"
 #import "IDESelectionSource-Protocol.h"
-#import "IDEWorkspaceDocumentProvider-Protocol.h"
 
 @class DVTStateToken, IDESelection, IDEWorkspace, IDEWorkspaceDocument, IDEWorkspaceTabController, NSString;
+@protocol IDEWorkspaceDocumentProvider;
 
 @interface IDEViewController : DVTViewController <IDESelectionSource, DVTStatefulObject>
 {
@@ -54,7 +54,7 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

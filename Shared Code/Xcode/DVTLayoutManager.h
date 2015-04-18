@@ -5,17 +5,13 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTFoldingLayoutManager.h"
 
 #import "DVTAnnotationManagerDelegate-Protocol.h"
 
-struct _DVTLayoutManagerFlags
-{
-	int x;
-};
 @class DVTMapTable, DVTPointerArray, NSArray, NSMutableArray, NSMutableSet, NSSet, NSString;
 
 @interface DVTLayoutManager : DVTFoldingLayoutManager <DVTAnnotationManagerDelegate>
@@ -26,7 +22,7 @@ struct _DVTLayoutManagerFlags
     DVTMapTable *_messageBubblesForAnnotations;
     NSMutableSet *_accessoryAnnotations;
     NSArray *_sortedAccessoryAnnotations;
-    struct _DVTLayoutManagerFlags _lmFlags2;
+	struct _DVTLayoutManagerFlags{} _lmFlags2;
 }
 
 + (void)initialize;
@@ -75,7 +71,7 @@ struct _DVTLayoutManagerFlags
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

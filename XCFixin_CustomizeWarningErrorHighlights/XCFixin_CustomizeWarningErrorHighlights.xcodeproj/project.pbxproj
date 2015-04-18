@@ -128,7 +128,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0620;
 			};
 			buildConfigurationList = 1DEB913E08733D840010E9CD /* Build configuration list for PBXProject "XCFixin_CustomizeWarningErrorHighlights" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -248,7 +248,7 @@
 					"-Xlinker",
 					"-t",
 				);
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -265,7 +265,7 @@
 					"-Xlinker",
 					"-t",
 				);
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};

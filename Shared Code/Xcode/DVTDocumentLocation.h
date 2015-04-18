@@ -5,12 +5,11 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTSimpleSerialization-Protocol.h"
 #import "DVTStringRepresentationPersistable-Protocol.h"
-
 @class NSDictionary, NSNumber, NSString, NSURL;
 
 @interface DVTDocumentLocation : NSObject <NSSecureCoding, NSCopying, DVTStringRepresentationPersistable, DVTSimpleSerialization>
@@ -39,7 +38,7 @@
 @property(readonly, copy) NSString *description;
 - (BOOL)isEqualDisregardingTimestamp:(id)arg1;
 - (BOOL)isEqualToDocumentLocationDisregardingDocumentURL:(id)arg1;
-@property(readonly) unsigned long long hash;
+
 - (BOOL)isEqual:(id)arg1;
 - (id)copyWithURL:(id)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;

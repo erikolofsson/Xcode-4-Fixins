@@ -5,9 +5,10 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
+#import "Shared.h"
 #import "IDEEditor.h"
 
 #import "DVTFindBarFindable-Protocol.h"
@@ -19,9 +20,9 @@
 #import "IDESourceExpressionSource-Protocol.h"
 #import "IDETestingSelection-Protocol.h"
 #import "IDETextVisualizationHost-Protocol.h"
-#import "IDESourceEditorViewControllerHost-Protocol.h"
 
 @class DVTDispatchLock, DVTLayoutManager, DVTNotificationToken, DVTObservingToken, DVTOperation, DVTSDK, DVTScopeBarController, DVTSourceExpression, DVTSourceLanguageService, DVTSourceTextView, DVTStackBacktrace, DVTTextDocumentLocation, DVTTextSidebarView, DVTWeakInterposer, IDEAnalyzerResultsExplorer, IDENoteAnnotationExplorer, IDESingleFileProcessingToolbarController, IDESourceCodeDocument, IDESourceCodeEditorAnnotationProvider, IDESourceCodeEditorContainerView, IDESourceCodeHelpNavigationRequest, IDESourceCodeNavigationRequest, IDESourceCodeSingleLineBlameProvider, IDESourceControlLogDetailViewController, IDEViewController, NSArray, NSDictionary, NSMutableArray, NSOperationQueue, NSPopover, NSProgressIndicator, NSScrollView, NSString, NSTimer, NSTrackingArea, NSView;
+@protocol IDESourceEditorViewControllerHost;
 
 @interface IDESourceCodeEditor : IDEEditor <NSTextViewDelegate, NSMenuDelegate, NSPopoverDelegate, DVTSourceTextViewDelegate, DVTFindBarFindable, IDESourceExpressionSource, IDERefactoringExpressionSource, IDETextVisualizationHost, IDEOpenQuicklyJumpToSupport, IDEComparisonEditorHostContext, IDESourceControlLogDetailDelegate, IDETestingSelection>
 {
@@ -126,6 +127,7 @@
 - (void)jumpToDefinitionWithShiftPlusAlternate:(id)arg1;
 - (void)jumpToDefinitionWithAlternate:(id)arg1;
 - (void)jumpToDefinition:(id)arg1;
+- (void)_jumpToExpression:(id)arg1;
 - (void)revealInSymbolNavigator:(id)arg1;
 - (unsigned long long)_insertionIndexUnderMouse;
 - (id)_documentLocationUnderMouse;
@@ -237,6 +239,9 @@
 - (void)textViewBoundsDidChange:(id)arg1;
 - (void)textView:(id)arg1 handleMouseDidExitSidebar:(id)arg2;
 - (void)textView:(id)arg1 handleMouseDidMoveOverSidebar:(id)arg2 atLineNumber:(unsigned long long)arg3;
+- (void)uninstallBreakpointGestureRecognizers;
+- (void)_replaceItemsInMenu:(id)arg1 withItemsInMenu:(id)arg2;
+- (void)installBreakpointGestureRecognizersInView:(id)arg1;
 - (void)textView:(id)arg1 handleMouseDownInSidebar:(id)arg2 atLineNumber:(unsigned long long)arg3;
 - (id)completingTextView:(id)arg1 documentLocationForWordStartLocation:(unsigned long long)arg2;
 - (void)completingTextView:(id)arg1 willPassContextToStrategies:(id)arg2 atWordStartLocation:(unsigned long long)arg3;
@@ -298,7 +303,7 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) DVTSDK *sdk;
 @property(readonly) Class superclass;

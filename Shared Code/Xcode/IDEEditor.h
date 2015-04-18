@@ -5,14 +5,14 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "IDEViewController.h"
-#import "DVTTextFindable-Protocol.h"
-#import "IDEEditorDelegate-Protocol.h"
 
 @class DVTFindBar, DVTNotificationToken, DVTObservingToken, DVTScopeBarsManager, IDEEditorContext, IDEEditorDocument, IDEFileTextSettings, NSScrollView;
+@protocol DVTTextFindable;
+@protocol IDEEditorDelegate;
 
 @interface IDEEditor : IDEViewController
 {

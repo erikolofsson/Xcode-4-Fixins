@@ -5,30 +5,23 @@
 //
 
 //
-// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk.sdk
+// SDK Root: /Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTViewController.h"
 
 #import "DVTFindPatternManager-Protocol.h"
 #import "DVTScopeBarContentController-Protocol.h"
-#import "DVTFindPatternField-Protocol.h"
-#import "DVTFindPatternTextField.h"
-#import "DVTSearchField.h"
+#import "DVTFindBarOptionsCtrl.h"
 #import "DVTFindBarHostable-Protocol.h"
 
-struct _DVTFindBarFlags
-{
-	int Flags;
-};
-
-@class DVTBorderedView, DVTFindBarOptionsCtrl, DVTFindPatternTextField, DVTLogAspect, DVTObservingToken, DVTSearchField, DVTSharedFindState, DVTStackView_AppKitAutolayout, NSAttributedString, NSLayoutConstraint, NSMutableArray, NSPopUpButton, NSSegmentedControl, NSString, NSTextField, NSTimer, NSView;
+@class DVTBorderedView, DVTFindBarOptionsCtrl, DVTFindPatternTextField, DVTLogAspect, DVTObservingToken, DVTSearchField, DVTSharedFindState, DVTStackView_AppKitAutolayout, NSAttributedString, NSLayoutConstraint, NSMutableArray, NSPopUpButton, NSSegmentedControl, NSString, NSTextField, NSTimer, NSView, DVTSearchField;
 
 @interface DVTFindBar : DVTViewController <DVTFindPatternManager, DVTScopeBarContentController>
 {
     NSPopUpButton *_finderModePopUpButton;
-    DVTSearchField<DVTFindPatternField> *_findStringField;
-    DVTFindPatternTextField<DVTFindPatternField> *_replaceStringField;
+    DVTSearchField *_findStringField;
+    DVTFindPatternTextField *_replaceStringField;
     NSSegmentedControl *_segmentedControl;
     DVTStackView_AppKitAutolayout *_stackView;
     DVTBorderedView *_replaceModeView;
@@ -43,7 +36,7 @@ struct _DVTFindBarFlags
     NSAttributedString *_findAttributedString;
     NSAttributedString *_replaceAttributedString;
     unsigned long long _finderMode;
-    struct _DVTFindBarFlags _fbflags;
+	struct _DVTFindBarFlags {} _fbflags;
     BOOL _canReplace;
     BOOL _hasResults;
     BOOL _recentsNeedUpdate;
@@ -159,7 +152,7 @@ struct _DVTFindBarFlags
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
-@property(readonly) unsigned long long hash;
+
 @property(readonly) Class superclass;
 
 @end

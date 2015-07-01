@@ -22,21 +22,21 @@ BOOL XCFixinShouldLoad(void)
 }
 
 const NSUInteger XCFixinMaxLoadAttempts = 3;
-IMP XCFixinOverrideMethod(Class class, SEL selector, IMP newImplementation)
+IMP XCFixinOverrideMethod(Class class0, SEL selector, IMP newImplementation)
 {
     Method *classMethods = nil;
     IMP result = nil;
     
-        XCFixinAssertOrPerform(class, goto cleanup);
+        XCFixinAssertOrPerform(class0, goto cleanup);
         XCFixinAssertOrPerform(selector, goto cleanup);
         XCFixinAssertOrPerform(newImplementation, goto cleanup);
     
-    Method originalMethod = class_getInstanceMethod(class, selector);
+    Method originalMethod = class_getInstanceMethod(class0, selector);
         XCFixinAssertOrPerform(originalMethod, goto cleanup);
     
     IMP originalImplementation = method_getImplementation(originalMethod);
     unsigned int classMethodsCount = 0;
-    classMethods = class_copyMethodList(class, &classMethodsCount);
+    classMethods = class_copyMethodList(class0, &classMethodsCount);
         XCFixinAssertOrPerform(classMethods, goto cleanup);
     
     /* Check to see if the method is defined at the level of 'class', rather than at a super class' level. */
@@ -65,7 +65,7 @@ IMP XCFixinOverrideMethod(Class class, SEL selector, IMP newImplementation)
         const char *types = method_getTypeEncoding(originalMethod);
             XCFixinAssertOrPerform(types, goto cleanup);
         
-        BOOL addMethodResult = class_addMethod(class, selector, newImplementation, types);
+        BOOL addMethodResult = class_addMethod(class0, selector, newImplementation, types);
             XCFixinAssertOrPerform(addMethodResult, goto cleanup);
     }
     
@@ -123,15 +123,15 @@ NSTextView *XCFixinFindIDETextView(BOOL log)
   return textView;
 }
 
-IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation)
+IMP XCFixinOverrideStaticMethod(Class class0, SEL selector, IMP newImplementation)
 {
   IMP result = nil;
     
-  XCFixinAssertOrPerform(class, goto cleanup);
+  XCFixinAssertOrPerform(class0, goto cleanup);
   XCFixinAssertOrPerform(selector, goto cleanup);
   XCFixinAssertOrPerform(newImplementation, goto cleanup);
     
-  Method originalMethod = class_getClassMethod(class, selector);
+  Method originalMethod = class_getClassMethod(class0, selector);
   XCFixinAssertOrPerform(originalMethod, goto cleanup);
     
   IMP originalImplementation = method_getImplementation(originalMethod);

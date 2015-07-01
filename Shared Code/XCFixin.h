@@ -1,3 +1,5 @@
+#pragma once
+
 #import <Foundation/Foundation.h>
 
 
@@ -71,12 +73,12 @@ extern const NSUInteger XCFixinMaxLoadAttempts;
    implementation is returned.
    
    This function returns nil on failure. */
-IMP XCFixinOverrideMethod(Class class, SEL selector, IMP newImplementation);
+IMP XCFixinOverrideMethod(Class class0, SEL selector, IMP newImplementation);
 #define XCFixinOverrideMethodString(className, selector, newImplementation) XCFixinOverrideMethod(NSClassFromString(className), selector, newImplementation)
 
 @class NSTextView;
 NSTextView *XCFixinFindIDETextView(BOOL log);
-IMP XCFixinOverrideStaticMethod(Class class, SEL selector, IMP newImplementation);
+IMP XCFixinOverrideStaticMethod(Class class0, SEL selector, IMP newImplementation);
 #define XCFixinOverrideStaticMethodString(className, selector, newImplementation) XCFixinOverrideStaticMethod(NSClassFromString(className), selector, newImplementation)
 @class NSLayoutManager;
 void XCFixinUpdateTempAttributes(NSLayoutManager *layoutManager, NSRange range);

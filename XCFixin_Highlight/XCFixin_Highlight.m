@@ -10,8 +10,8 @@
 #import "../Shared Code/Xcode/DVTSourceCodeLanguage.h"
 #import "../Shared Code/Xcode/DVTLanguageSpecification.h"
 #import "../Shared Code/Xcode/IDESourceCodeEditor.h"
-#import "../Shared Code/Xcode/IDESourceCodeEditor.h"
 #import "../Shared Code/Xcode/IDEIndex.h"
+#import "../Shared Code/Xcode/DVTLayoutManager.h"
 
 
 @interface XCFixin_Highlight_ViewState : NSObject

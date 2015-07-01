@@ -20,7 +20,7 @@
 	<string>${CURRENT_PROJECT_VERSION}</string>
 	<key>DVTPlugInCompatibilityUUIDs</key>
 	<array>
-		<string>E969541F-E6F9-4D25-8158-72DC3545A6C6</string>
+		<string>7FDF5C7A-131F-4ABB-9EDC-8C5F8F0B8A90</string>
 	</array>
 	<key>NSPrincipalClass</key>
 	<string>OMMiniXcode</string>

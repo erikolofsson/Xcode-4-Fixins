@@ -109,7 +109,7 @@
 		435E246713A8E4510052479A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = 435E246A13A8E4510052479A /* Build configuration list for PBXProject "XCFixin_EmulateVisualStudio" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -169,6 +169,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
@@ -206,13 +207,14 @@
 				DSTROOT = "$(HOME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
-					"/Source/Xcode-4-Fixins/XCFixin_Highlight/../../../Applications/Xcode.app/Contents/SharedFrameworks",
-					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/Frameworks",
+					"/Applications/Xcode-beta.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_EmulateVisualStudio;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
@@ -231,13 +233,14 @@
 				DSTROOT = "$(HOME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
-					"/Source/Xcode-4-Fixins/XCFixin_Highlight/../../../Applications/Xcode.app/Contents/SharedFrameworks",
-					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/Frameworks",
+					"/Applications/Xcode-beta.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_EmulateVisualStudio;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;

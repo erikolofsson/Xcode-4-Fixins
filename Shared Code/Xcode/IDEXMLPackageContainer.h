@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -16,14 +16,14 @@
 #import "DVTXMLUnarchiving-Protocol.h"
 #import "IDECustomDataStoring-Protocol.h"
 
-@class DVTMapTable, IDEDirectoryBasedCustomDataStore, IDEGroup, NSMutableDictionary, NSString;
+@class IDEDirectoryBasedCustomDataStore, IDEGroup, NSMapTable, NSMutableDictionary, NSString;
 
 @interface IDEXMLPackageContainer : IDEContainer <DVTXMLUnarchiverDelegate, DVTXMLUnarchiving, IDECustomDataStoring>
 {
     IDEGroup *_unarchivingGroup;
     NSMutableDictionary *_unarchivingProperties;
     IDEDirectoryBasedCustomDataStore *_customDataStore;
-    DVTMapTable *_unsavedXMLDataForCustomDataStoreSpecifier;
+    NSMapTable *_unsavedXMLDataForCustomDataStoreSpecifier;
     BOOL _hasUnhandledArchiveData;
 }
 

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -29,6 +29,7 @@ __attribute__((visibility("hidden")))
     BOOL _terminateCalled;
 }
 
++ (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
 + (void)initialize;
 @property(readonly) BOOL terminateCalled; // @synthesize terminateCalled=_terminateCalled;
 // - (id).cxx_construct;
@@ -45,7 +46,6 @@ __attribute__((visibility("hidden")))
 - (struct SBProcess)_doRegularDebugWithTarget:(struct SBTarget)arg1 usingDebugServer:(BOOL)arg2 errTargetString:(id)arg3;
 - (void)_reportTarget:(id)arg1 failedToLaunchError:(struct SBError)arg2;
 - (struct SBProcess)_doAttachWithTarget:(struct SBTarget)arg1 childPID:(unsigned long long *)arg2;
-- (id)executableArguments;
 - (id)parseConsoleOutputFromOriginalOutput:(id)arg1;
 - (id)parseConsoleInputFromOriginalInput:(id)arg1;
 - (void)_executeLLDBCommands:(id)arg1;

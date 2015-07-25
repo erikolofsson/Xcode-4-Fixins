@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -22,15 +22,8 @@
 {
     NSTimer *_springToFrontTimer;
     int _debugSessionState;
-    NSMutableArray *_windowsOrderedOutForMiniDebugging;
     struct CGRect _restoreFrame;
     struct CGSize _originalMinSize;
-    struct CGPoint _miniRestoreOrigin;
-    struct CGSize _collapsedRestoreSize;
-    struct CGSize _mediumRestoreSize;
-    double _miniWindowBarHeight;
-    double _toolbarHeightDelta;
-    struct CGSize _contentViewFrozenSize;
     NSMutableArray *_topLevelViewOrder;
     NSMapTable *_viewHeightsForResizing;
     NSMutableArray *_stateChangeObservingTokens;
@@ -44,8 +37,6 @@
     DVTObservingToken *_workspaceFinishedLoadingObservingToken;
     DVTObservingToken *_navigationTargetedEditorDocumentObservingToken;
     DVTNotificationToken *_editorDocumentIsEditedNotificationToken;
-    DVTObservingToken *_userWantsMiniDebuggingConsoleObservingToken;
-    DVTObservingToken *_userWantsAppFocusInMiniDebuggingObservingToken;
     IDEWorkspace *_workspace;
     _IDEWindowFullScreenSavedDebuggerTransitionValues *_fullScreenSavedDebuggerTransitionValues;
     unsigned int _coalescedUpdateMask;
@@ -55,20 +46,14 @@
     BOOL _tabBarInTransition;
     BOOL _tabBarShownForTabDrag;
     BOOL _keepTabBarHiddenWhenCreatingTab;
-    BOOL _isInMorphingToDebugging;
     BOOL _createdCollapsedRestoreFrame;
     BOOL _createdMediumRestoreFrame;
     BOOL _inTotalCollapsedFrame;
     BOOL _tabBarForcedClosed;
-    BOOL _capturedStatesBeforeMiniDebugging;
-    BOOL _wasShowingNavigatorBeforeMiniDebugging;
-    BOOL _wasShowingUtilitiesBeforeMiniDebugging;
-    BOOL _wasShowingEditorBeforeMiniDebugging;
     BOOL _isClosing;
     BOOL _enteringFullScreenMode;
     BOOL _exitingFullScreenMode;
     BOOL _fullScreenTabBarAlwaysVisible;
-    BOOL _inMiniDebuggingMode;
     BOOL _createNewTabUponLoadIfNoTabsExist;
     BOOL _didSetupFirstResponderInterposer;
     BOOL _shouldPerformWindowClose;
@@ -83,6 +68,7 @@
 + (id)keyPathsForValuesAffectingUserWantsBreakpointsActivated;
 + (void)initialize;
 + (id)workspaceWindowControllerForWindow:(id)arg1;
++ (id)keyPathsForValuesAffectingEditorArea;
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)workspaceWindowControllers;
@@ -94,7 +80,6 @@
 @property(nonatomic) BOOL showToolbar; // @synthesize showToolbar=_showToolbar;
 @property BOOL createNewTabUponLoadIfNoTabsExist; // @synthesize createNewTabUponLoadIfNoTabsExist=_createNewTabUponLoadIfNoTabsExist;
 @property(copy, nonatomic) NSString *uniqueIdentifier; // @synthesize uniqueIdentifier=_uniqueIdentifier;
-@property(readonly, getter=isInMiniDebuggingMode) BOOL inMiniDebuggingMode; // @synthesize inMiniDebuggingMode=_inMiniDebuggingMode;
 @property(retain, nonatomic) NSTabView *tabView; // @synthesize tabView=_tabView;
 @property(retain, nonatomic) DVTTabBarEnclosureView *tabBarEnclosureView; // @synthesize tabBarEnclosureView=_tabBarEnclosureView;
 // - (void).cxx_destruct;
@@ -102,11 +87,9 @@
 - (void)dicardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
 - (void)_updateWindowTitle;
-- (void)_userWantsMiniDebuggingConsoleChanged;
-- (void)_userWantsAppFocusInMiniDebuggingChanged;
 - (void)_updateTitleRepresentedPath;
 @property BOOL userWantsBreakpointsActivated;
-- (void)changeFromDebugSessionState:(int)arg1 to:(int)arg2 fromDebuggingWindowBehavior:(int)arg3 to:(int)arg4;
+- (void)changeFromDebugSessionState:(int)arg1 to:(int)arg2 forLaunchSession:(id)arg3;
 - (void)_makeWindowLookKeyWhenKey;
 - (void)windowDidExitFullScreen:(id)arg1;
 - (void)windowWillExitFullScreen:(id)arg1;
@@ -114,16 +97,6 @@
 - (void)windowDidEnterFullScreen:(id)arg1;
 - (void)_workaround8217584;
 - (BOOL)_isTargetApplicationActive;
-- (void)_changeWindowsLevelFrom:(int)arg1 to:(int)arg2;
-- (void)_changeFrom:(int)arg1 toNormalOrXcodeBehindDebugging:(int)arg2;
-- (void)_changeToMiniDebugging:(int)arg1;
-- (void)_morphToMedium:(int)arg1;
-- (struct CGRect)_mediumFrame;
-- (void)_morphToNonCollapsed:(struct CGRect)arg1 frozenMode:(int)arg2 toolbarHeightDelta:(double)arg3;
-- (void)_morphToCollapsed;
-- (void)_setInTotalCollapsed:(BOOL)arg1;
-- (void)_reSnapshotContentViewToNewFrame:(struct CGRect)arg1 hideTabBarBeforeSnapshot:(BOOL)arg2 toolbarHeightDelta:(double)arg3;
-- (void)_createCollapsedRestoreFrame;
 - (void)_performSpringToFront;
 - (void)_cancelSpringToFront;
 - (void)_scheduleSpringToFront;

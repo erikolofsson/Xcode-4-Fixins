@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -18,8 +18,8 @@
 #import "IDEReadOnlyItem-Protocol.h"
 #import "IDEUpgradeableItem-Protocol.h"
 
-@class DVTExtension, DVTFilePath, DVTMapTable, DVTOperation, DVTStackBacktrace, IDEActivityLogSection, IDEGroup, IDEWorkspace, NSDictionary, NSMapTable, NSMutableDictionary, NSMutableSet, NSString, NSTimer, NSURL;
-@protocol DVTCancellable, IDEContainerCore, IDEContainerDelegate;
+@class DVTExtension, DVTFilePath, DVTOperation, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDEActivityLogSection, IDEGroup, IDEWorkspace, NSDictionary, NSMapTable, NSMutableDictionary, NSString, NSTimer, NSURL;
+@protocol IDEContainerCore, IDEContainerDelegate;
 
 @interface IDEContainer : DVTModelObject <DVTInvalidation, IDEIntegrityLogDataSource, IDEReadOnlyItem, DVTDirectoryBasedCustomDataStoreDelegate, IDEUpgradeableItem>
 {
@@ -32,12 +32,12 @@
     DVTOperation *_willReadOperation;
     DVTOperation *_readOperation;
     DVTOperation *_didReadOperation;
-    id <DVTCancellable> _resolvePendingFilesCancellableToken;
+    DVTTimeSlicedMainThreadWorkQueue *_mainThreadTimeSlicedQueue;
+    DVTTimeSlicedMainThreadWorkQueue *_pendingFileReferenceResolvingQueue;
     int _activity;
     int _transitionActivity;
     NSMutableDictionary *_sessionIdentifiersToFilePaths;
     NSMutableDictionary *_containerLoadingTokens;
-    NSMutableSet *_pendingFileReferences;
     NSDictionary *_containerDataFilePaths;
     int _autosaveBehavior;
     int _saveIssue;
@@ -46,7 +46,7 @@
     NSMutableDictionary *_filePathToReadOnlyItemMap;
     NSMapTable *_readOnlyItemToStatusObserverMap;
     id <IDEContainerDelegate> _containerDelegate;
-    DVTMapTable *_pendingFilePathChangeDictionary;
+    NSMapTable *_pendingFilePathChangeDictionary;
     int _readOnlyStatus;
     BOOL _hasTransitionedToIdle;
     BOOL _containerEdited;
@@ -60,6 +60,7 @@
 + (void)setReloadingDelegate:(id)arg1;
 + (id)errorPresenter;
 + (void)setErrorPresenter:(id)arg1;
++ (BOOL)isOnlyUsedForUserInteraction;
 + (BOOL)supportsMultipleInstancesPerFilePath;
 + (BOOL)automaticallyNotifiesObserversOfFilePath;
 + (BOOL)automaticallyNotifiesObserversOfActivity;
@@ -69,10 +70,12 @@
 + (double)_defaltSlowAutosaveDelay;
 + (double)_defaltAutosaveDelay;
 + (BOOL)automaticallyNotifiesObserversOfContainerEdited;
++ (void)_addContainerWithPendingChanges:(id)arg1;
 + (void)resumeFilePathChangeNotifications;
 + (void)suspendFilePathChangeNotifications;
 + (id)_containersWithPendingFilePathChanges;
 + (BOOL)_observeContainerDataFilePathsForChanges;
++ (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
 + (id)_containerForSessionIdentifier:(id)arg1;
 + (void)_invalidateContainer:(id)arg1;
 + (void)_releaseContainer:(id)arg1;
@@ -120,6 +123,7 @@
 - (void)debugPrintStructure;
 - (void)debugPrintInnerStructure;
 @property(readonly, copy) NSString *description;
+- (void)_enqueueWorkItem:(CDUnknownBlockType)arg1;
 - (void)collectMessageTracerStatisticsIntoDictionary:(id)arg1;
 @property(readonly) IDEActivityLogSection *integrityLog;
 - (void)analyzeModelIntegrity;
@@ -140,6 +144,7 @@
 - (void)_respondToFileChangeOnDiskWithFilePath:(id)arg1;
 - (void)_makeAbsoluteFileReferencesInGroup:(id)arg1 relativeToFolderFilePath:(id)arg2 withPathString:(id)arg3;
 @property(readonly) NSString *displayName;
+@property(readonly, copy) NSString *workspaceParentRelativePath;
 - (void)_setTransitioningToNewFilePath:(BOOL)arg1;
 - (void)_setExtension:(id)arg1;
 - (void)_didUpdateActivity;
@@ -190,7 +195,7 @@
 - (void)_removeContainerLoadingTokenForContainer:(id)arg1;
 - (void)_locateFileReferencesRecursively;
 - (void)_clearPendingFileReferencesAndContainerLoadingTokens;
-- (void)_scheduleResolvePendingFileReferencesOperation;
+- (void)_resolveFileReference:(id)arg1;
 - (void)_handleContainerResolutionFailureForFileReference:(id)arg1;
 - (void)_locateFileReferencesRecursivelyInGroup:(id)arg1;
 - (void)_removePendingFileReference:(id)arg1;

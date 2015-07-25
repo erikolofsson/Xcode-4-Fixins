@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -14,7 +14,7 @@
 
 #import "DVTXMLUnarchiving-Protocol.h"
 
-@class DVTNotificationToken, DVTObservingToken, IDEDeviceAppDataReference, IDEFileReference, IDELocationScenarioReference, IDERunnable, IDESchemeOptionReference, NSArray, NSDictionary, NSMutableArray, NSMutableDictionary, NSNumber, NSString;
+@class DVTNotificationToken, DVTObservingToken, IDEDeviceAppDataReference, IDEFileReference, IDELocationScenarioReference, IDERunnable, IDESchemeOptionReference, NSArray, NSDictionary, NSMutableArray, NSMutableDictionary, NSMutableOrderedSet, NSNumber, NSString;
 
 @interface IDELaunchSchemeAction : IDESchemeAction <DVTXMLUnarchiving>
 {
@@ -26,6 +26,7 @@
     NSMutableDictionary *_additionalSchemeSettings;
     DVTObservingToken *_launchSessionObservingToken;
     BOOL _debugXPCServices;
+    BOOL _enableAddressSanitizer;
     BOOL _useCustomWorkingDirectory;
     BOOL _allowLocationSimulation;
     BOOL _showNonLocalizedStrings;
@@ -41,6 +42,7 @@
     NSString *_selectedLauncherIdentifier;
     IDERunnable *_runnable;
     NSString *_resolvedCustomWorkingDirectory;
+    NSMutableOrderedSet *_debugServiceExtensionContents;
     IDEFileReference *_notificationPayloadFile;
     IDEDeviceAppDataReference *_deviceAppDataReference;
     NSDictionary *_additionalOptionEntriesDict;
@@ -54,6 +56,8 @@
     NSNumber *_simulatorIPhoneDisplay;
     NSNumber *_simulatorIPadDisplay;
     NSString *_internalIOSSubstitutionApp;
+    NSString *_debugServiceExtensionContentsString;
+    NSString *_debugServiceExtension;
     NSString *_debugAsWhichUser;
 }
 
@@ -64,6 +68,8 @@
 + (id)keyPathsForValuesAffectingSubtitle;
 + (void)initialize;
 @property(copy) NSString *debugAsWhichUser; // @synthesize debugAsWhichUser=_debugAsWhichUser;
+@property(copy) NSString *debugServiceExtension; // @synthesize debugServiceExtension=_debugServiceExtension;
+@property(copy) NSString *debugServiceExtensionContentsString; // @synthesize debugServiceExtensionContentsString=_debugServiceExtensionContentsString;
 @property BOOL viewDebuggingEnabled; // @synthesize viewDebuggingEnabled=_viewDebuggingEnabled;
 @property(copy) NSString *internalIOSSubstitutionApp; // @synthesize internalIOSSubstitutionApp=_internalIOSSubstitutionApp;
 @property int internalIOSLaunchStyle; // @synthesize internalIOSLaunchStyle=_internalIOSLaunchStyle;
@@ -85,6 +91,7 @@
 @property BOOL useCustomWorkingDirectory; // @synthesize useCustomWorkingDirectory=_useCustomWorkingDirectory;
 @property(nonatomic) unsigned long long launchAutomaticallySubstyle; // @synthesize launchAutomaticallySubstyle=_launchAutomaticallySubstyle;
 @property(nonatomic) int launchStyle; // @synthesize launchStyle=_launchStyle;
+@property BOOL enableAddressSanitizer; // @synthesize enableAddressSanitizer=_enableAddressSanitizer;
 @property BOOL debugXPCServices; // @synthesize debugXPCServices=_debugXPCServices;
 @property(nonatomic) unsigned int debugProcessAsUID; // @synthesize debugProcessAsUID=_debugProcessAsUID;
 @property(readonly) NSDictionary *additionalOptionEntriesDict; // @synthesize additionalOptionEntriesDict=_additionalOptionEntriesDict;
@@ -92,8 +99,6 @@
 @property(retain) IDEFileReference *notificationPayloadFile; // @synthesize notificationPayloadFile=_notificationPayloadFile;
 @property(copy) NSString *selectedLauncherIdentifier; // @synthesize selectedLauncherIdentifier=_selectedLauncherIdentifier;
 // - (void).cxx_destruct;
-@property int enableOpenGLPerformanceAnalysisMode;
-@property int enableOpenGLFrameCaptureMode;
 - (void)addRoutingCoverageFileReference:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addLocationScenarioReference:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addDeviceAppData:(id)arg1 fromXMLUnarchiver:(id)arg2;
@@ -112,6 +117,7 @@
 - (BOOL)needsNewSchemeVersionForAppDataPackage;
 - (void)setAskForAppToLaunchFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 @property BOOL askForAppToLaunch;
+@property BOOL launchWithComplication;
 @property BOOL launchWithGlance;
 @property BOOL launchWithNotification;
 @property BOOL staticNotificationSelected;
@@ -131,17 +137,24 @@
 - (void)setAllowLocationSimulationFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setEnableGPUValidationModeFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setEnableGPUFrameCaptureModeFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)setDebugServiceExtensionContentsStringFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)setDebugServiceExtensionFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setCustomLaunchCommandFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)setEnableAddressSanitizerFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setDebugXPCServicesFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setDebugDocumentVersioningFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setIgnoresPersistentStateOnLaunchFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
+@property(copy) NSMutableOrderedSet *debugServiceExtensionContents; // @synthesize debugServiceExtensionContents=_debugServiceExtensionContents;
 - (void)setNotificationPayloadFileFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1 version:(id)arg2;
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)runOperationForExecutionEnvironment:(id)arg1 withBuildOperation:(id)arg2 buildParameters:(id)arg3 buildableProductDirectories:(id)arg4 schemeCommand:(id)arg5 schemeActionRecord:(id)arg6 outError:(id *)arg7 actionCallbackBlock:(CDUnknownBlockType)arg8;
+- (void)_restoreLaunchStyleForMetalRemoteDebuggingWithEnvironmentVariables:(id)arg1;
+- (BOOL)_overrideParametersForMetalRemoteDebuggingWithEnvironmentVariables:(id)arg1 WithOutError:(id *)arg2;
+- (BOOL)_isMetalRemoteDebuggingEnabledWithEnvironmentVariables:(id)arg1;
 - (BOOL)hasAppExtensionsInTargets;
 - (id)_extensionInfosForExtensions:(id)arg1;
-- (id)filePathsForContainersAndExtensionsForBuildParameters:(id)arg1;
+- (id)filePathsForContainersAndExtensionsForBuildParameters:(id)arg1 launchParameters:(id)arg2;
 - (void)_setupRecordedFramesInEnvironmentVariables:(id)arg1 runDestination:(id)arg2;
 - (id)_realAppNameForRunnablePath:(id)arg1;
 @property(readonly, nonatomic) BOOL debugAppExtensions;
@@ -165,7 +178,7 @@
 - (void)_updateBuildableToUseForMacroExpansion;
 - (void)setRunContext:(id)arg1;
 - (void)primitiveInvalidate;
-- (id)_initAdditionalOptionsDict;
+- (id)_createAdditionalOptionsDict;
 - (id)notificationPayloadFileReferences;
 - (void)_commonInit;
 - (BOOL)internalSettings;

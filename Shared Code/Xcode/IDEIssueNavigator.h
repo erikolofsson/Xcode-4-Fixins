@@ -5,61 +5,55 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
 
-#import "IDENavigator.h"
+#import "IDEOutlineBasedNavigator.h"
 
-@class DVTObservingToken, DVTScopeBarView, DVTScrollView, IDENavigatorDataCell, IDENavigatorOutlineView, NSArray, NSButton, NSMutableArray, NSMutableSet, NSSet, NSString;
+#import "DVTOutlineViewDelegate-Protocol.h"
 
-@interface IDEIssueNavigator : IDENavigator
+@class DVTNotificationToken, DVTObservingToken, DVTScopeBarView, DVTScrollView, DVTTimeSlicedMainThreadWorkQueue, NSButton, NSMutableArray, NSMutableSet, NSSet, NSString;
+
+@interface IDEIssueNavigator : IDEOutlineBasedNavigator <DVTOutlineViewDelegate>
 {
-    IDENavigatorOutlineView *_outlineView;
     DVTScopeBarView *_scopeBarView;
     NSButton *_scopeByFileButton;
     NSButton *_scopeByTypeButton;
-    NSArray *_selectedNavigables;
-    IDENavigatorDataCell *_groupCell;
-    IDENavigatorDataCell *_subGroupCell;
-    IDENavigatorDataCell *_issueCell;
-    IDENavigatorDataCell *_subissueCell;
-    NSMutableSet *_collapsedGroups;
-    NSMutableSet *_collapsedFiles;
-    NSMutableSet *_collapsedTypes;
-    NSMutableSet *_expandedIssues;
     NSSet *_collapsedGroupsBeforeFiltering;
     NSSet *_collapsedFilesBeforeFiltering;
     NSSet *_collapsedTypesBeforeFiltering;
     NSSet *_expandedIssuesBeforeFiltering;
-    NSMutableArray *_autoExpandItems;
-    NSString *_filterPatternString;
+    DVTTimeSlicedMainThreadWorkQueue *_autoExpandingWorkQueue;
     NSMutableArray *_stateChangeObservingTokens;
+    unsigned long long _issueDetailLevel;
     DVTObservingToken *_selectedNavigablesObservingToken;
-    DVTObservingToken *_navigatorDetailObservingToken;
+    DVTNotificationToken *_issueDetailLevelObservingToken;
     BOOL _showByType;
     BOOL _restoringState;
-    BOOL _autoExpanding;
+    BOOL _clearingFilterPredicate;
     BOOL _errorFilteringEnabled;
     BOOL _recentFilteringEnabled;
-    BOOL _clearingFilterPredicate;
-    BOOL _hasScheduledAutoExpansion;
-    BOOL _invalidatingRowHeights;
+    NSString *_filterPatternString;
+    NSMutableSet *_collapsedGroups;
+    NSMutableSet *_collapsedFiles;
+    NSMutableSet *_collapsedTypes;
+    NSMutableSet *_expandedIssues;
     DVTScrollView *_issueNavigatorScrollView;
     struct _NSRange _visibleRows;
 }
 
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
++ (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (void)initialize;
 @property __weak DVTScrollView *issueNavigatorScrollView; // @synthesize issueNavigatorScrollView=_issueNavigatorScrollView;
 @property struct _NSRange visibleRows; // @synthesize visibleRows=_visibleRows;
-@property(copy, nonatomic) NSSet *expandedIssues; // @synthesize expandedIssues=_expandedIssues;
-@property(copy, nonatomic) NSSet *collapsedTypes; // @synthesize collapsedTypes=_collapsedTypes;
-@property(copy, nonatomic) NSSet *collapsedFiles; // @synthesize collapsedFiles=_collapsedFiles;
-@property(copy, nonatomic) NSSet *collapsedGroups; // @synthesize collapsedGroups=_collapsedGroups;
-@property(retain, nonatomic) NSArray *selectedNavigables; // @synthesize selectedNavigables=_selectedNavigables;
+@property(copy, nonatomic) NSMutableSet *expandedIssues; // @synthesize expandedIssues=_expandedIssues;
+@property(copy, nonatomic) NSMutableSet *collapsedTypes; // @synthesize collapsedTypes=_collapsedTypes;
+@property(copy, nonatomic) NSMutableSet *collapsedFiles; // @synthesize collapsedFiles=_collapsedFiles;
+@property(copy, nonatomic) NSMutableSet *collapsedGroups; // @synthesize collapsedGroups=_collapsedGroups;
 @property(nonatomic) BOOL recentFilteringEnabled; // @synthesize recentFilteringEnabled=_recentFilteringEnabled;
 @property(nonatomic) BOOL errorFilteringEnabled; // @synthesize errorFilteringEnabled=_errorFilteringEnabled;
 @property(copy, nonatomic) NSString *filterPatternString; // @synthesize filterPatternString=_filterPatternString;
@@ -74,23 +68,17 @@
 - (id)filterDefinitionIdentifier;
 - (void)_updateFilterPredicate;
 - (BOOL)_isFiltered;
-- (id)outlineView:(id)arg1 toolTipForCell:(id)arg2 rect:(struct CGRect *)arg3 tableColumn:(id)arg4 item:(id)arg5 mouseLocation:(struct CGPoint)arg6;
-- (BOOL)outlineView:(id)arg1 shouldShowCellExpansionForTableColumn:(id)arg2 item:(id)arg3;
-- (id)outlineView:(id)arg1 dataCellForTableColumn:(id)arg2 item:(id)arg3;
-- (void)_autoExpandItem:(id)arg1;
+- (void)_configureStandardTableViewCell:(id)arg1 toNavItemsRepresentedObject:(id)arg2;
+- (id)_tableCellViewForSubIssueNavItem:(id)arg1;
+- (id)_tableCellViewForIssueNavItem:(id)arg1;
+- (id)_tableCellViewForIssueTypeGroupNavItem:(id)arg1;
+- (id)_tableCellViewForFileGroupNavItem:(id)arg1;
+- (id)_tableCellViewForIssueGroupNavItem:(id)arg1;
+- (id)outlineView:(id)arg1 viewForTableColumn:(id)arg2 item:(id)arg3;
 - (BOOL)outlineView:(id)arg1 writeItems:(id)arg2 toPasteboard:(id)arg3;
-- (id)_subissueCell;
-- (id)_issueCell;
-- (id)_subGroupCell;
-- (id)_groupCell;
-- (id)severityStatusCellsWithRepresentedObject:(id)arg1;
-- (double)outlineView:(id)arg1 heightOfRowByItem:(id)arg2;
 - (void)outlineViewItemDidCollapse:(id)arg1;
 - (void)outlineViewItemDidExpand:(id)arg1;
 - (void)_ensureNavigableItem:(id)arg1 expansionStateIsExpanded:(BOOL)arg2;
-- (void)viewBoundsChanged:(id)arg1;
-- (void)invalidateRowHeights;
-- (void)updateVisibleRows;
 - (id)_itemsMatchingState:(id)arg1;
 - (id)_leafIssueNavigableInIssuePath:(id)arg1 parentNavigable:(id)arg2 idToNavigableDict:(id)arg3;
 - (id)_issueNavigableItemForIdentifierDictionary:(id)arg1 parentNavigable:(id)arg2 idToNavigableDict:(id)arg3;
@@ -126,12 +114,15 @@
 - (void)showByType:(id)arg1;
 - (id)domainIdentifier;
 @property BOOL showByType;
-- (void)updateDetailLevel;
-- (void)_invalidateIssueAndSubIssueCells;
-- (BOOL)delegateFirstResponder;
 - (void)primitiveInvalidate;
+- (void)_handleDetailLevelDefaultDidChange;
 - (void)viewDidInstall;
 - (void)loadView;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) Class superclass;
 
 @end
 

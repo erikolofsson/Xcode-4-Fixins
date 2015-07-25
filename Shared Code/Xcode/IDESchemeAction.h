@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -26,6 +26,7 @@
 }
 
 + (BOOL)shouldAllowCustomPhaseActions;
++ (void)forceAddressSanitizerEnabledTo:(BOOL)arg1;
 + (void)initialize;
 @property(retain) IDEProfileOptimizationActionController *pgoController; // @synthesize pgoController=_pgoController;
 @property(retain) IDESchemeBuildableReference *buildableReferenceToUseForMacroExpansion; // @synthesize buildableReferenceToUseForMacroExpansion=_buildableReferenceToUseForMacroExpansion;
@@ -39,6 +40,7 @@
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 @property(readonly) NSArray *_postPhaseExecutionActionsProxies;
 @property(readonly) NSArray *_prePhaseExecutionActionsProxies;
+- (id)createAdditionalDiagnosticsDict;
 - (void)schemeObjectGraphSetupComplete;
 @property(readonly) BOOL hasAwoken;
 - (void)replacePostPhaseExecutionActionsAtIndexes:(id)arg1 withPostPhaseExecutionActions:(id)arg2;
@@ -60,6 +62,8 @@
 - (id)bundleIdentifierWithRunnablePath:(id)arg1;
 - (id)absolutePathOfBuildSetting:(id)arg1 forSchemeCommand:(id)arg2;
 - (id)expandMacrosInString:(id)arg1 forSchemeCommand:(id)arg2;
+- (BOOL)addAddressSanitizerEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildable:(id)arg3 error:(id *)arg4;
+- (BOOL)addressSanitizerEnabledForSchemeCommand:(id)arg1;
 - (id)setUpActionDependenciesForCorePhaseOperation:(id)arg1 shouldRunPostActionsBlock:(CDUnknownBlockType)arg2 prePhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg3 postPhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg4 buildParameters:(id)arg5 schemeActionResultOperation:(id)arg6 error:(id *)arg7;
 - (void)setRunContext:(IDEScheme *)arg1;
 @property(readonly) BOOL doesNonActionWork;

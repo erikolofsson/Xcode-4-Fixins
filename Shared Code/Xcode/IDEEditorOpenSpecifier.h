@@ -5,15 +5,16 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
 
-@class DVTDocumentLocation, DVTFileDataType, IDENavigableItemArchivableRepresentation, NSString, NSURL;
+@class DVTDocumentLocation, DVTFileDataType, DVTStackBacktrace, IDENavigableItemArchivableRepresentation, NSString, NSURL;
 
 @interface IDEEditorOpenSpecifier : NSObject
 {
+    DVTStackBacktrace *_creationBacktrace;
     IDENavigableItemArchivableRepresentation *_archivableRepresentation;
     DVTDocumentLocation *_locationToSelect;
     NSURL *_documentURL;

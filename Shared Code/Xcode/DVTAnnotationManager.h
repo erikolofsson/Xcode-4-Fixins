@@ -5,28 +5,39 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
 
-@class DVTAnnotationContext, NSMutableArray;
+#import "DVTInvalidation-Protocol.h"
+
+@class DVTStackBacktrace, NSMutableArray, NSString;
 @protocol DVTAnnotationManagerDelegate;
 
-@interface DVTAnnotationManager : NSObject
+@interface DVTAnnotationManager : NSObject <DVTInvalidation>
 {
     id <DVTAnnotationManagerDelegate> _delegate;
     NSMutableArray *_annotationProviders;
-    DVTAnnotationContext *_context;
 }
 
++ (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
++ (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
++ (void)initialize;
 @property(retain) id <DVTAnnotationManagerDelegate> delegate; // @synthesize delegate=_delegate;
-@property(retain) DVTAnnotationContext *context; // @synthesize context=_context;
-@property(retain) NSMutableArray *annotationProviders; // @synthesize annotationProviders=_annotationProviders;
 // - (void).cxx_destruct;
 - (void)removeAllAnnotationProviders;
 - (void)setupAnnotationProvidersWithContext:(id)arg1;
 - (id)_installObservationBlockForAnnotationProvider:(id)arg1;
+- (void)primitiveInvalidate;
+
+// Remaining properties
+@property(retain) DVTStackBacktrace *creationBacktrace;
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace;
+@property(readonly) Class superclass;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 

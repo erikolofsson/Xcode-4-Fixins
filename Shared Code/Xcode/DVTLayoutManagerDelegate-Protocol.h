@@ -5,17 +5,19 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #import "DVTFoldingLayoutManagerDelegate-Protocol.h"
 
-@class DVTLayoutManager, NSColor;
+@class DVTLayoutManager, DVTMutableRangeArray, NSColor;
 
 @protocol DVTLayoutManagerDelegate <DVTFoldingLayoutManagerDelegate>
 
 @optional
+- (void)didEndTokenizedEditingWithRanges:(DVTMutableRangeArray *)arg1;
+- (void)willStartTokenizedEditingWithRanges:(DVTMutableRangeArray *)arg1;
 - (void)tokenizableRangesWithRange:(struct _NSRange)arg1 completionBlock:(void (^)(NSArray *))arg2;
-- (NSColor *)layoutManager:(DVTLayoutManager *)arg1 shouldUseTextBackgroundColor:(NSColor *)arg2 rectArray:(struct CGRect *)arg3 count:(unsigned long long)arg4 forCharacterRange:(struct _NSRange)arg5;
+- (NSColor *)layoutManager:(DVTLayoutManager *)arg1 shouldUseTextBackgroundColor:(NSColor *)arg2 rectArray:(const struct CGRect *)arg3 count:(unsigned long long)arg4 forCharacterRange:(struct _NSRange)arg5;
 @end
 

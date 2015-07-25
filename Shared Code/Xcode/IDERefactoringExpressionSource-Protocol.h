@@ -5,12 +5,13 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
+
 
 @class DVTSourceExpression;
 
-@protocol IDERefactoringExpressionSource
+@protocol IDERefactoringExpressionSource <NSObject>
 - (DVTSourceExpression *)refactoringExpressionUsingContextMenu:(BOOL)arg1;
 @end
 

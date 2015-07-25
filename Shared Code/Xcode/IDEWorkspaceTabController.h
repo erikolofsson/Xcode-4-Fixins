@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -20,43 +20,31 @@
 #import "IDEStructureEditingWorkspaceTabContext-Protocol.h"
 #import "IDEWorkspaceDocumentProvider-Protocol.h"
 
-@class DVTFilePath, DVTMapTable, DVTMutableOrderedSet, DVTNotificationToken, DVTObservingToken, DVTReplacementView, DVTSplitView, DVTSplitViewItem, IDEARCConversionAssistantContext, IDEAppChooserWindowController, IDEBuildAlertMonitor, IDEEditorArea, IDELaunchSession, IDENavigatorArea, IDEObjCModernizationAssistantContext, IDERunAlertMonitor, IDESwiftMigrationAssistantContext, IDEUnitTestsModernizationAssistantContext, IDEWorkspace, IDEWorkspaceDocument, IDEWorkspaceWindowController, NSAlert, NSDocument, NSMutableArray, NSString;
+@class DVTFilePath, DVTMutableOrderedSet, DVTNotificationToken, DVTObservingToken, DVTReplacementView, DVTSplitView, DVTSplitViewItem, IDEARCConversionAssistantContext, IDEAppChooserWindowController, IDEBuildAlertMonitor, IDEEditorArea, IDEExecutionHoldAlertHelper, IDELaunchSession, IDENavigatorArea, IDEObjCModernizationAssistantContext, IDERunAlertMonitor, IDESwiftMigrationAssistantContext, IDEUnitTestsModernizationAssistantContext, IDEWorkspace, IDEWorkspaceDocument, IDEWorkspaceWindowController, NSAlert, NSDocument, NSMapTable, NSMutableArray, NSString;
 @protocol DVTTabbedWindowCreation;
 
 @interface IDEWorkspaceTabController : IDEViewController <NSTextViewDelegate, DVTTabbedWindowTabContentControlling, DVTStatefulObject, DVTReplacementViewDelegate, IDEEditorAreaContainer, IDEStructureEditingWorkspaceTabContext, IDEWorkspaceDocumentProvider, DVTEditor>
 {
     DVTSplitView *_designAreaSplitView;
     DVTReplacementView *_navReplacementView;
-    DVTReplacementView *_editorReplacementView;
     DVTSplitView *_utilityAreaSplitView;
     DVTSplitViewItem *_navigatorAreaSplitViewItem;
     DVTSplitViewItem *_utilitiesAreaSplitViewItem;
     DVTReplacementView *_inspectorReplacementView;
     DVTReplacementView *_libraryReplacementView;
     DVTMutableOrderedSet *_cursorRectInterceptors;
-    int _assistantEditorsLayout;
-    NSString *_name;
-    IDELaunchSession *_currentLaunchSession;
-    IDEWorkspaceDocument *_workspaceDocument;
-    DVTMapTable *_additionControllersForLaunchSessionTable;
+    NSMapTable *_additionControllersForLaunchSessionTable;
     NSMutableArray *_debuggingUIControllerLifeCycleObservers;
     NSString *_userDefinedTabLabel;
     NSString *_lastValidUserDefinedName;
-    NSString *_savedTabLabel;
-    DVTFilePath *_savedTabFilePath;
-    DVTMapTable *_observerTokenForLaunchSessionTable;
-    DVTMapTable *_observerTokenForLaunchSessionsDebuggingAdditionsTable;
+    NSMapTable *_observerTokenForLaunchSessionTable;
+    NSMapTable *_observerTokenForLaunchSessionsDebuggingAdditionsTable;
     NSMutableArray *_uiControllerObserverEntries;
     DVTObservingToken *_mainCurrentLaunchSessionObserverToken;
     DVTObservingToken *_currentLaunchSessionStateObserverToken;
     DVTObservingToken *_launchSessionAlertErrorObservingToken;
     DVTObservingToken *_debugSessionObserverToken;
     DVTObservingToken *_debugSessionCoalescedStateObservingToken;
-    DVTObservingToken *_documentLoadingObservationToken;
-    DVTObservingToken *_firstIssueObservationToken;
-    DVTObservingToken *_buildCompleteObservationToken;
-    DVTObservingToken *_inMiniDebuggingModeObservingToken;
-    DVTObservingToken *_userWantsMiniDebuggingConsoleObservingToken;
     DVTObservingToken *_firstTimeSnapshotObserverToken;
     DVTNotificationToken *_codesignFailureObserver;
     NSAlert *_stoppingExecutionAlert;
@@ -64,15 +52,26 @@
     IDEBuildAlertMonitor *_buildAlertMonitor;
     IDERunAlertMonitor *_runAlertMonitor;
     IDEARCConversionAssistantContext *_conversionAssistantContext;
-    IDESwiftMigrationAssistantContext *_swiftMigrationAssistantContext;
     IDEObjCModernizationAssistantContext *_objcModernizationAssistantContext;
     IDEUnitTestsModernizationAssistantContext *_unitTestsModernizationAssistantContext;
-    BOOL _isAnimatingUtilities;
+    IDESwiftMigrationAssistantContext *_swiftMigrationAssistantContext;
     BOOL _userWantsUtilitiesVisible;
     BOOL _userWantsNavigatorVisible;
-    BOOL _stateRestoreCompleted;
+    BOOL _isAnimatingUtilities;
     BOOL _tabLoadingCompleted;
+    BOOL _stateRestoreCompleted;
+    int _assistantEditorsLayout;
+    IDEWorkspaceDocument *_workspaceDocument;
+    NSString *_name;
+    IDELaunchSession *_currentLaunchSession;
+    DVTReplacementView *_editorReplacementView;
+    DVTObservingToken *_documentLoadingObservationToken;
+    DVTObservingToken *_firstIssueObservationToken;
+    DVTObservingToken *_buildCompleteObservationToken;
+    NSString *_savedTabLabel;
+    DVTFilePath *_savedTabFilePath;
     IDEAppChooserWindowController *_appChooserWindowController;
+    IDEExecutionHoldAlertHelper *_executionHoldAlertHelper;
 }
 
 + (id)keyPathsForValuesAffectingTabLabel;
@@ -90,24 +89,25 @@
 + (void)setDefaultAssistantEditorsLayout:(int)arg1;
 + (BOOL)automaticallyNotifiesObserversOfSavedTabFilePath;
 + (BOOL)automaticallyNotifiesObserversOfSavedTabLabel;
+@property(retain) IDEExecutionHoldAlertHelper *executionHoldAlertHelper; // @synthesize executionHoldAlertHelper=_executionHoldAlertHelper;
 @property(retain) IDEAppChooserWindowController *appChooserWindowController; // @synthesize appChooserWindowController=_appChooserWindowController;
+@property(retain, nonatomic) DVTFilePath *savedTabFilePath; // @synthesize savedTabFilePath=_savedTabFilePath;
+@property(copy, nonatomic) NSString *savedTabLabel; // @synthesize savedTabLabel=_savedTabLabel;
 @property(retain) DVTObservingToken *buildCompleteObservationToken; // @synthesize buildCompleteObservationToken=_buildCompleteObservationToken;
 @property(retain) DVTObservingToken *firstIssueObservationToken; // @synthesize firstIssueObservationToken=_firstIssueObservationToken;
 @property(retain) DVTObservingToken *documentLoadingObservationToken; // @synthesize documentLoadingObservationToken=_documentLoadingObservationToken;
-@property(nonatomic) BOOL tabLoadingCompleted; // @synthesize tabLoadingCompleted=_tabLoadingCompleted;
 @property BOOL stateRestoreCompleted; // @synthesize stateRestoreCompleted=_stateRestoreCompleted;
-@property(copy) NSString *userDefinedTabLabel; // @synthesize userDefinedTabLabel=_userDefinedTabLabel;
-@property(retain, nonatomic) DVTFilePath *savedTabFilePath; // @synthesize savedTabFilePath=_savedTabFilePath;
-@property(copy, nonatomic) NSString *savedTabLabel; // @synthesize savedTabLabel=_savedTabLabel;
-@property(copy) NSString *name; // @synthesize name=_name;
-@property(retain) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
-@property(retain, nonatomic) IDELaunchSession *currentLaunchSession; // @synthesize currentLaunchSession=_currentLaunchSession;
 @property(retain) DVTReplacementView *editorReplacementView; // @synthesize editorReplacementView=_editorReplacementView;
-@property(retain) DVTReplacementView *navigatorReplacementView; // @synthesize navigatorReplacementView=_navReplacementView;
+@property(nonatomic) BOOL tabLoadingCompleted; // @synthesize tabLoadingCompleted=_tabLoadingCompleted;
+@property(nonatomic) int assistantEditorsLayout; // @synthesize assistantEditorsLayout=_assistantEditorsLayout;
+@property(retain, nonatomic) IDELaunchSession *currentLaunchSession; // @synthesize currentLaunchSession=_currentLaunchSession;
+@property(copy) NSString *name; // @synthesize name=_name;
+@property BOOL isAnimatingUtilities; // @synthesize isAnimatingUtilities=_isAnimatingUtilities;
 @property(nonatomic) BOOL userWantsNavigatorVisible; // @synthesize userWantsNavigatorVisible=_userWantsNavigatorVisible;
 @property(nonatomic) BOOL userWantsUtilitiesVisible; // @synthesize userWantsUtilitiesVisible=_userWantsUtilitiesVisible;
-@property BOOL isAnimatingUtilities; // @synthesize isAnimatingUtilities=_isAnimatingUtilities;
-@property(nonatomic) int assistantEditorsLayout; // @synthesize assistantEditorsLayout=_assistantEditorsLayout;
+@property(retain) DVTReplacementView *navigatorReplacementView; // @synthesize navigatorReplacementView=_navReplacementView;
+@property(copy) NSString *userDefinedTabLabel; // @synthesize userDefinedTabLabel=_userDefinedTabLabel;
+@property(retain) IDEWorkspaceDocument *workspaceDocument; // @synthesize workspaceDocument=_workspaceDocument;
 // - (void).cxx_destruct;
 - (void)discardEditing;
 - (BOOL)commitEditingForAction:(int)arg1 errors:(id)arg2;
@@ -124,10 +124,7 @@
 - (void)performCloseWorkspace:(id)arg1;
 - (void)_workspaceDocument:(id)arg1 shouldClose:(BOOL)arg2 contextInfo:(void *)arg3;
 - (void)setShowDisassemblyWhenDebugging:(id)arg1;
-- (void)setDebuggingWindowBehaviorXcodeInFront:(id)arg1;
-- (void)setDebuggingWindowBehaviorXcodeBehind:(id)arg1;
-- (void)setDebuggingWindowBehaviorNormal:(id)arg1;
-- (void)_setDebuggingWindowBehavior:(int)arg1;
+- (void)reloadConsole:(id)arg1;
 - (void)clearConsole:(id)arg1;
 - (void)viewMemory:(id)arg1;
 - (void)_swiftMigrationFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
@@ -136,10 +133,9 @@
 - (void)showModernUnitTestsConversionAssistant:(id)arg1;
 - (void)_objCModernizationFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)showModernObjectiveCConversionAssistant:(id)arg1;
-- (void)_arcConversionFoundErrorsAlertDidEnd:(id)arg1 returnCode:(long long)arg2 contextInfo:(void *)arg3;
 - (void)showARCConversionAssistant:(id)arg1;
 - (void)showSharedLibrariesPopUp:(id)arg1;
-- (void)askUserForProcessIdentifierToAttachTo:(id)arg1;
+- (void)attachByPIDOrName:(id)arg1;
 - (void)attachToProcess:(id)arg1;
 - (void)backgroundFetchEvent:(id)arg1;
 - (void)stepOut:(id)arg1;
@@ -222,12 +218,11 @@
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
 - (void)_silentlySwitchToLLDBIfNecessary:(id)arg1;
 - (void)_performDebuggableSchemeTask:(int)arg1 onScheme:(id)arg2 runDestination:(id)arg3 command:(id)arg4 commandName:(id)arg5 buildCommand:(int)arg6 filePath:(id)arg7 overridingTestingSpecifiers:(id)arg8 invocationRecord:(id)arg9 completionBlock:(CDUnknownBlockType)arg10;
-- (void)_debugSessionCoalescedStateChanged:(id)arg1;
+- (void)_debugSessionCoalescedStateChanged:(id)arg1 forDebugSession:(id)arg2;
 - (BOOL)isActiveWorkspaceTabController;
 - (id)debuggingAdditionUIControllersForLaunchSession:(id)arg1;
 - (id)currentDebuggingAdditionUIControllers;
 - (id)debugSessionController;
-- (void)_updateForDebuggingKVOChange;
 - (BOOL)_contentSizeCanBeZeroSize;
 - (void)_performContextTask:(int)arg1 command:(id)arg2 commandName:(id)arg3 buildCommand:(int)arg4 filePath:(id)arg5 invocationRecord:(id)arg6 completionBlock:(CDUnknownBlockType)arg7;
 - (void)_performSchemeTask:(int)arg1 onScheme:(id)arg2 runDestination:(id)arg3 command:(id)arg4 commandName:(id)arg5 buildCommand:(int)arg6 filePath:(id)arg7 overridingTestingSpecifiers:(id)arg8 invocationRecord:(id)arg9 completionBlock:(CDUnknownBlockType)arg10;
@@ -242,7 +237,7 @@
 - (BOOL)_cleanBuildFolderWithExecutionContext:(id)arg1 commandName:(id)arg2 error:(id *)arg3;
 - (void)observeBuildOperationForRestoringState:(id)arg1;
 - (void)switchNavigatorOnBuild;
-- (void)newWindow:(id)arg1;
+- (void)_newWindow:(id)arg1;
 - (void)hideUtilitiesArea:(id)arg1;
 - (void)showUtilitiesArea:(id)arg1;
 - (BOOL)isUtilitiesAreaVisible;
@@ -332,6 +327,8 @@
 - (id)debuggingAdditionUIControllerMatchingID:(id)arg1 forLaunchSession:(id)arg2 handler:(CDUnknownBlockType)arg3;
 - (id)_createDebuggingAdditionUIControllersForDebuggingAddition:(id)arg1;
 - (void)_createDebuggingAdditionUIControllersForLaunchSession:(id)arg1;
+- (void)dismissExecutionHoldAlert;
+- (void)showExecutionHoldAlertWithError:(id)arg1;
 - (void)showAlertModallyInWorkspaceForError:(id)arg1;
 - (void)replacementView:(id)arg1 willInstallViewController:(id)arg2;
 - (void)primitiveInvalidate;
@@ -344,6 +341,7 @@
 - (void)_revertStateForNewWindowWithDictionary:(id)arg1 simpleEditorWindowLayout:(BOOL)arg2;
 - (void)_primitiveSetAssistantEditorsLayout:(int)arg1;
 - (void)loadView;
+- (void)setSplitGroupAccessibility;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
 // Remaining properties

@@ -9,9 +9,10 @@
 //
 
 
-@class IDEBatchFindResultGroup;
+@class DVTTableCellView;
 
-@protocol IDEBatchFindResultGroupDelegate <NSObject>
-- (void)finishedSymbolQueryForResultsGroupNavItem:(IDEBatchFindResultGroup *)arg1;
+@protocol DVTTableCellViewTitleEditingDelegate <NSObject>
+- (void)titleDidChangeForTableCellView:(DVTTableCellView *)arg1;
+- (struct _NSRange)initialSelectionRangeForTableCellView:(DVTTableCellView *)arg1 usingProposedRange:(struct _NSRange)arg2;
 @end
 

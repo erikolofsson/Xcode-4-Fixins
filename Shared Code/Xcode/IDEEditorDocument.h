@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -13,7 +13,7 @@
 #import "DVTUndoManagerDelegate-Protocol.h"
 #import "IDEReadOnlyItem-Protocol.h"
 
-@class DVTDispatchLock, DVTExtension, DVTFileDataType, DVTFilePath, DVTMapTable, DVTNotificationToken, DVTStackBacktrace, DVTUndoManager, NSDictionary, NSMutableArray, NSMutableSet, NSSet, NSString, NSURL;
+@class DVTDispatchLock, DVTExtension, DVTFileDataType, DVTFilePath, DVTNotificationToken, DVTStackBacktrace, DVTUndoManager, NSDictionary, NSMapTable, NSMutableArray, NSMutableSet, NSSet, NSString, NSURL;
 @protocol DVTCancellable;
 
 @interface IDEEditorDocument : NSDocument <IDEReadOnlyItem, DVTUndoManagerDelegate>
@@ -23,7 +23,7 @@
     DVTFileDataType *_ide_hintedFileDataType;
     DVTFilePath *_filePath;
     DVTFilePath *autosavedContentsFilePath;
-    DVTMapTable *_readOnlyClientsForRegistrationBacktrace;
+    NSMapTable *_readOnlyClientsForRegistrationBacktrace;
     DVTNotificationToken *_willRedoChangeNotificationToken;
     DVTNotificationToken *_willUndoChangeNotificationToken;
     DVTStackBacktrace *_addedToDocumentControllerBacktrace;
@@ -66,6 +66,7 @@
     DVTFilePath *_autosavedContentsFilePath;
 }
 
++ (BOOL)shouldOpenDocumentForURL:(id)arg1;
 + (BOOL)_presentsVersionsUserInterface;
 + (BOOL)autosavesInPlace;
 + (id)editedFileContents;
@@ -96,6 +97,7 @@
 - (void)_updateReadOnlyStatus;
 - (void)exportDocument:(id)arg1;
 @property(readonly) BOOL canExportDocument;
+- (void)duplicateDocumentWithFileType:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
 - (void)duplicateDocument:(id)arg1;
 - (void)revertDocumentToSaved:(id)arg1;
 - (BOOL)_checkAutosavingPossibilityAndReturnError:(id *)arg1;

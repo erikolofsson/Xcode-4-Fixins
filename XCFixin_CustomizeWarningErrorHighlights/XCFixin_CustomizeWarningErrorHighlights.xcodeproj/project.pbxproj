@@ -128,7 +128,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = 1DEB913E08733D840010E9CD /* Build configuration list for PBXProject "XCFixin_CustomizeWarningErrorHighlights" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -195,12 +195,13 @@
 				DSTROOT = "$(HOME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks\"",
+					"\"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/SharedFrameworks\"",
 					"\"$(SRCROOT)\"",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.themha.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_CustomizeWarningErrorHighlights;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
@@ -219,12 +220,13 @@
 				DSTROOT = "$(HOME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks\"",
+					"\"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/SharedFrameworks\"",
 					"\"$(SRCROOT)\"",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.themha.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_CustomizeWarningErrorHighlights;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
@@ -237,6 +239,7 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;

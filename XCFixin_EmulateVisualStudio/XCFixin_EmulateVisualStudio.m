@@ -16,6 +16,7 @@
 #import "../Shared Code/Xcode/DVTAnnotation.h"
 #import "../Shared Code/Xcode/DBGBreakpointAnnotation.h"
 #import "../Shared Code/Xcode/DVTTextStorage.h"
+#import "../Shared Code/Xcode/DVTAnnotationManager.h"
 
 
 #import "../Shared Code/Xcode/IDENavigatorOutlineView.h"
@@ -232,7 +233,10 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					break;
 				
 				NSMutableArray* pBreakpointsToDelete = [[NSMutableArray alloc] initWithCapacity:16];
-				for (NSDictionary* pProviderDict in [pAnnotationManager annotationProviders])
+				
+				NSMutableArray *pAnnotationProviders = [pAnnotationManager valueForKey:@"annotationProviders"];
+				
+				for (NSDictionary* pProviderDict in pAnnotationProviders)
 				{
 					DVTAnnotationProvider* pProvider = (DVTAnnotationProvider*)[pProviderDict valueForKey:@"annotationProviderObject"];
 					

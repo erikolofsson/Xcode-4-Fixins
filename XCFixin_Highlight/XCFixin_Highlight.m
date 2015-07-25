@@ -1021,9 +1021,9 @@ static struct CPrefixMap ms_PrefixMap[] =
 		, {"IC", &pType_Interface, false}								ignore( ICTest )
 		, {"TC", &pTemplateType, false}									ignore( TCTest )
 		, {"TIC", &pTemplateType_Interface, false}						ignore( TICTest )
-		, {"CFStr", &pType, false}										ignore( CFStr ) // Compatibility with core foundation
-		, {"CFWStr", &pType, false}										ignore( CFWStr ) // Compatibility with core foundation
-		, {"CFUStr", &pType, false}										ignore( CFUStr ) // Compatibility with core foundation
+		, {"CFStr", &pType, false}										ignore( CFStr256 ) // Compatibility with core foundation
+		, {"CFWStr", &pType, false}										ignore( CFWStr256 ) // Compatibility with core foundation
+		, {"CFUStr", &pType, false}										ignore( CFUStr256 ) // Compatibility with core foundation
 		, {"tf_C", &pFunctionTemplateTypeParam_Class, false}			ignore( tf_CTest )
 		, {"tf_F", &pFunctionTemplateTypeParam_Function, false}			ignore( tf_FTest )
 		, {"tf_TC", &pFunctionTemplateTemplateParam, false}				ignore( tf_TCTest )

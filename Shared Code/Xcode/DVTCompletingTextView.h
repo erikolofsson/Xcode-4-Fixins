@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -14,10 +14,10 @@
 
 #import "DVTLayoutManagerDelegate-Protocol.h"
 
-@class DVTFoldingLayoutManager, DVTFoldingManager, DVTLayoutManager, DVTSourceCodeLanguage, DVTTextCompletionController, DVTTextCompletionDataSource, DVTTextStorage, NSCharacterSet, NSColor, NSString;
+@class DVTLayoutManager, DVTSourceCodeLanguage, DVTTextCompletionController, DVTTextCompletionDataSource, DVTTextStorage, NSCharacterSet, NSColor, NSString;
 @protocol DVTCompletingTextViewDelegate;
 
-@interface DVTCompletingTextView : DVTTextView <DVTLayoutManagerDelegate>
+@interface DVTCompletingTextView : DVTTextView <DVTLayoutManagerDelegate, NSTableViewDelegate>
 {
     DVTTextCompletionController *_completionController;
     DVTTextCompletionDataSource *_completionsDataSource;
@@ -63,6 +63,7 @@
 - (void)drawRect:(struct CGRect)arg1;
 - (void)_drawRect:(struct CGRect)arg1 clip:(BOOL)arg2;
 - (void)_drawOverlayRect:(struct CGRect)arg1;
+- (void)moveDown:(id)arg1;
 - (void)setSelectedRange:(struct _NSRange)arg1;
 - (void)setSelectedRanges:(id)arg1 affinity:(unsigned long long)arg2 stillSelecting:(BOOL)arg3;
 - (void)_replaceFoldWithContents:(id)arg1;
@@ -95,7 +96,7 @@
 - (void)layoutManager:(id)arg1 didUnfoldRange:(struct _NSRange)arg2;
 - (void)layoutManager:(id)arg1 didFoldRange:(struct _NSRange)arg2;
 - (void)_foldingLayoutManagerFoldsChanged:(id)arg1;
-- (id)layoutManager:(id)arg1 shouldUseTextBackgroundColor:(id)arg2 rectArray:(struct CGRect *)arg3 count:(unsigned long long)arg4 forCharacterRange:(struct _NSRange)arg5;
+- (id)layoutManager:(id)arg1 shouldUseTextBackgroundColor:(id)arg2 rectArray:(const struct CGRect *)arg3 count:(unsigned long long)arg4 forCharacterRange:(struct _NSRange)arg5;
 - (id)layoutManager:(id)arg1 shouldUseTemporaryAttributes:(id)arg2 forDrawingToScreen:(BOOL)arg3 atCharacterIndex:(unsigned long long)arg4 effectiveRange:(struct _NSRange *)arg5;
 - (void)showMatchingBraceAtLocation:(id)arg1;
 - (void)autoHighlightMatchingBracketAtLocationIfNecessary:(unsigned long long)arg1;
@@ -105,6 +106,7 @@
 - (BOOL)_moveToNextPlaceholderFromCharacterIndex:(unsigned long long)arg1 forward:(BOOL)arg2 onlyIfNearby:(BOOL)arg3;
 - (struct _NSRange)_findString:(id)arg1 inString:(id)arg2 fromRange:(struct _NSRange)arg3 limitRange:(struct _NSRange)arg4 forward:(BOOL)arg5 wrap:(BOOL)arg6;
 - (struct _NSRange)rangeOfPlaceholderFromCharacterIndex:(unsigned long long)arg1 forward:(BOOL)arg2 wrap:(BOOL)arg3 limit:(unsigned long long)arg4;
+- (struct _NSRange)_rangeOfPlaeholderWithStartPrefix:(id)arg1 endSuffix:(id)arg2 inString:(id)arg3 fromRange:(struct _NSRange)arg4 limitRange:(struct _NSRange)arg5 forward:(BOOL)arg6 wrap:(BOOL)arg7;
 - (BOOL)selectFirstPlaceholderInCharacterRange:(struct _NSRange)arg1;
 - (BOOL)handleSelectPreviousPlaceholder;
 - (BOOL)handleSelectNextPlaceholder;
@@ -123,17 +125,14 @@
 - (id)initWithFrame:(struct CGRect)arg1 textContainer:(id)arg2;
 - (void)_dvtCommonInit;
 - (id)currentTheme;
-@property(readonly) DVTFoldingManager *foldingManager;
-@property(readonly) DVTFoldingLayoutManager *foldingLayoutManager;
 - (BOOL)removeMenusNotInWhiteList:(id)arg1 fromMenu:(id)arg2 removeSeparators:(BOOL)arg3;
-- (void)dvt_shouldDeallocate;
 - (id)cell;
 - (id)selectedCell;
 - (id)accessibilityAttributeValue:(id)arg1;
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
-@property (assign) id <DVTCompletingTextViewDelegate> delegate; // @dynamic delegate;
+@property(assign) id <DVTCompletingTextViewDelegate> delegate; // @dynamic delegate;
 @property(readonly, copy) NSString *description;
 @property(readonly) Class superclass;
 

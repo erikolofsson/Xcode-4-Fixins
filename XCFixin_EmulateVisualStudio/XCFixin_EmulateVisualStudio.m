@@ -2112,9 +2112,14 @@ static void resumeFilePathChangeNotifications(id self_, SEL _Sel)
 }
 
 NSObject<IDEContainerReloadingDelegate> *g_pOldDelegate = NULL;
+Class Xcode3Project_class = NULL;
+
 
 - (int)responseToExternalChangesToBackingFileForContainer:(IDEContainer *)_pContainer fileWasRemoved:(BOOL)arg2
 {
+	if (!Xcode3Project_class)
+		Xcode3Project_class = NSClassFromString(@"Xcode3Project");
+	
 	IDEDocumentController *pController = (IDEDocumentController *)g_pOldDelegate;
 	if ([_pContainer isKindOfClass:[IDEWorkspace class]])
 	{
@@ -2126,6 +2131,10 @@ NSObject<IDEContainerReloadingDelegate> *g_pOldDelegate = NULL;
 		[pController openDocumentWithContentsOfURL: [pFilePath fileURL] display: YES completionHandler: ^{}];
 		return 1;
 	}
+	else if ([_pContainer isKindOfClass:Xcode3Project_class])
+    {
+        return 0;
+    }
 	
 	int Ret = [g_pOldDelegate responseToExternalChangesToBackingFileForContainer: _pContainer fileWasRemoved: arg2];
 		
@@ -2251,8 +2260,6 @@ static void _filePathDidChangeWithPendingChangeDictionary(IDEContainer *self_, S
 	else
 		updateDispatch();		
 }
-
-Class Xcode3Project_class = NULL;
 
 // - (BOOL)_saveContainerForAction:(int)arg1 error:(id *)arg2;
 static BOOL _saveContainerForAction(IDEContainer *self_, SEL _Sel, int arg1, id *arg2)

@@ -2,7 +2,7 @@
 #pragma once
 
 typedef void (^CDUnknownBlockType)(void);
-
+typedef void (*CDUnknownFunctionPointerType)(void);
 
 struct _DVTTextLineOffsetTable {
     unsigned long long capacity;

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		032D81D31B89238B005B67C4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 032D81D21B89238B005B67C4 /* QuartzCore.framework */; };
 		03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03318EDA1937BC3B00132304 /* Cocoa.framework */; };
 		03329EC81937AA1A000E475B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03329EC71937AA1A000E475B /* README.md */; };
 		0372C85519378E9400364146 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 0372C85419378E9400364146 /* XCFixin.m */; };
@@ -14,11 +15,13 @@
 		0382C751199412CB00DEF003 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C750199412CB00DEF003 /* DVTKit.framework */; };
 		0382C7531994131400DEF003 /* DVTFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C7521994131400DEF003 /* DVTFoundation.framework */; };
 		03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A1896E1992C68500F87332 /* IDEKit.framework */; };
+		03F332F71B891CA30014B200 /* IDEFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03F332F61B891CA30014B200 /* IDEFoundation.framework */; };
 		435E248813A8E5A40052479A /* XCFixin_EmulateVisualStudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */; };
 		437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 437DCBC314D41E700039CB49 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		032D81D21B89238B005B67C4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		03318EDA1937BC3B00132304 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		03329EC71937AA1A000E475B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		0372C85319378E9400364146 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
@@ -27,6 +30,7 @@
 		0382C750199412CB00DEF003 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = "/Source/Xcode-4-Fixins/XCFixin_Highlight/../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework"; sourceTree = "<absolute>"; };
 		0382C7521994131400DEF003 /* DVTFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTFoundation.framework; path = ../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework; sourceTree = "<group>"; };
 		03A1896E1992C68500F87332 /* IDEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEKit.framework; path = ../../../Applications/Xcode.app/Contents/Frameworks/IDEKit.framework; sourceTree = "<group>"; };
+		03F332F61B891CA30014B200 /* IDEFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEFoundation.framework; path = "../../../Applications/Xcode-beta.app/Contents/Frameworks/IDEFoundation.framework"; sourceTree = "<group>"; };
 		435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_EmulateVisualStudio.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		435E248413A8E5A40052479A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = XCFixin_EmulateVisualStudio.m; sourceTree = "<group>"; tabWidth = 4; };
@@ -38,6 +42,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				032D81D31B89238B005B67C4 /* QuartzCore.framework in Frameworks */,
+				03F332F71B891CA30014B200 /* IDEFoundation.framework in Frameworks */,
 				0382BA6D199516B500E48ED4 /* Carbon.framework in Frameworks */,
 				0382C7531994131400DEF003 /* DVTFoundation.framework in Frameworks */,
 				03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */,
@@ -52,6 +58,8 @@
 		435E246513A8E4510052479A = {
 			isa = PBXGroup;
 			children = (
+				032D81D21B89238B005B67C4 /* QuartzCore.framework */,
+				03F332F61B891CA30014B200 /* IDEFoundation.framework */,
 				0382BA6C199516B500E48ED4 /* Carbon.framework */,
 				0382C7521994131400DEF003 /* DVTFoundation.framework */,
 				0382C750199412CB00DEF003 /* DVTKit.framework */,

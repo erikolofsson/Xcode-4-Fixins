@@ -30,9 +30,13 @@ This fixin aims to emulate the editor behavior of the Visual Studio editor. The 
  + `Ctrl-E` Toggels regular expression
  + `Ctrl-W` Toggles whole word only matching
  + `Esc` Returns to editor from batch find
+
+Also fixes limitations bugs in Xcode
+
 + Run multiple schemes with `⌘-G` from one scheme by setting Custom working directory to "[MulitLaunchSchemes]" and the scheme names as arguments
 + `Ctrl-H` Toggles breakpoints more reliably than the built in shortcut for toggling breakpoints (workaround for Xcode bug)
 + Ability to stop the debugger from setting DYLD_INSERT_LIBRARIES, DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH. Accessbile from Edit->Xcode fixes options... or `Ctrl+O`
++ Batches external updates and automatically reloads them. .xcworkspace and .xcproj folders needs to have a 'generatedContainer' file in them to enable. For use with external project generators.
 
 ### TODO
 + Build only current project

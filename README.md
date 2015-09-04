@@ -60,6 +60,7 @@ Also fixes limitations bugs in Xcode
 + `Ctrl-H` Toggles breakpoints more reliably than the built in shortcut for toggling breakpoints (workaround for Xcode bug)
 + Ability to stop the debugger from setting DYLD_INSERT_LIBRARIES, DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH. Accessbile from Edit->Xcode fixes options... or `Ctrl+O`
 + Batches external updates and automatically reloads them. .xcworkspace and .xcproj folders needs to have a 'generatedContainer' file in them to enable. For use with external project generators.
++ Disable the build queue throttling in Xcode
 
 __CurrentLineHighlighter__: This fixin highlights the line currently
 being edited in the source editor, making it easier to track the

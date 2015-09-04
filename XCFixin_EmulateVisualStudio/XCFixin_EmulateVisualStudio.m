@@ -48,6 +48,7 @@
 #import "../Shared Code/Xcode/IDEContainerReloadingDelegate-Protocol.h"
 #import "../Shared Code/Xcode/IDEDocumentController.h"
 #import "../Shared Code/Xcode/IDEExecutionEnvironment.h"
+#import "../Shared Code/Xcode/IDEBuildOperationQueueSet.h"
 
 
 #import "../Shared Code/Xcode/DBGLLDBDebugLocalService.h"
@@ -73,6 +74,8 @@ static IMP original_filePathDidChangeWithPendingChangeDictionary = nil;
 static IMP original_saveContainerForAction = nil;
 static IMP original_resumeFilePathChangeNotifications = nil;
 static IMP original_suspendFilePathChangeNotifications = nil;
+static IMP original_updateOperationConcurrency = nil;
+static IMP original_changeMaximumOperationConcurrencyUsingThrottleFactor = nil;
 
 
 
@@ -2037,6 +2040,15 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	original_suspendFilePathChangeNotifications = XCFixinOverrideStaticMethodString(@"IDEContainer", @selector(suspendFilePathChangeNotifications), (IMP)&suspendFilePathChangeNotifications);
 	XCFixinAssertOrPerform(original_suspendFilePathChangeNotifications, goto failed);
 
+	original_updateOperationConcurrency = XCFixinOverrideMethodString(@"IDEBuildOperationQueueSet", @selector(updateOperationConcurrency), (IMP)&updateOperationConcurrency);
+	XCFixinAssertOrPerform(original_updateOperationConcurrency, goto failed);
+	
+	original_changeMaximumOperationConcurrencyUsingThrottleFactor = XCFixinOverrideMethodString(@"IDEBuildOperationQueueSet", @selector(changeMaximumOperationConcurrencyUsingThrottleFactor:), (IMP)&changeMaximumOperationConcurrencyUsingThrottleFactor);
+	XCFixinAssertOrPerform(original_changeMaximumOperationConcurrencyUsingThrottleFactor, goto failed);
+	
+
+
+
 	XCFixinPostflight();
 }
 
@@ -2089,6 +2101,22 @@ static BOOL fg_ContainerWasGenerated(IDEContainer *_pContainer)
 	}
 	
 	return [pGenerated boolValue];
+}
+	
+// - (void)updateOperationConcurrency
+static void updateOperationConcurrency(id self_, SEL _Sel)
+{
+	return; // Disable updates
+
+//	return ((void(*)(id, SEL))original_updateOperationConcurrency)(self_, _Sel);
+}
+
+// - (void)changeMaximumOperationConcurrencyUsingThrottleFactor:(double)arg1;
+static void changeMaximumOperationConcurrencyUsingThrottleFactor(id self_, SEL _Sel, double arg1)
+{
+	return; // Disable updates
+
+//	return ((void(*)(id, SEL))original_changeMaximumOperationConcurrencyUsingThrottleFactor)(self_, _Sel, arg1);
 }
 
 NSHashTable *g_pPendingChanges = NULL;

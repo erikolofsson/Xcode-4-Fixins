@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -14,13 +14,13 @@
 
 #import "DVTTextAnnotationDelegate-Protocol.h"
 
-@class DVTObservingToken, IDEAnnotationContext, IDEWorkspaceWindowController, NSString;
+@class DVTObservingToken, IDEAnnotationContext, IDEWorkspaceDocument, NSString;
 
 @interface DBGBreakpointAnnotationProvider : DVTAnnotationProvider <DVTTextAnnotationDelegate>
 {
-    IDEAnnotationContext *_context;
-    IDEWorkspaceWindowController *_workspaceWindowController;
+    IDEWorkspaceDocument *_workspaceDocument;
     DVTObservingToken *_breakpointsObservingToken;
+    IDEAnnotationContext *_context;
 }
 
 + (id)annotationProviderForContext:(id)arg1 error:(id *)arg2;

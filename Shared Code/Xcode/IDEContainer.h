@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -50,6 +50,7 @@
     int _readOnlyStatus;
     BOOL _hasTransitionedToIdle;
     BOOL _containerEdited;
+    BOOL _validForSchemeBuildableReferences;
     BOOL _transitioningToNewFilePath;
 }
 
@@ -105,6 +106,7 @@
 @property(copy, nonatomic) DVTFilePath *itemBaseFilePath; // @synthesize itemBaseFilePath=_itemBaseFilePath;
 @property(readonly) DVTFilePath *filePath; // @synthesize filePath=_filePath;
 @property(readonly) DVTExtension *extension; // @synthesize extension=_extension;
+@property(readonly, nonatomic, getter=isValidForSchemeBuildableReferences) BOOL validForSchemeBuildableReferences; // @synthesize validForSchemeBuildableReferences=_validForSchemeBuildableReferences;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
 @property(readonly) id <IDEContainerCore> containerCore; // @synthesize containerCore=_containerCore;
 @property(retain) id <IDEContainerDelegate> containerDelegate; // @synthesize containerDelegate=_containerDelegate;
@@ -128,6 +130,7 @@
 @property(readonly) IDEActivityLogSection *integrityLog;
 - (void)analyzeModelIntegrity;
 - (void)enumerateUpgradeTasksWithBlock:(CDUnknownBlockType)arg1;
+@property(readonly) BOOL supportsOnDemandResources;
 @property(readonly, getter=isFolderLike) BOOL folderLike;
 @property(readonly, getter=isMajorGroup) BOOL majorGroup;
 @property(readonly, getter=isEditable) BOOL editable;

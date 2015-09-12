@@ -184,7 +184,11 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				WARNING_CFLAGS = "-Wno-incompatible-property-type";
+				WARNING_CFLAGS = (
+					"-Wno-incompatible-property-type",
+					"-Wno-nullability-completeness",
+					"-Wno-property-attribute-mismatch",
+				);
 			};
 			name = Debug;
 		};
@@ -198,7 +202,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
-				WARNING_CFLAGS = "-Wno-incompatible-property-type";
+				WARNING_CFLAGS = (
+					"-Wno-incompatible-property-type",
+					"-Wno-nullability-completeness",
+					"-Wno-property-attribute-mismatch",
+				);
 			};
 			name = Release;
 		};
@@ -213,7 +221,7 @@
 				DSTROOT = "$(HOME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
@@ -237,7 +245,7 @@
 				DSTROOT = "$(HOME)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SYSTEM_APPS_DIR)/Xcode-beta.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";

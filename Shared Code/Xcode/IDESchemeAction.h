@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -13,26 +13,33 @@
 #import "DVTInvalidation-Protocol.h"
 #import "DVTXMLUnarchiving-Protocol.h"
 
-@class DVTStackBacktrace, IDEProfileOptimizationActionController, IDEScheme, IDESchemeBuildableReference, NSArray, NSMutableArray, NSString;
+@class DVTStackBacktrace, IDEProfileOptimizationActionController, IDERunnable, IDEScheme, IDESchemeBuildableReference, NSArray, NSMutableArray, NSString;
 
 @interface IDESchemeAction : NSObject <DVTXMLUnarchiving, DVTInvalidation>
 {
     BOOL _hasAwoken;
-    IDEScheme *_runContext;
     NSMutableArray *_prePhaseExecutionActions;
     NSMutableArray *_postPhaseExecutionActions;
+    IDEScheme *_runContext;
+    IDERunnable *_runnable;
     IDESchemeBuildableReference *_buildableReferenceToUseForMacroExpansion;
+    NSString *_buildConfiguration;
     IDEProfileOptimizationActionController *_pgoController;
 }
 
++ (id)keyPathsForValuesAffectingRunnable;
 + (BOOL)shouldAllowCustomPhaseActions;
 + (void)forceAddressSanitizerEnabledTo:(BOOL)arg1;
 + (void)initialize;
 @property(retain) IDEProfileOptimizationActionController *pgoController; // @synthesize pgoController=_pgoController;
+@property(copy) NSString *buildConfiguration; // @synthesize buildConfiguration=_buildConfiguration;
 @property(retain) IDESchemeBuildableReference *buildableReferenceToUseForMacroExpansion; // @synthesize buildableReferenceToUseForMacroExpansion=_buildableReferenceToUseForMacroExpansion;
 @property(readonly) IDEScheme *runContext; // @synthesize runContext=_runContext;
 // - (void).cxx_destruct;
 - (void)updateSearchPathSettingsInEnvironment:(id)arg1 withBuildProducts:(id)arg2 runDestination:(id)arg3;
+- (void)addBuildableProductRunnable:(id)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)addPathRunnable:(id)arg1 fromXMLUnarchiver:(id)arg2;
+- (void)addRemoteRunnable:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addPostActions:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addPreActions:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeRelationshipsWithXMLArchiver:(id)arg1 version:(id)arg2;
@@ -65,6 +72,11 @@
 - (BOOL)addAddressSanitizerEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildable:(id)arg3 error:(id *)arg4;
 - (BOOL)addressSanitizerEnabledForSchemeCommand:(id)arg1;
 - (id)setUpActionDependenciesForCorePhaseOperation:(id)arg1 shouldRunPostActionsBlock:(CDUnknownBlockType)arg2 prePhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg3 postPhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg4 buildParameters:(id)arg5 schemeActionResultOperation:(id)arg6 error:(id *)arg7;
+- (id)realAppNameForRunnablePath:(id)arg1;
+- (id)extensionInfosForExtensions:(id)arg1;
+- (void)updateBuildableForChangeInRunnable;
+@property(readonly, nonatomic) BOOL debugAppExtensions;
+@property(retain, nonatomic) IDERunnable *runnable; // @synthesize runnable=_runnable;
 - (void)setRunContext:(IDEScheme *)arg1;
 @property(readonly) BOOL doesNonActionWork;
 @property(readonly) NSString *subtitle;

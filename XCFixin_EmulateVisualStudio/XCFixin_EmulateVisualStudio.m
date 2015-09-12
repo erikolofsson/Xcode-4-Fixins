@@ -713,7 +713,17 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 						{
 							if ([[pScheme name] compare:[pCommandLineArg argument]] == NSOrderedSame)
 							{
-								[pTabController _runWithoutBuildingForScheme:pScheme runDestination:[pRunContextManager activeRunDestination] invocationRecord:nil];
+								dispatch_after
+									(
+										dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100) // 10 ms
+										, dispatch_get_main_queue()
+										, ^
+										{
+											[pTabController _runWithoutBuildingForScheme:pScheme runDestination:[pRunContextManager activeRunDestination] invocationRecord:nil];
+										}
+									)
+								;
+								
 								bHandled = true;
 								//[NSThread sleepForTimeInterval:0.0];
 								//XCFixinLog(@"pScheme %@\n", [pScheme name]);

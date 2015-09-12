@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -13,7 +13,7 @@
 #import "DVTInvalidation-Protocol.h"
 #import "IDEIndexDatabaseDelegate-Protocol.h"
 
-@class DVTDispatchLock, DVTFilePath, DVTStackBacktrace, IDEIndexDatabase, IDEIndexQPManager, IDEIndexingEngine, IDEIndexingPrebuildController, IDEWorkspace, NSDate, NSMutableDictionary, NSSet, NSString;
+@class DVTDispatchLock, DVTFilePath, DVTObservingToken, DVTStackBacktrace, IDEIndexDatabase, IDEIndexQPManager, IDEIndexingEngine, IDEIndexingPrebuildController, IDEWorkspace, NSDate, NSMutableDictionary, NSSet, NSString;
 
 @interface IDEIndex : NSObject <IDEIndexDatabaseDelegate, DVTInvalidation>
 {
@@ -38,7 +38,9 @@
     BOOL _isInErrorRecoveryMode;
     BOOL _isReadOnly;
     BOOL _cleanedUpOldPCHs;
-    BOOL _didSetKeyPathObservers;
+    DVTObservingToken *_indexFolderPathObservingToken;
+    DVTObservingToken *_activeRunContextObservingToken;
+    DVTObservingToken *_activeRunDestinationObservingToken;
     id _indexableFileWasAddedNotificationObservingToken;
     id _indexableFileWillBeRemovedNotificationObservingToken;
     id _indexableDidRenameFileNotificationObservingToken;
@@ -144,7 +146,6 @@
 - (id)indexState;
 @property(readonly) DVTFilePath *workspaceBuildProductsDirPath;
 @property(readonly) DVTFilePath *headerMapFilePath;
-- (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (void)setKeyPathObservers:(id)arg1;
 - (BOOL)isCurrentForWorkspace:(id)arg1;
 - (void)beginTextIndexing;

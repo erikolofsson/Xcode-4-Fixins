@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -96,7 +96,7 @@
 - (void)triggerFilteringForDocumentURLs:(id)arg1;
 - (void)updateFilterPredicate;
 - (void)clearFilterPredicate;
-- (void)_navigableItemCoordinatorDidForgetNavigableItems:(id)arg1;
+- (void)willForgetNavigableItems:(id)arg1;
 - (void)primitiveInvalidate;
 - (void)viewWillUninstall;
 - (void)viewDidInstall;
@@ -164,9 +164,9 @@
 @property(readonly, copy) NSString *description;
 @property(copy) NSSet *expandedItems; // @dynamic expandedItems;
 @property(readonly, copy) NSMutableSet *mutableExpandedItems; // @dynamic mutableExpandedItems;
-@property(readwrite, copy) IDESelection *outputSelection;
+@property(readonly, copy) IDESelection *outputSelection;
 @property(readonly) Class superclass;
-@property(readwrite, nonatomic) IDEWorkspaceTabController *workspaceTabController;
+@property(readonly, nonatomic) IDEWorkspaceTabController *workspaceTabController;
 
 @end
 

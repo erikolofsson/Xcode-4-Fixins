@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -114,7 +114,7 @@
 @property(readonly) DVTFilePath *tabFilePath;
 @property(readonly) NSString *tabLabel;
 @property(retain) NSDocument<DVTTabbedWindowCreation> *document;
-- (void)codesignFailureNotification:(id)arg1 continuationBlock:(CDUnknownBlockType)arg2;
+- (void)codesignFailureNotification:(id)arg1 forRunDestination:(id)arg2 continuationBlock:(CDUnknownBlockType)arg3;
 - (id)_codesigningInfoDelegateProvider;
 - (void)moveKeyboardFocusToPreviousArea:(id)arg1;
 - (void)moveKeyboardFocusToNextArea:(id)arg1;
@@ -151,8 +151,6 @@
 - (void)createTestFailureBreakpoint:(id)arg1;
 - (void)createSymbolicBreakpoint:(id)arg1;
 - (void)createExceptionBreakpoint:(id)arg1;
-- (void)restoreSnapshot:(id)arg1;
-- (void)createSnapshot:(id)arg1;
 - (void)editWorkspaceUserSettings:(id)arg1;
 - (void)newRunContext:(id)arg1;
 - (void)takeScreenshot:(id)arg1;
@@ -324,6 +322,7 @@
 - (id)workspace;
 - (void)_removePendingDebuggingAdditionUIControllerObserversForLaunchSession:(id)arg1;
 - (void)_notifyAndRemoveObserversForCreatedUIController:(id)arg1 inLaunchSession:(id)arg2;
+- (id)debuggingAdditionUIControllerMatchingClass:(id)arg1 forLaunchSession:(id)arg2 handler:(CDUnknownBlockType)arg3;
 - (id)debuggingAdditionUIControllerMatchingID:(id)arg1 forLaunchSession:(id)arg2 handler:(CDUnknownBlockType)arg3;
 - (id)_createDebuggingAdditionUIControllersForDebuggingAddition:(id)arg1;
 - (void)_createDebuggingAdditionUIControllersForLaunchSession:(id)arg1;

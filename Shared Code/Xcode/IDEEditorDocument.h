@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -97,6 +97,8 @@
 - (void)_updateReadOnlyStatus;
 - (void)exportDocument:(id)arg1;
 @property(readonly) BOOL canExportDocument;
+- (void)_setDocumentFileType:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
+- (void)duplicateDocumentWithFileType:(id)arg1 writableTypes:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (void)duplicateDocumentWithFileType:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
 - (void)duplicateDocument:(id)arg1;
 - (void)revertDocumentToSaved:(id)arg1;

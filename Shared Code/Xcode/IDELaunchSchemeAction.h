@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -14,7 +14,7 @@
 
 #import "DVTXMLUnarchiving-Protocol.h"
 
-@class DVTNotificationToken, DVTObservingToken, IDEDeviceAppDataReference, IDEFileReference, IDELocationScenarioReference, IDERunnable, IDESchemeOptionReference, NSArray, NSDictionary, NSMutableArray, NSMutableDictionary, NSMutableOrderedSet, NSNumber, NSString;
+@class DVTNotificationToken, DVTObservingToken, IDEDeviceAppDataReference, IDEFileReference, IDELocationScenarioReference, IDESchemeOptionReference, NSArray, NSDictionary, NSMutableArray, NSMutableDictionary, NSMutableOrderedSet, NSNumber, NSString;
 
 @interface IDELaunchSchemeAction : IDESchemeAction <DVTXMLUnarchiving>
 {
@@ -25,6 +25,7 @@
     DVTNotificationToken *_buildablesToken;
     NSMutableDictionary *_additionalSchemeSettings;
     DVTObservingToken *_launchSessionObservingToken;
+    NSDictionary *_cachedAppExtensionBuiltPaths;
     BOOL _debugXPCServices;
     BOOL _enableAddressSanitizer;
     BOOL _useCustomWorkingDirectory;
@@ -40,7 +41,6 @@
     int _internalIOSLaunchStyle;
     NSString *_selectedDebuggerIdentifier;
     NSString *_selectedLauncherIdentifier;
-    IDERunnable *_runnable;
     NSString *_resolvedCustomWorkingDirectory;
     NSMutableOrderedSet *_debugServiceExtensionContents;
     IDEFileReference *_notificationPayloadFile;
@@ -48,7 +48,6 @@
     NSDictionary *_additionalOptionEntriesDict;
     unsigned long long _launchAutomaticallySubstyle;
     NSString *_customWorkingDirectory;
-    NSString *_buildConfiguration;
     NSString *_language;
     NSString *_region;
     IDELocationScenarioReference *_locationScenarioReference;
@@ -63,7 +62,6 @@
 
 + (id)keyPathsForValuesAffectingDebugProcessAsUID;
 + (id)keyPathsForValuesAffectingLaunchDueToFetchEvent;
-+ (id)keyPathsForValuesAffectingRunnable;
 + (id)keyPathsForValuesAffectingDoesNonActionWork;
 + (id)keyPathsForValuesAffectingSubtitle;
 + (void)initialize;
@@ -86,7 +84,6 @@
 @property(copy, nonatomic) NSString *language; // @synthesize language=_language;
 @property BOOL showNonLocalizedStrings; // @synthesize showNonLocalizedStrings=_showNonLocalizedStrings;
 @property BOOL allowLocationSimulation; // @synthesize allowLocationSimulation=_allowLocationSimulation;
-@property(copy) NSString *buildConfiguration; // @synthesize buildConfiguration=_buildConfiguration;
 @property(copy, nonatomic) NSString *customWorkingDirectory; // @synthesize customWorkingDirectory=_customWorkingDirectory;
 @property BOOL useCustomWorkingDirectory; // @synthesize useCustomWorkingDirectory=_useCustomWorkingDirectory;
 @property(nonatomic) unsigned long long launchAutomaticallySubstyle; // @synthesize launchAutomaticallySubstyle=_launchAutomaticallySubstyle;
@@ -98,6 +95,8 @@
 @property(retain) IDEDeviceAppDataReference *deviceAppDataReference; // @synthesize deviceAppDataReference=_deviceAppDataReference;
 @property(retain) IDEFileReference *notificationPayloadFile; // @synthesize notificationPayloadFile=_notificationPayloadFile;
 @property(copy) NSString *selectedLauncherIdentifier; // @synthesize selectedLauncherIdentifier=_selectedLauncherIdentifier;
+- (void)setBuildConfiguration:(id)arg1;
+- (id)buildConfiguration;
 // - (void).cxx_destruct;
 - (void)addRoutingCoverageFileReference:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addLocationScenarioReference:(id)arg1 fromXMLUnarchiver:(id)arg2;
@@ -108,9 +107,6 @@
 - (void)addAdditionalOptions:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addEnvironmentVariables:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)addCommandLineArguments:(id)arg1 fromXMLUnarchiver:(id)arg2;
-- (void)addBuildableProductRunnable:(id)arg1 fromXMLUnarchiver:(id)arg2;
-- (void)addPathRunnable:(id)arg1 fromXMLUnarchiver:(id)arg2;
-- (void)addRemoteRunnable:(id)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)dvt_encodeRelationshipsWithXMLArchiver:(id)arg1 version:(id)arg2;
 - (BOOL)needsNewSchemeVersionForInternalIOSLaunchStyleAndOthers;
 - (BOOL)needsNewSchemeVersionForLocationSimulation;
@@ -149,20 +145,18 @@
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1 version:(id)arg2;
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)runOperationForExecutionEnvironment:(id)arg1 withBuildOperation:(id)arg2 buildParameters:(id)arg3 buildableProductDirectories:(id)arg4 schemeCommand:(id)arg5 schemeActionRecord:(id)arg6 outError:(id *)arg7 actionCallbackBlock:(CDUnknownBlockType)arg8;
+- (BOOL)_tweakEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildableProductDirectories:(id)arg3 schemeCommand:(id)arg4 schemeActionRecord:(id)arg5 shouldSetupRecordedFrames:(BOOL)arg6 optimizationProfileFilePath:(id *)arg7 outError:(id *)arg8;
+- (id)_preferredBuildable:(id)arg1;
 - (void)_restoreLaunchStyleForMetalRemoteDebuggingWithEnvironmentVariables:(id)arg1;
-- (BOOL)_overrideParametersForMetalRemoteDebuggingWithEnvironmentVariables:(id)arg1 WithOutError:(id *)arg2;
+- (BOOL)_overrideParametersForMetalRemoteDebuggingWithEnvironmentVariables:(id)arg1 outError:(id *)arg2;
 - (BOOL)_isMetalRemoteDebuggingEnabledWithEnvironmentVariables:(id)arg1;
 - (BOOL)hasAppExtensionsInTargets;
-- (id)_extensionInfosForExtensions:(id)arg1;
-- (id)filePathsForContainersAndExtensionsForBuildParameters:(id)arg1 launchParameters:(id)arg2;
+- (id)filePathsForContainersAndExtensionsForBuildParameters:(id)arg1;
 - (void)_setupRecordedFramesInEnvironmentVariables:(id)arg1 runDestination:(id)arg2;
-- (id)_realAppNameForRunnablePath:(id)arg1;
-@property(readonly, nonatomic) BOOL debugAppExtensions;
 @property(retain) NSString *customLaunchCommand;
 - (id)customLaunchCommandMacroExpanded;
 - (void)setLaunchDueToFetchEvent:(BOOL)arg1;
 - (BOOL)launchDueToFetchEvent;
-@property(retain) IDERunnable *runnable; // @synthesize runnable=_runnable;
 @property(copy) NSString *selectedDebuggerIdentifier; // @synthesize selectedDebuggerIdentifier=_selectedDebuggerIdentifier;
 @property(readonly) NSArray *additionalDSYMFilePaths;
 @property(readonly) NSArray *additionalSourceCodeFilePaths;
@@ -176,6 +170,7 @@
 - (id)subtitle;
 - (id)name;
 - (void)_updateBuildableToUseForMacroExpansion;
+- (void)updateBuildableForChangeInRunnable;
 - (void)setRunContext:(id)arg1;
 - (void)primitiveInvalidate;
 - (id)_createAdditionalOptionsDict;

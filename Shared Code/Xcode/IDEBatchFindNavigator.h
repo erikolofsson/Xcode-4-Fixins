@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -16,7 +16,7 @@
 #import "IDEProgressSearchFieldCommandDelegate-Protocol.h"
 #import "IDEProgressSearchFieldDelegate-Protocol.h"
 
-@class DVTBorderedView, DVTFindPatternTextField, DVTLayoutView_ML, DVTSplitViewItem, DVTStackView_ML, IDEBatchFindLocationPickerView, IDEBatchFindQuery, IDEBatchFindReplaceButtonLayoutView, IDEBatchFindReplaceableSheetController, IDEBatchFindResultsOutlineController, IDEBatchFindStrategiesController, IDEBatchFindTwoButtonLayout, IDECallHierarchyViewController, IDENavigableItem, IDENavigableItemCoordinator, IDEPathControl, IDEProgressSearchField, NSArray, NSAttributedString, NSButton, NSColor, NSMenu, NSMutableArray, NSPopUpButton, NSPopUpButtonCell, NSString, NSTextField, NSView;
+@class DVTBorderedView, DVTFindPatternTextField, DVTLayoutView_ML, DVTSplitViewItem, DVTStackView_ML, IDEBatchFindLocationPickerView, IDEBatchFindQuery, IDEBatchFindReplaceButtonLayoutView, IDEBatchFindReplaceableSheetController, IDEBatchFindResultsOutlineController, IDEBatchFindStrategiesController, IDEBatchFindTwoButtonLayout, IDECallHierarchyViewController, IDENavigableItem, IDENavigableItemCoordinator, IDEPathControl, IDEProgressSearchField, NSArray, NSAttributedString, NSButton, NSMenu, NSMutableArray, NSPopUpButton, NSPopUpButtonCell, NSString, NSTextField, NSView;
 
 @interface IDEBatchFindNavigator : IDENavigator <NSTextFieldDelegate, NSPopoverDelegate, NSAnimationDelegate, IDEProgressSearchFieldCommandDelegate, IDEProgressSearchFieldDelegate, DVTFindPatternManager>
 {
@@ -67,7 +67,6 @@
     int _thirdLevelIndex;
     NSArray *_strategiesControllerObjects;
     NSArray *_criteriaEditorObjects;
-    NSColor *_filterControlBackgroundColor;
     BOOL _startSearchAfterHidingLocationPicker;
     IDECallHierarchyViewController *_callHierarchyViewController;
     BOOL _findStringValid;
@@ -190,6 +189,7 @@
 - (void)revertStateWithDictionary:(id)arg1;
 - (BOOL)delegateFirstResponder;
 - (void)updatePathbar;
+- (void)_updatePlaceholder;
 @property(retain) IDENavigableItem *selectedNavigable;
 - (void)updateMenuState:(id)arg1 forLevel:(int)arg2;
 - (void)_setSelectedNavigable:(id)arg1;

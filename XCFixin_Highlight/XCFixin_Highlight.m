@@ -1939,6 +1939,7 @@ static void AddDefaultKeywords()
 
 	// this
 	AddDefaultKeyword_CLike(@"this", pKeywordThis);
+	AddDefaultKeyword_CLike(@"self", pKeywordThis);
 
 	// operator
 	AddDefaultKeyword_CLike(@"operator", pKeywordOperator);

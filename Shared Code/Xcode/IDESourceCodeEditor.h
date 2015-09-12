@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -226,7 +226,6 @@
 - (void)showQuickHelp:(id)arg1;
 - (void)continueToCurrentLine:(id)arg1;
 - (void)continueToHere:(id)arg1;
-- (void)toggleCodeCoverageCountsShown:(id)arg1;
 - (void)toggleCodeCoverageShown:(id)arg1;
 - (void)toggleInvisibleCharactersShown:(id)arg1;
 - (void)toggleBreakpointAtCurrentLine:(id)arg1;
@@ -343,11 +342,11 @@
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
-@property(readwrite, copy) IDESelection *outputSelection;
+@property(readonly, copy) IDESelection *outputSelection;
 @property(readonly) DVTSDK *sdk;
 @property(readonly) Class superclass;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
-@property(readwrite, nonatomic) IDEWorkspaceTabController *workspaceTabController;
+@property(readonly, nonatomic) IDEWorkspaceTabController *workspaceTabController;
 
 @end
 

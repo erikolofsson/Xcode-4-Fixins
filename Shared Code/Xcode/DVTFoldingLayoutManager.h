@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -29,6 +29,7 @@
 - (void)drawGlyphsForGlyphRange:(struct _NSRange)arg1 atPoint:(struct CGPoint)arg2;
 - (void)foldingManager:(id)arg1 didUnfoldRange:(struct _NSRange)arg2;
 - (void)foldingManager:(id)arg1 didFoldRange:(struct _NSRange)arg2;
+- (struct CGRect)boundingRectForGlyphRange:(struct _NSRange)arg1 inTextContainer:(id)arg2;
 - (void)_invalidateGlyphsInCharacterRange:(struct _NSRange)arg1;
 - (struct _NSRange)_paragraphExtendedCharacterRange:(struct _NSRange)arg1;
 - (void)textStorage:(id)arg1 edited:(unsigned long long)arg2 range:(struct _NSRange)arg3 changeInLength:(long long)arg4 invalidatedRange:(struct _NSRange)arg5;
@@ -41,9 +42,10 @@
 - (void)setFolsMultiPathTokens:(BOOL)arg1;
 - (struct _NSRange)paragraphRangeForLineRange:(struct _NSRange)arg1;
 - (BOOL)foldsAreValid:(id)arg1;
-@property(assign) DVTTextStorage *textStorage;
+@property DVTTextStorage *textStorage;
 - (void)enableTextFolding:(BOOL)arg1;
 - (id)initWithCoder:(id)arg1;
+- (void)dealloc;
 - (id)init;
 
 // Remaining properties

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -105,6 +105,7 @@
 @property(retain) NSImage *image; // @synthesize image=_image;
 @property(copy) NSString *name; // @synthesize name=_name;
 // - (void).cxx_destruct;
+- (BOOL)hasLightBackground;
 - (void)setFont:(id)arg1 forNodeTypes:(id)arg2;
 - (void)setColor:(id)arg1 forNodeTypes:(id)arg2;
 - (void)_setColorOrFont:(id)arg1 forNodeTypes:(id)arg2;

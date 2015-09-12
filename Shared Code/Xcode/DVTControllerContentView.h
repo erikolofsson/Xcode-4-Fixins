@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -82,7 +82,6 @@
 @property(readonly) NSWindow *kvoWindow;
 @property(readonly, copy) NSString *description;
 - (void)primitiveInvalidate;
-- (void)_shouldDeallocateDescendantsOfView:(id)arg1;
 - (void)invalidate;
 - (id)initWithFrame:(struct CGRect)arg1;
 - (void)awakeFromNib;

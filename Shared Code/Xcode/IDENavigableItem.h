@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -129,6 +129,7 @@
 @property(readonly, nonatomic) BOOL isDocumentNavigableItem;
 @property(readonly) id <IDENavigableItemDebugAreaDelegate> debugAreaDelegate;
 @property(readonly) id <IDENavigableItemDebugBarDelegate> debugBarDelegate;
+- (id)ide_inferredURLFromRepresentedObject;
 - (id)navigableItemsForPersistentNameTree:(id)arg1;
 - (void)_fillItems:(id)arg1 fromNameDictionary:(id)arg2 withParent:(id)arg3 andChildren:(id)arg4;
 - (id)persistentNameTreeForNavigableItems:(id)arg1 errorOnInvalidItems:(BOOL)arg2 error:(id *)arg3;

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -25,6 +25,7 @@
     double _accessoryAnnotationWidth;
     unsigned long long _modifierFlagsAtLastSingleMouseDown;
     BOOL _tabSelectsNextPlaceholder;
+    BOOL _hidesInsertionPoint;
 }
 
 + (id)readableTextPasteboardTypes;
@@ -33,6 +34,7 @@
 + (id)identifierChars;
 + (id)_identifierCharsForImportStatements;
 + (BOOL)appSupportsActionMonitoring;
+@property BOOL hidesInsertionPoint; // @synthesize hidesInsertionPoint=_hidesInsertionPoint;
 @property(copy, nonatomic) NSColor *secondarySelectedTextBackgroundColor; // @synthesize secondarySelectedTextBackgroundColor=_secondarySelectedTextBackgroundColor;
 @property BOOL tabSelectsNextPlaceholder; // @synthesize tabSelectsNextPlaceholder=_tabSelectsNextPlaceholder;
 @property(readonly) DVTTextCompletionController *completionController; // @synthesize completionController=_completionController;
@@ -63,6 +65,7 @@
 - (void)drawRect:(struct CGRect)arg1;
 - (void)_drawRect:(struct CGRect)arg1 clip:(BOOL)arg2;
 - (void)_drawOverlayRect:(struct CGRect)arg1;
+- (void)drawInsertionPointInRect:(struct CGRect)arg1 color:(id)arg2 turnedOn:(BOOL)arg3;
 - (void)moveDown:(id)arg1;
 - (void)setSelectedRange:(struct _NSRange)arg1;
 - (void)setSelectedRanges:(id)arg1 affinity:(unsigned long long)arg2 stillSelecting:(BOOL)arg3;
@@ -132,7 +135,7 @@
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
-@property(assign) id <DVTCompletingTextViewDelegate> delegate; // @dynamic delegate;
+@property id <DVTCompletingTextViewDelegate> delegate; // @dynamic delegate;
 @property(readonly, copy) NSString *description;
 @property(readonly) Class superclass;
 

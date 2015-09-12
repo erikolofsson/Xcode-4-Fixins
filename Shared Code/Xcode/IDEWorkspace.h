@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
 #include "Shared.h"
@@ -15,7 +15,7 @@
 #import "IDEClientTracking-Protocol.h"
 #import "IDEIntegrityLogDataSource-Protocol.h"
 
-@class DVTFilePath, DVTObservingToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDEActivityLogSection, IDEBatchFindManager, IDEBreakpointManager, IDEConcreteClientTracker, IDEContainer, IDEContainerQuery, IDEDeviceInstallWorkspaceMonitor, IDEExecutionEnvironment, IDEIndex, IDEIssueManager, IDELocalizationManager, IDELogManager, IDERefactoring, IDERunContextManager, IDESourceControlWorkspaceMonitor, IDETestManager, IDETextIndex, IDEWorkspaceArena, IDEWorkspaceSharedSettings, IDEWorkspaceSnapshotManager, IDEWorkspaceUpgradeTasksController, IDEWorkspaceUserSettings, NSArray, NSDictionary, NSHashTable, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSMutableSet, NSSet, NSString;
+@class DVTFilePath, DVTObservingToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDEActivityLogSection, IDEBatchFindManager, IDEBreakpointManager, IDEConcreteClientTracker, IDEContainer, IDEContainerQuery, IDEDeviceInstallWorkspaceMonitor, IDEExecutionEnvironment, IDEIndex, IDEIssueManager, IDELocalizationManager, IDELogManager, IDERefactoring, IDERunContextManager, IDESourceControlWorkspaceMonitor, IDETestManager, IDETextIndex, IDEWorkspaceArena, IDEWorkspaceSharedSettings, IDEWorkspaceUpgradeTasksController, IDEWorkspaceUserSettings, NSArray, NSDictionary, NSHashTable, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSMutableSet, NSSet, NSString;
 @protocol IDEActiveRunContextStoring, IDEContinuousIntegrationBotMonitor, IDECustomDataStoring, IDEWorkspaceDelegate;
 
 @interface IDEWorkspace : IDEXMLPackageContainer <IDEClientTracking, IDEIntegrityLogDataSource>
@@ -55,7 +55,6 @@
     IDETextIndex *_textIndex;
     IDEDeviceInstallWorkspaceMonitor *_deviceInstallWorkspaceMonitor;
     IDESourceControlWorkspaceMonitor *_sourceControlWorkspaceMonitor;
-    IDEWorkspaceSnapshotManager *_snapshotManager;
     IDELocalizationManager *_localizationManager;
     DVTFilePath *_wrappedContainerPath;
     IDEContainer<IDECustomDataStoring> *_wrappedContainer;
@@ -172,7 +171,6 @@
 @property(retain) IDETestManager *testManager; // @dynamic testManager;
 - (void)setBatchFindManager:(IDEBatchFindManager *)arg1;
 @property(readonly) IDEBatchFindManager *batchFindManager;
-@property(retain) IDEWorkspaceSnapshotManager *snapshotManager;
 @property(retain) IDEBreakpointManager *breakpointManager; // @dynamic breakpointManager;
 @property(readonly) IDEIssueManager *issueManager;
 - (void)_setupIssueManagerIfNeeded;

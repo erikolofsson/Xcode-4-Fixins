@@ -3,7 +3,6 @@
 #include "../Shared Code/XCFixin.h"
 #import "../Shared Code/Xcode/IDEEditorDocument.h"
 #import <AppKit/AppKit.h>
-#import "../Shared Code/Xcode/_DVTAsynchronousRequest.h"
 
 static IMP original__unlockIfNeededCompletionBlock = nil;
 static Class g_EditorDocumentClass;
@@ -130,11 +129,15 @@ static void _unlockIfNeededCompletionBlock(id self_, SEL _cmd, void (^completion
 						return ((void (*)(id, SEL, id))original__unlockIfNeededCompletionBlock)(self_, _cmd, completion);
 					else
 					{
-						[_DVTAsynchronousRequest _scheduledRequestWithDelay:0.0 block: 
-							^{
-								completion(false);
-							}
-						];
+						dispatch_async
+							(
+								dispatch_get_main_queue()
+								, ^
+								{
+									completion(false);
+								}
+							 )
+						;
 						return;
 					}
 				}
@@ -176,11 +179,15 @@ static void _unlockIfNeededCompletionBlock(id self_, SEL _cmd, void (^completion
 			[pEditor _updateReadOnlyStatus];
 			ReadOnlyStatus = [pEditor readOnlyStatus];
 
-			[_DVTAsynchronousRequest _scheduledRequestWithDelay:0.0 block: 
-				^{
-					completion(bSuccess);
-				}
-			];
+			dispatch_async
+				(
+					dispatch_get_main_queue()
+					, ^
+					{
+						completion(bSuccess);
+					}
+				 )
+			;
 			
 			return;
 		}

@@ -12,11 +12,13 @@
 
 #import "IDENavigableItem.h"
 
-@class NSDictionary;
+@class DVTObservingToken, NSDictionary;
+@protocol IDEKeyDrivenNavigableItemRepresentedObject;
 
 @interface IDEKeyDrivenNavigableItem : IDENavigableItem
 {
     NSDictionary *_cachedPropertyValues;
+    DVTObservingToken *_parentChildBreakdownObserver;
     struct {
         unsigned int _invalidatingChildItems:1;
         unsigned int _disposing:1;
@@ -33,8 +35,9 @@
 + (id)keyPathsForValuesAffectingName;
 + (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 + (id)keyPathsForValuesAffectingLeaf;
-+ (unsigned long long)countOfNavigableItemsForRepresentedObject:(id)arg1;
-+ (id)navigableItemsForRepresentedObject:(id)arg1;
++ (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
++ (unsigned long long)_countOfNavigableItemsForRepresentedObject:(id)arg1;
++ (id)_navigableItemsForRepresentedObject:(id)arg1;
 + (id)keyPathsForValuesAffectingConflictStateForUpdateOrMerge;
 + (id)keyPathsForValuesAffectingSourceControlCurrentRevision;
 + (id)keyPathsForValuesAffectingSourceControlLastModifiedDate;
@@ -44,6 +47,8 @@
 + (id)keyPathsForValuesAffectingSourceControlLocalStatus;
 + (id)keyPathsForValuesAffectingProgressValue;
 // - (void).cxx_destruct;
+- (id)cachedValueForProperty:(id)arg1;
+- (void)cacheValue:(id)arg1 forProperty:(id)arg2;
 - (unsigned long long)indexOfChildItemForIdentifier:(id)arg1;
 - (id)identifierForChildItem:(id)arg1;
 - (BOOL)_automatic_isMajorGroup;
@@ -56,13 +61,14 @@
 - (id)image;
 - (id)name;
 - (void)_setRepresentedObject:(id)arg1;
-- (void)invalidateValueForKey:(id)arg1;
-- (id)cachedValueForProperty:(id)arg1;
-- (void)cacheValue:(id)arg1 forProperty:(id)arg2;
+- (void)_invalidateValueForKey:(id)arg1;
+- (id)_cachedValueForProperty:(id)arg1;
+- (void)_cacheValue:(id)arg1 forProperty:(id)arg2;
+- (id)cachedValueForProperty:(id)arg1 withCreationBlock:(CDUnknownBlockType)arg2;
 - (id)cachedPropertyValues;
 - (id)_cachedPropertyValues;
 - (void)_configurePropertyObservingForKey:(id)arg1;
-- (void)_propagateFilterPredicateToChildItems;
+- (BOOL)_alwaysBypassFilter;
 - (BOOL)isLeaf;
 - (id)childRepresentedObjects;
 - (id)_childItemsKeyPath;
@@ -85,6 +91,9 @@
 - (id)sourceControlLocalStatus;
 - (int)sourceControlLocalStatusFlag;
 - (long long)progressValue;
+
+// Remaining properties
+@property(retain) id <IDEKeyDrivenNavigableItemRepresentedObject> representedObject; // @dynamic representedObject;
 
 @end
 

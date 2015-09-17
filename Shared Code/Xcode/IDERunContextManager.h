@@ -12,14 +12,14 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTMapTable, DVTStackBacktrace, IDERunDestination, IDEScheme, IDEWorkspace, NSArray, NSCountedSet, NSMutableArray, NSMutableSet, NSString;
+@class DVTStackBacktrace, IDERunDestination, IDEScheme, IDEWorkspace, NSArray, NSCountedSet, NSMapTable, NSMutableArray, NSMutableSet, NSString;
 
 @interface IDERunContextManager : NSObject <DVTInvalidation>
 {
     IDEWorkspace *_workspace;
     NSMutableSet *_customDataStores;
-    DVTMapTable *_storeToSpecifierMap;
-    DVTMapTable *_storeToUserDataMap;
+    NSMapTable *_storeToSpecifierMap;
+    NSMapTable *_storeToUserDataMap;
     NSMutableArray *_runContexts;
     IDEScheme *_activeRunContext;
     IDERunDestination *_activeRunDestination;
@@ -32,6 +32,7 @@
 + (BOOL)automaticallyNotifiesObserversOfActiveRunDestination;
 + (BOOL)automaticallyNotifiesObserversOfActiveRunContext;
 + (void)initialize;
++ (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 @property(readonly) NSCountedSet *schemeNameCounts; // @synthesize schemeNameCounts=_schemeNameCounts;
 @property(retain, nonatomic) IDERunDestination *activeRunDestination; // @synthesize activeRunDestination=_activeRunDestination;
 @property(retain, nonatomic) IDEScheme *activeRunContext; // @synthesize activeRunContext=_activeRunContext;

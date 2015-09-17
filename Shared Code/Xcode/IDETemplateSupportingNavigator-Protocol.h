@@ -9,11 +9,11 @@
 //
 
 
-@class IDEContainerItem, IDEGroup, IDETemplateInstantiationContext, NSArray;
+@class IDEContainerItem, IDEGroup, IDETemplateAssistantContext, NSArray;
 
 @protocol IDETemplateSupportingNavigator <NSObject>
 - (IDEGroup *)defaultDestinationGroupForTemplateInstantiationWithDestinationIndex:(long long *)arg1;
 - (void)addTemplateInstantiatedItems:(NSArray *)arg1 primaryItem:(IDEContainerItem *)arg2 shouldEdit:(BOOL)arg3;
-- (void)setupTemplateContext:(IDETemplateInstantiationContext *)arg1;
+- (void)setupTemplateContext:(IDETemplateAssistantContext *)arg1;
 @end
 

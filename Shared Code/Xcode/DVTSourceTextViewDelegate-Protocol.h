@@ -10,7 +10,7 @@
 
 #import "DVTCompletingTextViewDelegate-Protocol.h"
 
-@class DVTAnnotationContext, DVTSourceTextView, NSArray, NSDictionary, NSEvent, NSMenu, NSNotification, NSString;
+@class DVTAnnotationContext, DVTMutableRangeArray, DVTSourceTextView, NSArray, NSDictionary, NSEvent, NSMenu, NSNotification, NSString;
 
 @protocol DVTSourceTextViewDelegate <DVTCompletingTextViewDelegate>
 
@@ -21,6 +21,8 @@
 - (NSString *)textViewWillReturnPrintJobTitle:(DVTSourceTextView *)arg1;
 - (void)textViewDidScroll:(DVTSourceTextView *)arg1;
 - (void)setupGutterContextMenuWithMenu:(NSMenu *)arg1;
+- (void)didEndTokenizedEditingWithRanges:(DVTMutableRangeArray *)arg1;
+- (void)willStartTokenizedEditingWithRanges:(DVTMutableRangeArray *)arg1;
 - (void)tokenizableRangesWithRange:(struct _NSRange)arg1 completionBlock:(void (^)(NSArray *))arg2;
 - (void)textViewDidFinishAnimatingScroll:(DVTSourceTextView *)arg1;
 - (void)textViewDidLoadAnnotationProviders:(DVTSourceTextView *)arg1;

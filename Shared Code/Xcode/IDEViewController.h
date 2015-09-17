@@ -20,9 +20,9 @@
 
 @interface IDEViewController : DVTViewController <IDESelectionSource, DVTStatefulObject>
 {
-    IDEWorkspaceTabController *_workspaceTabController;
     id <IDEWorkspaceDocumentProvider> _workspaceDocumentProvider;
-    id _outputSelection;
+    IDEWorkspaceTabController *_workspaceTabController;
+    IDESelection *_outputSelection;
     DVTStateToken *_stateToken;
 }
 
@@ -31,8 +31,8 @@
 + (id)keyPathsForValuesAffectingWorkspace;
 + (id)keyPathsForValuesAffectingWorkspaceDocument;
 @property(readonly) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
-@property(retain, nonatomic) IDEWorkspaceTabController *workspaceTabController; // @synthesize workspaceTabController=_workspaceTabController;
 @property(copy) IDESelection *outputSelection; // @synthesize outputSelection=_outputSelection;
+@property(retain, nonatomic) IDEWorkspaceTabController *workspaceTabController; // @synthesize workspaceTabController=_workspaceTabController;
 // - (void).cxx_destruct;
 - (void)setStateToken:(DVTStateToken *)arg1;
 - (BOOL)_knowsAboutInstalledState;

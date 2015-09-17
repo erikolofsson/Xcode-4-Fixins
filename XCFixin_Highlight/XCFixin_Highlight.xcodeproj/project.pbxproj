@@ -114,7 +114,7 @@
 		FB1ECC4DE9204CA9B0973FA6CC165AEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = 435E246A13A8E4510052479A /* Build configuration list for PBXProject "XCFixin_Highlight" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -175,6 +175,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
@@ -183,7 +184,11 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				WARNING_CFLAGS = "-Wno-incompatible-property-type";
+				WARNING_CFLAGS = (
+					"-Wno-incompatible-property-type",
+					"-Wno-nullability-completeness",
+					"-Wno-property-attribute-mismatch",
+				);
 			};
 			name = Debug;
 		};
@@ -197,7 +202,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
-				WARNING_CFLAGS = "-Wno-incompatible-property-type";
+				WARNING_CFLAGS = (
+					"-Wno-incompatible-property-type",
+					"-Wno-nullability-completeness",
+					"-Wno-property-attribute-mismatch",
+				);
 			};
 			name = Release;
 		};
@@ -217,6 +226,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_Highlight;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
@@ -240,6 +250,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_Highlight;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;

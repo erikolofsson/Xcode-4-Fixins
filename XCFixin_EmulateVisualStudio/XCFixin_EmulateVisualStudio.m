@@ -76,6 +76,9 @@ static IMP original_resumeFilePathChangeNotifications = nil;
 static IMP original_suspendFilePathChangeNotifications = nil;
 static IMP original_updateOperationConcurrency = nil;
 static IMP original_changeMaximumOperationConcurrencyUsingThrottleFactor = nil;
+static IMP original_setNeedsDisplay = nil;
+static IMP original_displayIfNeeded = nil;
+static IMP original_NSScrollingBehaviorLegacy_scrollView = nil;
 
 
 
@@ -105,6 +108,48 @@ static void * EmulateVisualStudioIDEContainerKey_lastBuilding = &EmulateVisualSt
 
 - (void)setLastBuilding:(NSNumber *)generated {
     objc_setAssociatedObject(self, EmulateVisualStudioIDEContainerKey_lastBuilding, generated, OBJC_ASSOCIATION_RETAIN_NONATOMIC); 
+}
+
+@end
+
+
+@interface NSObject (EmulateVisualStudioNSObject)
+
+@property (nonatomic, retain) NSNumber *displayCycleObserver_alreadyScheduled;
+@property (nonatomic, retain) NSNumber *displayCycleObserver_lastDraw;
+@property (nonatomic, retain) NSNumber *displayCycleObserver_sequence;
+
+@end
+
+
+static void * EmulateVisualStudioNSObjectKey_displayCycleObserver_alreadyScheduled = &EmulateVisualStudioNSObjectKey_displayCycleObserver_alreadyScheduled;
+static void * EmulateVisualStudioNSObjectKey_displayCycleObserver_lastDraw = &EmulateVisualStudioNSObjectKey_displayCycleObserver_lastDraw;
+static void * EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence = &EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence;
+
+@implementation NSObject (EmulateVisualStudioNSObject)
+
+- (NSNumber *)displayCycleObserver_alreadyScheduled {
+    return objc_getAssociatedObject(self, EmulateVisualStudioNSObjectKey_displayCycleObserver_alreadyScheduled);
+}
+
+- (void)setDisplayCycleObserver_alreadyScheduled:(NSNumber *)generated {
+    objc_setAssociatedObject(self, EmulateVisualStudioNSObjectKey_displayCycleObserver_alreadyScheduled, generated, OBJC_ASSOCIATION_RETAIN_NONATOMIC); 
+}
+
+- (NSNumber *)displayCycleObserver_lastDraw {
+    return objc_getAssociatedObject(self, EmulateVisualStudioNSObjectKey_displayCycleObserver_lastDraw);
+}
+
+- (void)setDisplayCycleObserver_lastDraw:(NSNumber *)generated {
+    objc_setAssociatedObject(self, EmulateVisualStudioNSObjectKey_displayCycleObserver_lastDraw, generated, OBJC_ASSOCIATION_RETAIN_NONATOMIC); 
+}
+
+- (NSNumber *)displayCycleObserver_sequence {
+    return objc_getAssociatedObject(self, EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence);
+}
+
+- (void)setDisplayCycleObserver_sequence:(NSNumber *)generated {
+    objc_setAssociatedObject(self, EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence, generated, OBJC_ASSOCIATION_RETAIN_NONATOMIC); 
 }
 
 @end
@@ -2056,9 +2101,15 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	original_changeMaximumOperationConcurrencyUsingThrottleFactor = XCFixinOverrideMethodString(@"IDEBuildOperationQueueSet", @selector(changeMaximumOperationConcurrencyUsingThrottleFactor:), (IMP)&changeMaximumOperationConcurrencyUsingThrottleFactor);
 	XCFixinAssertOrPerform(original_changeMaximumOperationConcurrencyUsingThrottleFactor, goto failed);
 	
+	original_setNeedsDisplay = XCFixinOverrideMethodString(@"NSDisplayCycleObserver", @selector(setNeedsDisplay:), (IMP)&setNeedsDisplay);
+	XCFixinAssertOrPerform(original_setNeedsDisplay, goto failed);
+	
+	original_displayIfNeeded = XCFixinOverrideMethodString(@"NSWindow", @selector(displayIfNeeded), (IMP)&displayIfNeeded);
+	XCFixinAssertOrPerform(original_displayIfNeeded, goto failed);
 
-
-
+	original_NSScrollingBehaviorLegacy_scrollView = XCFixinOverrideMethodString(@"NSScrollingBehaviorLegacy", @selector(scrollView: scrollWheelWithEvent:), (IMP)&NSScrollingBehaviorLegacy_scrollView);
+	XCFixinAssertOrPerform(original_NSScrollingBehaviorLegacy_scrollView, goto failed);
+	
 	XCFixinPostflight();
 }
 
@@ -2128,6 +2179,95 @@ static void changeMaximumOperationConcurrencyUsingThrottleFactor(id self_, SEL _
 
 //	return ((void(*)(id, SEL))original_changeMaximumOperationConcurrencyUsingThrottleFactor)(self_, _Sel, arg1);
 }
+	
+// -[NSDisplayCycleObserver setNeedsDisplay:]
+static void setNeedsDisplay(id self_, SEL _Sel, BOOL _Arg1)
+{
+	NSMutableDictionary *ThreadDict = [[NSThread currentThread] threadDictionary];
+	NSNumber *pInScroll = ThreadDict[@"EmulateVisualStudio_InLegacyScroll"];
+	
+	if (!_Arg1 || (pInScroll && [pInScroll boolValue]))
+		return ((void(*)(id, SEL, BOOL _Arg1))original_setNeedsDisplay)(self_, _Sel, _Arg1);
+	//return ((void(*)(id, SEL, BOOL _Arg1))original_setNeedsDisplay)(self_, _Sel, _Arg1);
+	
+	NSObject *pDisplayCycle = (NSObject *)self_;
+	
+	uint64_t Sequence = 0;
+	if (pDisplayCycle.displayCycleObserver_sequence)
+		Sequence = [pDisplayCycle.displayCycleObserver_sequence unsignedLongLongValue];
+	
+	bool bAlreadyScheduled = pDisplayCycle.displayCycleObserver_alreadyScheduled && [pDisplayCycle.displayCycleObserver_alreadyScheduled boolValue];
+
+	double UpdateTime = 1.0 / 60.0;
+	double Now = CACurrentMediaTime();
+	double Last = 0;
+	if (pDisplayCycle.displayCycleObserver_lastDraw)
+		Last = [pDisplayCycle.displayCycleObserver_lastDraw doubleValue];
+	
+	if ((Now - Last) < UpdateTime)
+	{
+		if (bAlreadyScheduled)
+			return;
+		pDisplayCycle.displayCycleObserver_alreadyScheduled = [NSNumber numberWithBool: true];
+		// Schedule update in future
+		double DispatchFromNow = ((Last + UpdateTime) - Now);
+		dispatch_after
+			(
+				dispatch_time(DISPATCH_TIME_NOW, (int64_t)(DispatchFromNow * 1000000000.0))
+				, dispatch_get_main_queue()
+				, ^
+				{
+					uint64_t Sequence2 = 0;
+					if (pDisplayCycle.displayCycleObserver_sequence)
+						Sequence2 = [pDisplayCycle.displayCycleObserver_sequence unsignedLongLongValue];
+					if (Sequence == Sequence2)
+					{
+						pDisplayCycle.displayCycleObserver_sequence = [NSNumber numberWithUnsignedLongLong: Sequence + 1];
+						((void(*)(id, SEL, BOOL _Arg1))original_setNeedsDisplay)(self_, _Sel, _Arg1);
+					}
+				}
+			)
+		;
+		return;
+	} 
+	
+	if (!bAlreadyScheduled)
+		pDisplayCycle.displayCycleObserver_alreadyScheduled = [NSNumber numberWithBool: true];
+	
+	pDisplayCycle.displayCycleObserver_sequence = [NSNumber numberWithUnsignedLongLong: Sequence + 1];
+	((void(*)(id, SEL, BOOL _Arg1))original_setNeedsDisplay)(self_, _Sel, _Arg1);
+}
+
+// - (void)scrollView:(id)arg1 scrollWheelWithEvent:(id)arg2;
+static void NSScrollingBehaviorLegacy_scrollView(id self_, SEL _Sel, id _Arg1, id _Arg2)
+{
+	NSMutableDictionary *ThreadDict = [[NSThread currentThread] threadDictionary];
+	ThreadDict[@"EmulateVisualStudio_InLegacyScroll"] = [NSNumber numberWithBool:true];
+	((void(*)(id, SEL, id, id))original_NSScrollingBehaviorLegacy_scrollView)(self_, _Sel, _Arg1, _Arg2);
+	ThreadDict[@"EmulateVisualStudio_InLegacyScroll"] = [NSNumber numberWithBool:false];
+}
+
+// -[NSWindow displayIfNeeded]
+static void displayIfNeeded(id self_, SEL _Sel)
+{
+	NSWindow *pWindow = (NSWindow *)self_;
+
+	NSObject *pAuxilaryStorage = [pWindow valueForKey:@"_auxiliaryStorage"];
+	if (pAuxilaryStorage)
+	{
+		NSObject *pDisplayCycle = (NSObject *)[pAuxilaryStorage valueForKey:@"_displayCycleObserver"];
+		if (pDisplayCycle)
+		{
+			pDisplayCycle.displayCycleObserver_alreadyScheduled = [NSNumber numberWithBool: false];
+			pDisplayCycle.displayCycleObserver_lastDraw = [NSNumber numberWithDouble: CACurrentMediaTime()];
+		}
+	}	
+	
+	((void(*)(id, SEL))original_displayIfNeeded)(self_, _Sel);
+}
+
+
+
 
 NSHashTable *g_pPendingChanges = NULL;
 

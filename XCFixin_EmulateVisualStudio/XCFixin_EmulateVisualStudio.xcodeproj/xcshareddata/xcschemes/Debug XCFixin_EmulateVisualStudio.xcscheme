@@ -45,7 +45,7 @@
       <PathRunnable
          runnableDebuggingMode = "0"
          BundleIdentifier = "com.apple.dt.Xcode"
-         FilePath = "/Applications/Xcode-beta.app">
+         FilePath = "/Applications/Xcode.app">
       </PathRunnable>
       <MacroExpansion>
          <BuildableReference
@@ -60,11 +60,24 @@
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <PathRunnable
+         runnableDebuggingMode = "0"
+         FilePath = "/Applications/Xcode.app">
+      </PathRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "435E247113A8E4A20052479A"
+            BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
+            BlueprintName = "XCFixin_EmulateVisualStudio"
+            ReferencedContainer = "container:XCFixin_EmulateVisualStudio.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

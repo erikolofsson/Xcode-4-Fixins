@@ -16,6 +16,7 @@
 		0382C7531994131400DEF003 /* DVTFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C7521994131400DEF003 /* DVTFoundation.framework */; };
 		03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A1896E1992C68500F87332 /* IDEKit.framework */; };
 		03F332F71B891CA30014B200 /* IDEFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03F332F61B891CA30014B200 /* IDEFoundation.framework */; };
+		03F6DBC91BC94F6500B97C8B /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03F6DBC81BC94F6500B97C8B /* AppKit.framework */; };
 		435E248813A8E5A40052479A /* XCFixin_EmulateVisualStudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */; };
 		437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 437DCBC314D41E700039CB49 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
@@ -30,7 +31,8 @@
 		0382C750199412CB00DEF003 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = "/Source/Xcode-4-Fixins/XCFixin_Highlight/../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework"; sourceTree = "<absolute>"; };
 		0382C7521994131400DEF003 /* DVTFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTFoundation.framework; path = ../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework; sourceTree = "<group>"; };
 		03A1896E1992C68500F87332 /* IDEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEKit.framework; path = ../../../Applications/Xcode.app/Contents/Frameworks/IDEKit.framework; sourceTree = "<group>"; };
-		03F332F61B891CA30014B200 /* IDEFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEFoundation.framework; path = "../../../Applications/Xcode-beta.app/Contents/Frameworks/IDEFoundation.framework"; sourceTree = "<group>"; };
+		03F332F61B891CA30014B200 /* IDEFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEFoundation.framework; path = ../../../Applications/Xcode.app/Contents/Frameworks/IDEFoundation.framework; sourceTree = "<group>"; };
+		03F6DBC81BC94F6500B97C8B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_EmulateVisualStudio.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		435E248413A8E5A40052479A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = XCFixin_EmulateVisualStudio.m; sourceTree = "<group>"; tabWidth = 4; };
@@ -42,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03F6DBC91BC94F6500B97C8B /* AppKit.framework in Frameworks */,
 				032D81D31B89238B005B67C4 /* QuartzCore.framework in Frameworks */,
 				03F332F71B891CA30014B200 /* IDEFoundation.framework in Frameworks */,
 				0382BA6D199516B500E48ED4 /* Carbon.framework in Frameworks */,
@@ -58,6 +61,7 @@
 		435E246513A8E4510052479A = {
 			isa = PBXGroup;
 			children = (
+				03F6DBC81BC94F6500B97C8B /* AppKit.framework */,
 				032D81D21B89238B005B67C4 /* QuartzCore.framework */,
 				03F332F61B891CA30014B200 /* IDEFoundation.framework */,
 				0382BA6C199516B500E48ED4 /* Carbon.framework */,

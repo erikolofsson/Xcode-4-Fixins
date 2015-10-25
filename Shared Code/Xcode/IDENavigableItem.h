@@ -27,6 +27,7 @@
         unsigned int _invalidatingChildItems:1;
         unsigned int _debug_8061745_shouldCaptureInvalidationBacktrace:1;
         unsigned int _observersRegisteredWithOldOrPriorOption:1;
+        unsigned int _isBeingForgotten:1;
     } _ideniFlags;
     id _representedObject;
     IDENavigableItem *_parentItem;
@@ -44,6 +45,7 @@
 + (BOOL)automaticallyNotifiesObserversOfParentItem;
 + (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
++ (BOOL)automaticallyNotifiesObserversOf_forgetting;
 + (id)description;
 + (BOOL)automaticallyNotifiesObserversOfRepresentedObject;
 + (id)navigableItemWithRepresentedObject:(id)arg1 coordinator:(id)arg2;
@@ -99,6 +101,7 @@
 - (void)_setParentItem:(id)arg1;
 - (BOOL)_isWrappingDocumentFileReference;
 - (void)setName:(NSString *)arg1;
+@property(nonatomic) BOOL _forgetting; // @dynamic _forgetting;
 - (void)primitiveInvalidate;
 - (void)addObserver:(id)arg1 forKeyPath:(id)arg2 options:(unsigned long long)arg3 context:(void *)arg4;
 - (id)observationInfo;

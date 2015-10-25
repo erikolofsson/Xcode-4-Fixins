@@ -1,13 +1,13 @@
-__These plugins are only maintained for the latest version of Xcode (currently 6.4)__
+__These plugins are only maintained for the latest version of Xcode (currently 7.1)__
 
 __===== DESCRIPTION =====__
 
 This project includes plugins (known as _fixins_) that extend Xcode
 and fix some of its annoying behaviors.
 
-__===== INSTALLATION (Xcode 6) =====__
+__===== INSTALLATION (Xcode 7) =====__
 
-Despite the name, the Xcode 4 Fixins are compatible with Xcode 6.
+Despite the name, the Xcode 4 Fixins are compatible with Xcode 7.
 
 To install the fixins:
 

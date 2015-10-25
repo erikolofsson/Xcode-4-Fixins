@@ -110,6 +110,7 @@
 - (id)structureEditorOpenSpecifierForIssuesNavigable:(id)arg1 error:(id *)arg2;
 - (id)structureEditorOpenSpecifierForLogDocumentForIssue:(id)arg1 error:(id *)arg2;
 - (id)structureNavigableItemForIssuesNavigable:(id)arg1 error:(id *)arg2;
+- (id)_urlOfRepresentedObject:(id)arg1;
 - (void)showByFile:(id)arg1;
 - (void)showByType:(id)arg1;
 - (id)domainIdentifier;

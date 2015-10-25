@@ -29,8 +29,10 @@
     int _saveErrorCode;
     NSArray *_targets;
     NSMapTable *_pbxTargetsToXc3Targets;
+    NSArray *_allTestables;
     NSArray *_testables;
     NSMapTable *_xc3TargetsToTestables;
+    NSMapTable *_xc3TargetsToDeprecatedTestables;
     NSMutableArray *_localizations;
     BOOL _isBaseLocalized;
     IDEActivityLogSection *_integrityLog;
@@ -75,8 +77,10 @@
 - (id)evaluatedStringValueForBuildSetting:(id)arg1 withBuildParameters:(id)arg2;
 - (id)allBuildSettingNamesWithBuildParameters:(id)arg1;
 - (id)cachedMacroExpansionScopeForBuildParameters:(id)arg1;
+- (void)clearTestablesCache;
 - (void)_updateTestablesForTargetProxies:(id)arg1;
 - (id)testableForBlueprint:(id)arg1;
+@property(readonly, copy) NSArray *allTestables;
 @property(readonly, copy) NSArray *testables;
 - (id)testableProvider;
 - (void)addSpecifier:(id)arg1 inWorkspace:(id)arg2 toSCMWithCompletionBlock:(CDUnknownBlockType)arg3;

@@ -151,6 +151,8 @@
 - (void)createTestFailureBreakpoint:(id)arg1;
 - (void)createSymbolicBreakpoint:(id)arg1;
 - (void)createExceptionBreakpoint:(id)arg1;
+- (void)createSwiftErrorBreakpoint:(id)arg1;
+- (void)_createBreakpointOfClass:(Class)arg1 sender:(id)arg2;
 - (void)editWorkspaceUserSettings:(id)arg1;
 - (void)newRunContext:(id)arg1;
 - (void)takeScreenshot:(id)arg1;

@@ -13,6 +13,7 @@
 @protocol IDEClientTrackingToken;
 
 @protocol IDEClientTracking <NSObject>
+@property(readonly) BOOL isCancelling;
 - (void)cancelTrackedClients;
 - (NSArray *)clientsNotSupportingCancellation;
 - (NSArray *)clientsRequiringCancellationPrompt;

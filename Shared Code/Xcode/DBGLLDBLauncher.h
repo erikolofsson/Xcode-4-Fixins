@@ -40,7 +40,6 @@ __attribute__((visibility("hidden")))
 - (id)_consumeEventAfterConnectToDebugServer:(struct SBProcess)arg1 lldbTarget:(struct SBTarget)arg2 launchParameters:(id)arg3;
 - (void)_setMiscHandleCommands:(id)arg1;
 - (void)_setPlatformForStart:(id)arg1;
-- (void)_messageTrace:(id)arg1;
 - (id)devicePathSubstitutionPairsString;
 - (struct SBTarget)_tryWithAnotherArchitectureOnBinaryPath:(id)arg1;
 - (struct SBProcess)_doRegularDebugWithTarget:(struct SBTarget)arg1 usingDebugServer:(BOOL)arg2 errTargetString:(id)arg3;

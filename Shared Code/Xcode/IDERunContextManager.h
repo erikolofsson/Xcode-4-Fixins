@@ -45,8 +45,10 @@
 - (void)blueprintsWillBulkChange:(id)arg1;
 - (void)blueprintsDidChange:(id)arg1;
 - (void)deviceUsabilityDidChange:(id)arg1;
+- (id)_preferredDestinationForRunDestination:(id)arg1 inDestinations:(id)arg2;
 - (void)_invalidateAvailableRunDestinations;
 - (void)_invalidateAvailableRunDestinationsForSchemes:(id)arg1;
+- (void)_invalidateActiveRunDestinationDueToDeviceAvailable;
 - (void)_invalidateActiveRunDestination;
 - (void)shouldIgnoreDeviceChangesDidEnd:(id)arg1;
 - (void)shouldIgnoreDeviceChangesWillBegin:(id)arg1;

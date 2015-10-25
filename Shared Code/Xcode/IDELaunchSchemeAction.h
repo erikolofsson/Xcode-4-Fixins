@@ -35,6 +35,7 @@
     BOOL _debugDocumentVersioning;
     BOOL _enableGPUValidationMode;
     BOOL _viewDebuggingEnabled;
+    BOOL _queueDebuggingEnabled;
     unsigned int _debugProcessAsUID;
     int _launchStyle;
     int _enableGPUFrameCaptureMode;
@@ -68,6 +69,7 @@
 @property(copy) NSString *debugAsWhichUser; // @synthesize debugAsWhichUser=_debugAsWhichUser;
 @property(copy) NSString *debugServiceExtension; // @synthesize debugServiceExtension=_debugServiceExtension;
 @property(copy) NSString *debugServiceExtensionContentsString; // @synthesize debugServiceExtensionContentsString=_debugServiceExtensionContentsString;
+@property BOOL queueDebuggingEnabled; // @synthesize queueDebuggingEnabled=_queueDebuggingEnabled;
 @property BOOL viewDebuggingEnabled; // @synthesize viewDebuggingEnabled=_viewDebuggingEnabled;
 @property(copy) NSString *internalIOSSubstitutionApp; // @synthesize internalIOSSubstitutionApp=_internalIOSSubstitutionApp;
 @property int internalIOSLaunchStyle; // @synthesize internalIOSLaunchStyle=_internalIOSLaunchStyle;
@@ -121,6 +123,7 @@
 - (BOOL)_launchOptionIsSet:(unsigned long long)arg1;
 - (void)setUseCustomWorkingDirectoryFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 @property(readonly) BOOL shouldAllowGPUOptions;
+- (void)setQueueDebuggingEnabledFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setViewDebuggingEnabledFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setLaunchAutomaticallySubstyleFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
 - (void)setInternalIOSLaunchStyleFromUTF8String:(char *)arg1 fromXMLUnarchiver:(id)arg2;
@@ -146,7 +149,7 @@
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (id)runOperationForExecutionEnvironment:(id)arg1 withBuildOperation:(id)arg2 buildParameters:(id)arg3 buildableProductDirectories:(id)arg4 schemeCommand:(id)arg5 schemeActionRecord:(id)arg6 outError:(id *)arg7 actionCallbackBlock:(CDUnknownBlockType)arg8;
 - (BOOL)_tweakEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildableProductDirectories:(id)arg3 schemeCommand:(id)arg4 schemeActionRecord:(id)arg5 shouldSetupRecordedFrames:(BOOL)arg6 optimizationProfileFilePath:(id *)arg7 outError:(id *)arg8;
-- (id)_preferredBuildable:(id)arg1;
+- (id)_preferredBuildableForSchemeCommand:(id)arg1 buildParameters:(id)arg2;
 - (void)_restoreLaunchStyleForMetalRemoteDebuggingWithEnvironmentVariables:(id)arg1;
 - (BOOL)_overrideParametersForMetalRemoteDebuggingWithEnvironmentVariables:(id)arg1 outError:(id *)arg2;
 - (BOOL)_isMetalRemoteDebuggingEnabledWithEnvironmentVariables:(id)arg1;
@@ -175,6 +178,7 @@
 - (void)primitiveInvalidate;
 - (id)_createAdditionalOptionsDict;
 - (id)notificationPayloadFileReferences;
+- (void)_setupQueueDebuggingState;
 - (void)_commonInit;
 - (BOOL)internalSettings;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;

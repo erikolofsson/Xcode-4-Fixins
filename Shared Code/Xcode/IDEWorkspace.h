@@ -199,6 +199,7 @@
 - (void)_processFileReferencesForProblem8727051;
 - (void)_addFileReferenceForProblem8727051:(id)arg1;
 - (void)cancelTrackedClients;
+@property(readonly) BOOL isCancelling;
 - (id)clientsNotSupportingCancellation;
 - (id)clientsRequiringCancellationPrompt;
 - (id)registerUncancellableClientWithName:(id)arg1;

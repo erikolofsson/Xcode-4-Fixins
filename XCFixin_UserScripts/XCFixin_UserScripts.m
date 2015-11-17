@@ -644,6 +644,12 @@ static NSString *SystemFolderName(int folderType,int domain)
 				continue;
 			}
 			
+			if([name hasPrefix:@"._"])
+			{
+				Log(@"%@: not a script (is metadata file, starts with ._)\n",path);
+				continue;
+			}
+			
 			[scripts addObject:name];
 		}
 		

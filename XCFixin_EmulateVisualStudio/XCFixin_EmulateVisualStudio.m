@@ -1532,7 +1532,6 @@ static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearch
 
 static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool _bNext, bool _bBackwards)
 {
-	
 	NSRange selectedRange = _pTextView.selectedRange;
 	NSString *text = _pTextView.string;
 	NSRange lineRange = [text lineRangeForRange:selectedRange];
@@ -1542,6 +1541,7 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 													   options:0
 														 range:NSMakeRange(0, [line length])];
 
+	NSTabViewItem *pLastSelectedTabitem = NULL;
 	if (matches.count > 0)
 	{
 		NSUInteger nRanges = 0;
@@ -1590,6 +1590,7 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 
 					if (bValid)
 					{
+						pLastSelectedTabitem = g_pLastValidEditorTabView.selectedTabViewItem;
 						[g_pLastValidEditorTabView selectTabViewItem:g_pLastValidEditorTabItem];
 						pView = getSourceCodeEditorView(pWindow);
 					}
@@ -1600,7 +1601,9 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 			if (pView && pTabController)
 			{
 				IDESourceCodeEditor* pEditor = [pView editor];
-				if (pEditor)
+				NSFileManager *fileManager = [NSFileManager defaultManager];
+
+				if (pEditor && [pSource length] > 0 && [fileManager fileExistsAtPath:pSource])
 				{
 					//+[IDEEditorCoordinator _doOpenEditorOpenSpecifier:forWorkspaceTabController:editorContext:target:takeFocus:] ()
 					
@@ -1660,6 +1663,7 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 																															inWorkspace:[pDocument workspace]
 																																  error:nil];
 					
+						pLastSelectedTabitem = NULL;
 						[IDEEditorCoordinator _doOpenEditorOpenSpecifier:pSpecifier forWorkspaceTabController:pTabController editorContext:nil target:0 takeFocus:1];
 						setEditorFocus([pView window]);
 						return true;
@@ -1669,6 +1673,8 @@ static bool navigateToLineInConsoleTextView(IDEConsoleTextView* _pTextView, bool
 		}
 	}
 End:
+	if (pLastSelectedTabitem)
+		[g_pLastValidEditorTabView selectTabViewItem:pLastSelectedTabitem];
 	if (_bNext)
 	{
 		bool bWrapped = false;

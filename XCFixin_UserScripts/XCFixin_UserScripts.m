@@ -644,6 +644,12 @@ static NSString *SystemFolderName(int folderType,int domain)
 				continue;
 			}
 			
+			if([name hasPrefix:@"._"])
+			{
+				Log(@"%@: not a script (is metadata file, starts with ._)\n",path);
+				continue;
+			}
+			
 			[scripts addObject:name];
 		}
 		
@@ -801,13 +807,13 @@ static NSString *SystemFolderName(int folderType,int domain)
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
--(BOOL)install
+- (void)applicationFinishedLaunching: (NSNotification *)notification
 {
 	NSMenu *mainMenu=[NSApp mainMenu];
 	if(!mainMenu)
 	{
 		Log(@"%s: main menu not found!\n",__FUNCTION__);
-		return NO;
+		return;
 	}
 	
 	NSInteger menuIndex=[mainMenu indexOfItemWithTitle:@"Window"];
@@ -827,7 +833,7 @@ static NSString *SystemFolderName(int folderType,int domain)
 	
 	[self refreshScriptsMenu];
 	
-	return YES;
+	return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -902,9 +908,15 @@ static BOOL GetClasses(const char *name0,...)
 		// the target of an NSMenuItem doesn't retain it.
 		[handler doRetainHack:handler];
 		
-		BOOL goodInstall=[handler install];
-		(void)goodInstall;
-		Log(@"%s: handler installed: %s\n",__FUNCTION__,goodInstall?"YES":"NO");
+		if ([NSRunningApplication currentApplication].finishedLaunching) {
+			[handler applicationFinishedLaunching:nil];
+		}
+		else {
+			[NSNotificationCenter.defaultCenter addObserver:handler
+																						 selector:@selector(applicationFinishedLaunching:)
+																								 name:NSApplicationDidFinishLaunchingNotification
+																							 object: nil];
+		}
 	}
     
 	XCFixinPostflight();

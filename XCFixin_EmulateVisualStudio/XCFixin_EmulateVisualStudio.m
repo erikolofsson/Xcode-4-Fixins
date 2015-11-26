@@ -18,6 +18,7 @@
 #import "../Shared Code/Xcode/DVTTextStorage.h"
 #import "../Shared Code/Xcode/DVTAnnotationManager.h"
 #import "../Shared Code/Xcode/DVTFilePath.h"
+#import "../Shared Code/Xcode/DVTTextSidebarView.h"
 
 
 #import "../Shared Code/Xcode/IDENavigatorOutlineView.h"
@@ -79,7 +80,7 @@ static IMP original_changeMaximumOperationConcurrencyUsingThrottleFactor = nil;
 static IMP original_setNeedsDisplay = nil;
 static IMP original_displayIfNeeded = nil;
 static IMP original_NSScrollingBehaviorLegacy_scrollView = nil;
-
+static IMP original_recalculateSidebarWidthToFit = nil;
 
 
 @interface IDEContainer (EmulateVisualStudioIDEContainer)
@@ -2115,6 +2116,10 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 
 	original_NSScrollingBehaviorLegacy_scrollView = XCFixinOverrideMethodString(@"NSScrollingBehaviorLegacy", @selector(scrollView: scrollWheelWithEvent:), (IMP)&NSScrollingBehaviorLegacy_scrollView);
 	XCFixinAssertOrPerform(original_NSScrollingBehaviorLegacy_scrollView, goto failed);
+
+	original_recalculateSidebarWidthToFit = XCFixinOverrideMethodString(@"DVTTextSidebarView", @selector(recalculateSidebarWidthToFit), (IMP)&recalculateSidebarWidthToFit);
+	XCFixinAssertOrPerform(original_recalculateSidebarWidthToFit, goto failed);
+	
 	
 	XCFixinPostflight();
 }
@@ -2252,6 +2257,18 @@ static void NSScrollingBehaviorLegacy_scrollView(id self_, SEL _Sel, id _Arg1, i
 	((void(*)(id, SEL, id, id))original_NSScrollingBehaviorLegacy_scrollView)(self_, _Sel, _Arg1, _Arg2);
 	ThreadDict[@"EmulateVisualStudio_InLegacyScroll"] = [NSNumber numberWithBool:false];
 }
+
+	
+static void recalculateSidebarWidthToFit(DVTTextSidebarView *self_, SEL _Sel)
+{
+	((void(*)(id, SEL))original_recalculateSidebarWidthToFit)(self_, _Sel);
+
+	if (!self_.drawsLineNumbers)
+		self_.sidebarWidth = 1.0;
+	
+	return;
+}
+
 
 // -[NSWindow displayIfNeeded]
 static void displayIfNeeded(id self_, SEL _Sel)

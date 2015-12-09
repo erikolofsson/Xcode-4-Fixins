@@ -1,4 +1,4 @@
-__These plugins are only maintained for the latest version of Xcode (currently 7.1)__
+__These plugins are only maintained for the latest version of Xcode (currently 7.2)__
 
 __===== DESCRIPTION =====__
 

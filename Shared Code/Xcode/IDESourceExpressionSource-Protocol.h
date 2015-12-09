@@ -9,9 +9,8 @@
 //
 
 #import "DVTSourceExpressionSource-Protocol.h"
-#import "IDEIndexCollection.h"
 
-@class DVTSourceExpression, DVTTextDocumentLocation, NSObject, NSString;
+@class DVTSourceExpression, DVTTextDocumentLocation, NSObject, NSString, IDEIndexCollection;
 @protocol OS_dispatch_queue;
 
 @protocol IDESourceExpressionSource <DVTSourceExpressionSource>

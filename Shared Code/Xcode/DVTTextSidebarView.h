@@ -10,7 +10,6 @@
 
 #include "Shared.h"
 
-
 @class DVTTextAnnotation, NSColor, NSCursor, NSFont, NSTimer, NSTrackingArea;
 
 @interface DVTTextSidebarView : NSRulerView

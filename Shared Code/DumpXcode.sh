@@ -23,6 +23,10 @@ if [ -e "$CurrentPath/XcodeDump/CDStructures.h" ]; then
 fi
 
 for Executable in $XcodeExecutables; do
+	if [[ "$Executable" == "/Applications/Xcode.app/Contents/OtherFrameworks/DevToolsCore.framework/Versions/A/DevToolsCore" ]]; then
+		continue
+	fi
+
 	echo $Executable 1>&2
 	#class-dump --sdk-mac /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk "$Executable"
 	/Source/class-dump/build/Release/class-dump -H -F --sdk-mac /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk -o $CurrentPath/XcodeDump "$Executable"

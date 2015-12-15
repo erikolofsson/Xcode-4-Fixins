@@ -19,7 +19,7 @@
 #import "../Shared Code/Xcode/DVTAnnotationManager.h"
 #import "../Shared Code/Xcode/DVTFilePath.h"
 #import "../Shared Code/Xcode/DVTTextSidebarView.h"
-
+#import "../Shared Code/Xcode/DVTMacroExpansionScope.h"
 
 #import "../Shared Code/Xcode/IDENavigatorOutlineView.h"
 #import "../Shared Code/Xcode/IDEBatchFindResultsOutlineController.h"
@@ -51,10 +51,12 @@
 #import "../Shared Code/Xcode/IDEExecutionEnvironment.h"
 #import "../Shared Code/Xcode/IDEBuildOperationQueueSet.h"
 
+#import "../Shared Code/Xcode/XCCompilerSpecification.h"
 
 #import "../Shared Code/Xcode/DBGLLDBDebugLocalService.h"
 #import "../Shared Code/Xcode/DBGLLDBLauncher.h"
 
+#import "../Shared Code/Xcode/PBXFileType.h"
 
 
 #import "../Shared Code/Xcode/NSCarbonMenuImpl.h"
@@ -81,7 +83,9 @@ static IMP original_setNeedsDisplay = nil;
 static IMP original_displayIfNeeded = nil;
 static IMP original_NSScrollingBehaviorLegacy_scrollView = nil;
 static IMP original_recalculateSidebarWidthToFit = nil;
-
+static IMP original_evaluatedStringListValueForMacroNamed = nil;
+static IMP original_adjustedFileTypeForInputFileAtPath = nil;
+static IMP original_compileSourceCodeFileAtPath = nil;
 
 @interface IDEContainer (EmulateVisualStudioIDEContainer)
 
@@ -2120,6 +2124,15 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	original_recalculateSidebarWidthToFit = XCFixinOverrideMethodString(@"DVTTextSidebarView", @selector(recalculateSidebarWidthToFit), (IMP)&recalculateSidebarWidthToFit);
 	XCFixinAssertOrPerform(original_recalculateSidebarWidthToFit, goto failed);
 	
+	original_evaluatedStringListValueForMacroNamed = XCFixinOverrideMethodString(@"DVTMacroExpansionScope", @selector(evaluatedStringListValueForMacroNamed:), (IMP)&evaluatedStringListValueForMacroNamed);
+	XCFixinAssertOrPerform(original_evaluatedStringListValueForMacroNamed, goto failed);
+	
+	original_adjustedFileTypeForInputFileAtPath = XCFixinOverrideMethodString(@"XCCompilerSpecification", @selector(adjustedFileTypeForInputFileAtPath:originalFileType:withMacroExpansionScope:), (IMP)&adjustedFileTypeForInputFileAtPath);
+	XCFixinAssertOrPerform(original_adjustedFileTypeForInputFileAtPath, goto failed);
+	
+	original_compileSourceCodeFileAtPath = XCFixinOverrideMethodString(@"PBXCompilerSpecificationGcc2_95_2", @selector(compileSourceCodeFileAtPath: ofType: toOutputDirectory: withMacroExpansionScope:), (IMP)&compileSourceCodeFileAtPath);
+	XCFixinAssertOrPerform(original_compileSourceCodeFileAtPath, goto failed);
+	
 	
 	XCFixinPostflight();
 }
@@ -2269,6 +2282,81 @@ static void recalculateSidebarWidthToFit(DVTTextSidebarView *self_, SEL _Sel)
 	return;
 }
 
+// - (id)evaluatedStringListValueForMacroNamed:(id)arg1;
+static id evaluatedStringListValueForMacroNamed(DVTMacroExpansionScope *self_, SEL _Sel, NSString *_pMacroName)
+{
+	NSArray *pFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, _pMacroName);
+	
+	if ([_pMacroName hasPrefix:@"OTHER_C"])
+	{
+		NSMutableDictionary *ThreadDict = [[NSThread currentThread] threadDictionary];
+		PBXFileType *pFileType = ThreadDict[@"EmulateVisualStudio_FileType"];
+		
+		if (pFileType)
+		{
+			NSArray *pOnlyFlags = nil;
+			if ([pFileType.identifier isEqualToString:@"sourcecode.c.c"])
+				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_CFLAGS_ONLY");
+			else if ([pFileType.identifier isEqualToString:@"sourcecode.c.objc"])
+				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCFLAGS_ONLY");
+			else if ([pFileType.identifier isEqualToString:@"sourcecode.cpp.cpp"])
+				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_CPLUSPLUSFLAGS_ONLY");
+			else if ([pFileType.identifier isEqualToString:@"sourcecode.cpp.objcpp"])
+				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCPLUSPLUSFLAGS_ONLY");
+			else if ([pFileType.identifier isEqualToString:@"sourcecode.asm"])
+			{
+				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_CPLUSPLUSFLAGS_ONLY");
+				if (!pOnlyFlags)
+					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_CFLAGS_ONLY");
+				if (!pOnlyFlags)
+					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCPLUSPLUSFLAGS_ONLY");
+				if (!pOnlyFlags)
+					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCFLAGS_ONLY");
+			}
+			
+			if (pOnlyFlags)
+			{
+				if (pFlags)
+				{
+					NSMutableArray *pMutableArray = [NSMutableArray array];
+					[pMutableArray addObjectsFromArray: pFlags];
+					[pMutableArray addObjectsFromArray: pOnlyFlags];
+					pFlags = pMutableArray;
+				}
+				else
+					pFlags = pOnlyFlags;
+			}
+		}
+	}
+
+	return pFlags;
+}
+
+// - (id)adjustedFileTypeForInputFileAtPath:(id)arg1 originalFileType:(id)arg2 withMacroExpansionScope:(id)arg3;
+static id adjustedFileTypeForInputFileAtPath(XCCompilerSpecification *self_, SEL _Sel, id arg1, id arg2, id arg3)
+{
+	NSMutableDictionary *ThreadDict = [[NSThread currentThread] threadDictionary];
+	ThreadDict[@"EmulateVisualStudio_FileType"] = arg2;
+	
+	id Ret = ((id(*)(id, SEL, id, id, id))original_adjustedFileTypeForInputFileAtPath)(self_, _Sel, arg1, arg2, arg3);
+
+	[ThreadDict removeObjectForKey: @"EmulateVisualStudio_FileType"];
+
+	return Ret;
+}
+
+// - (id)compileSourceCodeFileAtPath:(id)arg1 ofType:(id)arg2 toOutputDirectory:(id)arg3 withMacroExpansionScope:(id)arg4;
+static id compileSourceCodeFileAtPath(XCCompilerSpecification *self_, SEL _Sel, id arg1, id arg2, id arg3, id arg4)
+{
+	NSMutableDictionary *ThreadDict = [[NSThread currentThread] threadDictionary];
+	ThreadDict[@"EmulateVisualStudio_FileType"] = arg2;
+	
+	id Ret = ((id(*)(id, SEL, id, id, id, id))original_compileSourceCodeFileAtPath)(self_, _Sel, arg1, arg2, arg3, arg4);
+
+	[ThreadDict removeObjectForKey: @"EmulateVisualStudio_FileType"];
+
+	return Ret;
+}
 
 // -[NSWindow displayIfNeeded]
 static void displayIfNeeded(id self_, SEL _Sel)

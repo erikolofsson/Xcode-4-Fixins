@@ -53,3 +53,20 @@ struct _DVTLayoutManagerFlags {
     unsigned int autoHighlightTokensEnabled:1;
     unsigned int delegateRespondsToTokenizableRangesWithRange:1;
 };
+
+struct DVTStringBuilder {
+    unsigned short _field1[512];
+    unsigned short *_field2;
+    unsigned long long _field3;
+    unsigned long long _field4;
+};
+
+struct DVTMacroNameLookupCursor {
+    void* _field1;
+    unsigned long long _field2;
+    void* _field3;
+    void* _field4;
+    struct DVTMacroValueAssignment *_field5;
+    void* _field6;
+};
+

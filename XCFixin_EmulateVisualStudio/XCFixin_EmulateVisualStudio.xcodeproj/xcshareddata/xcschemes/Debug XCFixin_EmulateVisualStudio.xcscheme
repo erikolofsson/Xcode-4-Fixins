@@ -56,6 +56,38 @@
             ReferencedContainer = "container:XCFixin_EmulateVisualStudio.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "IDEIndexingClangInvocationLogLevel"
+            value = "9"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "IDEBuildOnlyMetricLogLevel"
+            value = "9"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "IDEIndexingSchedulingLogLevel"
+            value = "9"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "IDEIndexingLogLevel"
+            value = "9"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "DVTFileTypeLogLevel"
+            value = "9"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "IDENavigableItemLogLevel"
+            value = "9"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

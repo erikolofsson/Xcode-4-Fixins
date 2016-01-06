@@ -544,9 +544,11 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		NSMutableDictionary *pExtraDefaultKeywords = nil;
 		NSMutableDictionary *pExtraDefaultKeywords2 = nil;
 		NSMutableDictionary *pExtraDefaultKeywords3 = nil;
+		bool bIsCpp = false;
 
 		if ([pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage.C-Plus-Plus"] || [pIdentifier hasPrefix:@"Xcode.SourceCodeLanguage.Objective-C-Plus-Plus"])
 		{
+			bIsCpp = true;
 			pExtraDefaultKeywords = pDefaultKeywords_Cpp;
 			pExtraDefaultKeywords2 = pDefaultKeywords_C;
 			pExtraDefaultKeywords3 = pDefaultKeywords_CLike;
@@ -845,6 +847,13 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		{
 			SafeRange.length -= _Index - SafeRange.location;
 			SafeRange.location = _Index;
+		}
+		
+		if (bIsCpp)
+		{
+			// Disable broken function parsing in Xcode
+			if (NodeType == NodeType_IdentifierFunction || NodeType == NodeType_IdentifierFunctionSystem)
+				NodeType = NodeType_IdentifierPlain;
 		}
 		
 		NSColor *pColor = fs_GetColor(textStorage, NodeType, bJS);

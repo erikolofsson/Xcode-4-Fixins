@@ -51,7 +51,7 @@ static void overrideSetAlphaValue(id self, SEL _cmd, CGFloat windowAlpha)
 
 + (void)pluginDidLoad: (NSBundle *)plugin
 {
-    XCFixinPreflight();
+    XCFixinPreflight(false);
 
     /* Override -[NSAnimation initWithDuration:(NSTimeInterval)duration animationCurve:(NSAnimationCurve)animationCurve] */
     gOriginalInitWithDuration = XCFixinOverrideMethodString(@"NSAnimation", @selector(initWithDuration: animationCurve:), (IMP)&overrideInitWithDuration);

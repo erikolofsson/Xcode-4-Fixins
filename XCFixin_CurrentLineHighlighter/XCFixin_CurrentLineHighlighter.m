@@ -281,7 +281,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute10";
   // Singleton instance
   static id highlighter = nil;
 
-  XCFixinPreflight();
+  XCFixinPreflight(false);
 
   highlighter = [[XCFixin_XCodeCurrentLineHighlighter alloc] init];            
 

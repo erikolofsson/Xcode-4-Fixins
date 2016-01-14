@@ -2683,7 +2683,7 @@ static NSMutableDictionary *pDefaultKeywords_CSS = nil;
 {
 	// Singleton instance
 
-	XCFixinPreflight();
+	XCFixinPreflight(false);
 
 	{
 		pWhitespaceChars = [NSCharacterSet whitespaceAndNewlineCharacterSet];

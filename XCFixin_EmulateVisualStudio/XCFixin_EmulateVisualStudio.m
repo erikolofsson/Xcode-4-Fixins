@@ -2032,7 +2032,7 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 {
 	if (singleton)
 		return;
-	XCFixinPreflight();
+	XCFixinPreflight(true);
 
 	singleton = [[XCFixin_EmulateVisualStudio alloc] init];
 

@@ -20,7 +20,7 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 
 + (void)pluginDidLoad:(NSBundle *)plugin	{
 
-	XCFixinPreflight();
+	XCFixinPreflight(false);
 	if ([NSRunningApplication currentApplication].finishedLaunching) {
 		[self applicationFinishedLaunching:nil];
 	}

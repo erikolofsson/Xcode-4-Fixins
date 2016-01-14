@@ -9,8 +9,8 @@
 #define XCFixinLog(...) ((void)0)
 #endif
 
-#define XCFixinPreflight()                         \
-    if (!XCFixinShouldLoad())                      \
+#define XCFixinPreflight(_LoadInXcodeBuild)                         \
+    if (!XCFixinShouldLoad(_LoadInXcodeBuild))                      \
         return;                                    \
                                                    \
     static NSUInteger loadAttempt = 0;             \
@@ -65,7 +65,7 @@
     }                                                   \
 })
 
-BOOL XCFixinShouldLoad(void);
+BOOL XCFixinShouldLoad(BOOL _LoadInXcodeBuild);
 extern const NSUInteger XCFixinMaxLoadAttempts;
 
 /* This function overrides a method at the given class level, and returns the old implementation. If no method existed at

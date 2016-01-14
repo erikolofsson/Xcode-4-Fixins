@@ -199,7 +199,7 @@ static void _unlockIfNeededCompletionBlock(id self_, SEL _cmd, void (^completion
 
 + (void) pluginDidLoad:(NSBundle *)plugin
 {
-	XCFixinPreflight();
+	XCFixinPreflight(false);
 
 	g_EditorDocumentClass = NSClassFromString(@"IDEEditorDocument");
 	XCFixinAssertOrPerform(g_EditorDocumentClass, goto failed);

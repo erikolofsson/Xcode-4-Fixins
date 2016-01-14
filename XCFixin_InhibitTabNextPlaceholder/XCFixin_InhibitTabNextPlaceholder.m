@@ -19,7 +19,7 @@ static BOOL overrideMoveToNextPlaceholderFromCharacterIndex(id self, SEL _cmd, u
 
 + (void)pluginDidLoad: (NSBundle *)plugin
 {
-  XCFixinPreflight();
+  XCFixinPreflight(false);
   
   /* Override -(BOOL)[DVTCompletingTextView _moveToNextPlaceholderFromCharacterIndex:(unsigned long long)arg1 forward:(BOOL)arg2 onlyIfNearby:(BOOL)arg3] */
   gOriginalMoveToNextPlaceholderFromCharacterIndex = XCFixinOverrideMethodString(@"DVTCompletingTextView",

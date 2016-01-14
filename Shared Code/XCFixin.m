@@ -2,13 +2,16 @@
 #import <objc/runtime.h>
 #import <Cocoa/Cocoa.h>
 
-BOOL XCFixinShouldLoad(void)
+BOOL XCFixinShouldLoad(BOOL _LoadInXcodeBuild)
 {
     BOOL result = NO;
-    
-    /* Prevent our plugins from loading in non-IDE processes, like xcodebuild. */
-    NSString *processName = [[NSProcessInfo processInfo] processName];
+   
+    if (!_LoadInXcodeBuild)
+    {
+        /* Prevent our plugins from loading in non-IDE processes, like xcodebuild. */
+        NSString *processName = [[NSProcessInfo processInfo] processName];
         XCFixinConfirmOrPerform([processName caseInsensitiveCompare: @"xcode"] == NSOrderedSame, return NO);
+    }
     
     /* Prevent our plugins from loading in Xcode versions < 4. */
     NSArray *versionComponents = [[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"] componentsSeparatedByString: @"."];

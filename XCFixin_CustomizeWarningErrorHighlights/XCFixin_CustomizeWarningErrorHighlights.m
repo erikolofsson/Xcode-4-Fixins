@@ -79,7 +79,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 
 + (void)pluginDidLoad: (NSBundle *)plugin{
 	
-	XCFixinPreflight();
+	XCFixinPreflight(false);
 	float lineAlpha = 0.30;	//whole line
 	float topAlpha = 0.6;	//the right-hand label
 	float bottomAlpha = 0.6;

@@ -232,7 +232,7 @@ static id overrideRecentsMenu(id self, SEL _cmd)
 
 + (void)pluginDidLoad: (NSBundle *)plugin
 {
-	XCFixinPreflight();
+	XCFixinPreflight(false);
 
 	/* Override -(void)[DVTFindBar viewDidInstall] */
 	gOriginalViewDidInstall = XCFixinOverrideMethodString(@"DVTFindBar", @selector(viewDidInstall), (IMP)&overrideViewDidInstall);

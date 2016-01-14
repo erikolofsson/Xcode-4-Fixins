@@ -17,7 +17,7 @@ static void overrideInsertUsefulPrefix(id self, SEL _cmd)
 
 + (void)pluginDidLoad: (NSBundle *)plugin
 {
-	XCFixinPreflight();
+	XCFixinPreflight(false);
 
 	/* Override -[DVTTextCompletionSession insertUsefulPrefix] */
 	gOriginalInsertUsefulPrefix = XCFixinOverrideMethodString(@"DVTTextCompletionSession", @selector(insertUsefulPrefix), (IMP)&overrideInsertUsefulPrefix);

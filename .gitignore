@@ -1,4 +1,5 @@
 build/
+Shared Code/XcodeDump/
 
 *.mode1
 *.mode1v3

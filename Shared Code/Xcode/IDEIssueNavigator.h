@@ -14,7 +14,7 @@
 
 #import "DVTOutlineViewDelegate-Protocol.h"
 
-@class DVTNotificationToken, DVTObservingToken, DVTScopeBarView, DVTScrollView, DVTTimeSlicedMainThreadWorkQueue, NSButton, NSMutableArray, NSMutableSet, NSSet, NSString;
+@class DVTNotificationToken, DVTObservingToken, DVTScopeBarView, DVTScrollView, DVTTableCellViewMultiLineHeightEstimator, DVTTimeSlicedMainThreadWorkQueue, NSButton, NSMutableArray, NSMutableSet, NSSet, NSString;
 
 @interface IDEIssueNavigator : IDEOutlineBasedNavigator <DVTOutlineViewDelegate>
 {
@@ -26,13 +26,15 @@
     NSSet *_collapsedTypesBeforeFiltering;
     NSSet *_expandedIssuesBeforeFiltering;
     DVTTimeSlicedMainThreadWorkQueue *_autoExpandingWorkQueue;
+    DVTTableCellViewMultiLineHeightEstimator *_issueHeightEstimator;
+    DVTTableCellViewMultiLineHeightEstimator *_subIssueHeightEstimator;
     NSMutableArray *_stateChangeObservingTokens;
     unsigned long long _issueDetailLevel;
     DVTObservingToken *_selectedNavigablesObservingToken;
     DVTNotificationToken *_issueDetailLevelObservingToken;
     BOOL _showByType;
     BOOL _restoringState;
-    BOOL _clearingFilterPredicate;
+    BOOL _clearingFilter;
     BOOL _errorFilteringEnabled;
     BOOL _recentFilteringEnabled;
     NSString *_filterPatternString;
@@ -62,13 +64,14 @@
 - (void)commitStateToDictionary:(id)arg1;
 - (void)configureStateSavingObservers;
 - (void)revertStateWithDictionary:(id)arg1;
-- (void)clearFilterPredicate;
-- (void)setFilterPredicate:(id)arg1;
+- (void)_clearFilter;
+- (void)setFilter:(id)arg1;
 - (void)_synchronizeFilteringWithOutlineView;
 - (id)filterDefinitionIdentifier;
-- (void)_updateFilterPredicate;
+- (void)_updateFilter;
 - (BOOL)_isFiltered;
-- (void)_configureStandardTableViewCell:(id)arg1 toNavItemsRepresentedObject:(id)arg2;
+- (double)outlineView:(id)arg1 estimatedHeightOfRowByItem:(id)arg2;
+- (void)_configureStandardTableViewCell:(id)arg1;
 - (id)_tableCellViewForSubIssueNavItem:(id)arg1;
 - (id)_tableCellViewForIssueNavItem:(id)arg1;
 - (id)_tableCellViewForIssueTypeGroupNavItem:(id)arg1;

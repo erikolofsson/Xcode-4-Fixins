@@ -64,11 +64,11 @@
     BOOL _shouldAssertIfNotInvalidatedBeforeDealloc;
     BOOL _trackFileSystemChanges;
     BOOL _wholeDocumentChanged;
+    BOOL _isPerformingSynchronousFileAccess;
     NSSet *_readOnlyClients;
     DVTFilePath *_autosavedContentsFilePath;
 }
 
-+ (BOOL)shouldOpenDocumentForURL:(id)arg1;
 + (BOOL)_presentsVersionsUserInterface;
 + (BOOL)autosavesInPlace;
 + (id)editedFileContents;
@@ -148,6 +148,7 @@
 - (void)_tryCloseAsynchronouslyToRevert:(BOOL)arg1 promptForUnsavedChanges:(BOOL)arg2 withCompletionBlock:(CDUnknownBlockType)arg3;
 - (void)_canCloseAsynchronouslyToRevert:(BOOL)arg1 promptForUnsavedChanges:(BOOL)arg2 withCompletionBlock:(CDUnknownBlockType)arg3;
 - (void)performActivityWithSynchronousWaiting:(BOOL)arg1 usingBlock:(CDUnknownBlockType)arg2;
+- (void)performSynchronousFileAccessUsingBlock:(CDUnknownBlockType)arg1;
 - (void)_didAddToDocumentController;
 - (void)canCloseDocumentWithDelegate:(id)arg1 shouldCloseSelector:(SEL)arg2 contextInfo:(void *)arg3;
 - (void)ide_editorDocument:(id)arg1 shouldClose:(BOOL)arg2 contextInfo:(void *)arg3;

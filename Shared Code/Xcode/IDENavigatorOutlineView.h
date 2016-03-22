@@ -14,16 +14,14 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTDelayedInvocation, DVTNotificationToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, NSArray, NSHashTable, NSMapTable, NSMutableArray, NSMutableIndexSet, NSPredicate, NSSet, NSString, _IDENavigatorOutlineViewDataSource, _IDEOutlineViewGroupInfo;
+@class DVTDelayedInvocation, DVTNotificationToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDENavigableItemFilter, NSArray, NSHashTable, NSMapTable, NSMutableArray, NSPredicate, NSSet, NSString, _IDENavigatorOutlineViewDataSource, _IDEOutlineViewGroupInfo;
 @protocol IDENavigatorOutlineViewLoadingDelegate;
 
 @interface IDENavigatorOutlineView : DVTOutlineView <DVTInvalidation>
 {
-    double _groupHeaderRowHeight;
     long long _batchRowUpdateCount;
     id _itemBeingFullyReloaded;
     NSHashTable *_unfilteredRootItems;
-    NSPredicate *_filterPredicate;
     DVTDelayedInvocation *_delayedInvocation;
     NSString *_emptyContentStringCopy;
     SEL _keyAction;
@@ -32,9 +30,6 @@
     NSMapTable *_cachedRowItemsToHeights;
     _IDENavigatorOutlineViewDataSource *_interposedDelegate;
     _IDENavigatorOutlineViewDataSource *_interposedDataSource;
-    void *_keepSelfAliveUntilCancellationRef;
-    BOOL _updatesDisplayOnlyInTrayCharts;
-    BOOL _calledFromSetsNeedsDisplayOnlyInTrayCharts;
     BOOL _isLiveScrolling;
     NSMutableArray *_entriesToRestoreToVisibleRect;
     DVTNotificationToken *_variableRowHeightLiveScrollStartObserver;
@@ -62,27 +57,29 @@
     BOOL _supportsVariableHeightCells;
     BOOL _tracksSelectionVisibleRect;
     BOOL _disableSourceListSelectionStyle;
+    double _groupHeaderRowHeight;
+    IDENavigableItemFilter *_filter;
+    NSPredicate *_filterPredicate;
     NSSet *_editorSelectedNavigableItems;
-    long long _filterProgress;
-    NSMutableIndexSet *_selectedIndexesToDrawAsUnselected;
     DVTTimeSlicedMainThreadWorkQueue *_expandingItemsWorkQueue;
+    long long _filterProgress;
 }
 
 + (id)keyPathsForValuesAffectingFilteringActive;
 + (id)keyPathsForValuesAffectingEmptyContentString;
 + (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (void)initialize;
-@property(retain) DVTTimeSlicedMainThreadWorkQueue *expandingItemsWorkQueue; // @synthesize expandingItemsWorkQueue=_expandingItemsWorkQueue;
-@property(retain) NSMutableIndexSet *selectedIndexesToDrawAsUnselected; // @synthesize selectedIndexesToDrawAsUnselected=_selectedIndexesToDrawAsUnselected;
 @property(nonatomic) BOOL disableSourceListSelectionStyle; // @synthesize disableSourceListSelectionStyle=_disableSourceListSelectionStyle;
 @property(retain) id <IDENavigatorOutlineViewLoadingDelegate> loadingDelegate; // @synthesize loadingDelegate=_loadingDelegate;
 @property(readonly) long long filterProgress; // @synthesize filterProgress=_filterProgress;
+@property(retain) DVTTimeSlicedMainThreadWorkQueue *expandingItemsWorkQueue; // @synthesize expandingItemsWorkQueue=_expandingItemsWorkQueue;
 @property BOOL tracksSelectionVisibleRect; // @synthesize tracksSelectionVisibleRect=_tracksSelectionVisibleRect;
 @property(retain, nonatomic) NSSet *editorSelectedNavigableItems; // @synthesize editorSelectedNavigableItems=_editorSelectedNavigableItems;
 @property(nonatomic) BOOL supportsVariableHeightCells; // @synthesize supportsVariableHeightCells=_supportsVariableHeightCells;
 @property(nonatomic) SEL keyAction; // @synthesize keyAction=_keyAction;
 @property(readonly, getter=isFilteringActive) BOOL filteringActive; // @synthesize filteringActive=_filteringActive;
 @property(copy, nonatomic) NSPredicate *filterPredicate; // @synthesize filterPredicate=_filterPredicate;
+@property(retain, nonatomic) IDENavigableItemFilter *filter; // @synthesize filter=_filter;
 @property double groupHeaderRowHeight; // @synthesize groupHeaderRowHeight=_groupHeaderRowHeight;
 // - (void).cxx_destruct;
 - (void)processPendingChanges;
@@ -99,18 +96,13 @@
 - (id)enclosingGroupItemForItem:(id)arg1;
 - (id)enclosingGroupInfoForRow:(long long)arg1;
 - (void)selectRowIndexes:(id)arg1 byExtendingSelection:(BOOL)arg2;
-- (void)setNeedsDisplayInRect:(struct CGRect)arg1;
-- (void)setNeedsDisplayOnlyInTrayCharts:(BOOL)arg1;
 - (BOOL)_hasExpandedGroups;
-- (BOOL)needsDisplayOnlyInTrayCharts;
 - (void)_setNeedsDisplayInSelectedRows;
 - (void)accessibilitySetSelectedRowsAttribute:(id)arg1;
 - (void)keyUp:(id)arg1;
 - (void)keyDown:(id)arg1;
 - (void)mouseDown:(id)arg1;
 - (void)quickLookWithEvent:(id)arg1;
-- (BOOL)_supportsTrackingAreasForCells;
-@property BOOL supportsTrackingAreasForCells;
 - (void)setSortDescriptors:(id)arg1;
 @property(copy) NSArray *rootItems;
 - (void)_updateRootItems:(id)arg1 sortDescriptors:(id)arg2;
@@ -120,7 +112,7 @@
 - (void)setDelegate:(id)arg1;
 - (void)setDataSource:(id)arg1;
 - (id)_cachedHeightOfItemOrNil:(id)arg1;
-- (double)_cachedOrDefaultHeightOfItem:(id)arg1;
+- (double)_cachedOrEstimatedOrDefaultHeightOfItem:(id)arg1;
 - (void)viewDidEndLiveResize;
 - (BOOL)_isVariableRowHeightViewBasedOutlineView;
 - (void)reloadData;

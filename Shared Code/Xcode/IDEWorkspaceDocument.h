@@ -86,7 +86,7 @@
 + (void)initialize;
 @property(retain) IDEUITestingTCCPermissionWindowController *TCCPermissionWindowController; // @synthesize TCCPermissionWindowController=_TCCPermissionWindowController;
 @property(nonatomic) BOOL createdAsUntitled; // @synthesize createdAsUntitled=_createdAsUntitled;
-@property(retain) IDEUIRecordingManager<DVTInvalidation> *uiRecordingManager; // @synthesize uiRecordingManager=_uiRecordingManager;
+@property(retain, nonatomic) IDEUIRecordingManager<DVTInvalidation> *uiRecordingManager; // @synthesize uiRecordingManager=_uiRecordingManager;
 @property(retain) IDESourceControlWorkspaceUIHandler *sourceControlWorkspaceUIHandler; // @synthesize sourceControlWorkspaceUIHandler=_sourceControlWorkspaceUIHandler;
 @property BOOL applicationIsTerminating; // @synthesize applicationIsTerminating=_applicationIsTerminating;
 @property(retain) NSMutableDictionary *tabStateContextForTabNameMap; // @synthesize tabStateContextForTabNameMap=_tabStateContextForTabNameMap;
@@ -152,6 +152,7 @@
 - (BOOL)revertToContentsOfURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 - (BOOL)readFromURL:(id)arg1 ofType:(id)arg2 error:(id *)arg3;
 - (BOOL)_readFromURL:(id)arg1 ofType:(id)arg2 simpleFilesFocused:(BOOL)arg3 error:(id *)arg4;
+- (BOOL)isUIStateSavingEnabled;
 - (void)setLastActiveWorkspaceWindowController:(id)arg1;
 - (id)activeWorkspaceWindowController;
 @property(readonly) IDEWorkspace *workspace;

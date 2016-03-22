@@ -303,7 +303,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					
 				if (!pWindow)
 					break;
-				DVTSourceTextView *pSourceTextView = (DVTSourceTextView *)findSubViewWithClassName([pWindow contentView], "DVTSourceTextView");
+				DVTSourceTextView *pSourceTextView = (DVTSourceTextView *)findSubViewWithClassName([pWindow contentView], "DVTSourceTextView", -1);
 				if (!pSourceTextView)
 					break;
 				
@@ -1052,15 +1052,17 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-static NSView* findSubViewWithClassName(NSView* _pView, char const* _pClassName)
+static NSView* findSubViewWithClassName(NSView* _pView, char const* _pClassName, int _Depth)
 {
 	char const* pClassName = object_getClassName([_pView class]);
+	if (_Depth >= 0)
+		NSLog(@"%@%s", [@"" stringByPaddingToLength:_Depth*3 withString: @" " startingAtIndex:0], pClassName);
 	if (strcmp(pClassName, _pClassName) == 0)
 		return _pView;
 	for (NSView * pView in [_pView subviews]) 
 	{
 		NSView * pFound;
-		if ((pFound = findSubViewWithClassName(pView, _pClassName)))
+		if ((pFound = findSubViewWithClassName(pView, _pClassName, _Depth >= 0 ? _Depth + 1 : _Depth)))
 			return pFound;
 	}
 	return NULL;
@@ -1128,7 +1130,7 @@ IDEStructureNavigator *m_pActiveStructureNavigator = nil;
 //	g_pLastValidEditorTabView = nil;
 	updateLastValidEditorTab(window);
 	
-	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([window contentView], "IDENavigatorOutlineView"));
+	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([window contentView], "IDENavigatorOutlineView", -1));
 }
 
 
@@ -1334,7 +1336,7 @@ static BOOL didSelectTabViewItem( NSView *self_, SEL _cmd, NSTabView *_pTabView,
 		g_PreferredNextLocation = EPreferredNextLocation_Undefined;
 	updateLastValidEditorTab([_pTabView window]);
 	
-	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([_pItem view], "IDENavigatorOutlineView"));
+	potentialView((IDENavigatorOutlineView*)findSubViewWithClassName([_pItem view], "IDENavigatorOutlineView", -1));
 	return ((BOOL (*)(id, SEL, id, id))original_didSelectTabViewItem)(self_, _cmd, _pTabView, _pItem);
 }
 
@@ -1342,13 +1344,13 @@ static IDESourceCodeEditorContainerView* getSourceCodeEditorView(NSWindow *_pWin
 {
 	if (_pWindow == nil)
 		_pWindow = [NSApp keyWindow];
-	return (IDESourceCodeEditorContainerView*)findSubViewWithClassName([_pWindow contentView], "IDESourceCodeEditorContainerView");
+	return (IDESourceCodeEditorContainerView*)findSubViewWithClassName([_pWindow contentView], "IDESourceCodeEditorContainerView", -1);
 }
 static IDEWorkspaceTabController* getWorkspaceTabController(NSWindow *_pWindow)
 {
 	if (_pWindow == nil)
 		_pWindow = [NSApp keyWindow];
-	NSTabView* pView = (NSTabView*)findSubViewWithClassName([_pWindow contentView], "DVTControllerContentView");
+	NSTabView* pView = (NSTabView*)findSubViewWithClassName([_pWindow contentView], "DVTControllerContentView_ControlledBy_IDEWorkspaceTabController", -1);
 	if (pView)
 	{
 		NSViewController* pViewController = (NSViewController*)[pView firstAvailableResponderOfClass: [	NSViewController class]];
@@ -1363,7 +1365,7 @@ static NSTabView* getWorkspaceTabView(NSWindow *_pWindow)
 {
 	if (_pWindow == nil)
 		_pWindow = [NSApp keyWindow];
-	NSTabView* pView = (NSTabView*)findSubViewWithClassName([_pWindow contentView], "NSTabView");
+	NSTabView* pView = (NSTabView*)findSubViewWithClassName([_pWindow contentView], "NSTabView", -1);
 	return pView;
 }
 
@@ -1371,7 +1373,7 @@ static IDEConsoleTextView* getConsoleTextView(NSWindow *_pWindow)
 {
 	if (_pWindow == nil)
 		_pWindow = [NSApp keyWindow];
-	IDEConsoleTextView* pView = (IDEConsoleTextView*)findSubViewWithClassName([_pWindow contentView], "IDEConsoleTextView");
+	IDEConsoleTextView* pView = (IDEConsoleTextView*)findSubViewWithClassName([_pWindow contentView], "IDEConsoleTextView", -1);
 	return pView;
 }
 
@@ -1439,7 +1441,7 @@ static DVTFindBar* getFindBar(DVTFindPatternFieldEditor* self_)
 
 static IDEBatchFindStrategiesController* getBatchFindStrategiesController(DVTFindPatternFieldEditor* self_)
 {
-	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView");
+	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView_ControlledBy_IDEBatchFindResultsOutlineController");
 	if (pParentView)
 	{
 		IDEBatchFindNavigator* pViewController = (IDEBatchFindNavigator*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"IDEBatchFindNavigator")];
@@ -1452,7 +1454,7 @@ static IDEBatchFindStrategiesController* getBatchFindStrategiesController(DVTFin
 
 static IDEBatchFindNavigator* getBatchFindNavigator(DVTFindPatternFieldEditor* self_)
 {
-	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView");
+	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView_ControlledBy_IDEBatchFindResultsOutlineController");
 	if (pParentView)
 	{
 		IDEBatchFindNavigator* pViewController = (IDEBatchFindNavigator*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"IDEBatchFindNavigator")];
@@ -2111,7 +2113,8 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	
 	original_changeMaximumOperationConcurrencyUsingThrottleFactor = XCFixinOverrideMethodString(@"IDEBuildOperationQueueSet", @selector(changeMaximumOperationConcurrencyUsingThrottleFactor:), (IMP)&changeMaximumOperationConcurrencyUsingThrottleFactor);
 	XCFixinAssertOrPerform(original_changeMaximumOperationConcurrencyUsingThrottleFactor, goto failed);
-	
+
+#if 1
 	original_setNeedsDisplay = XCFixinOverrideMethodString(@"NSDisplayCycleObserver", @selector(setNeedsDisplay:), (IMP)&setNeedsDisplay);
 	XCFixinAssertOrPerform(original_setNeedsDisplay, goto failed);
 	
@@ -2120,6 +2123,7 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 
 	original_NSScrollingBehaviorLegacy_scrollView = XCFixinOverrideMethodString(@"NSScrollingBehaviorLegacy", @selector(scrollView: scrollWheelWithEvent:), (IMP)&NSScrollingBehaviorLegacy_scrollView);
 	XCFixinAssertOrPerform(original_NSScrollingBehaviorLegacy_scrollView, goto failed);
+#endif
 
 	original_recalculateSidebarWidthToFit = XCFixinOverrideMethodString(@"DVTTextSidebarView", @selector(recalculateSidebarWidthToFit), (IMP)&recalculateSidebarWidthToFit);
 	XCFixinAssertOrPerform(original_recalculateSidebarWidthToFit, goto failed);

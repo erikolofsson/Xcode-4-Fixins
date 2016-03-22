@@ -45,6 +45,7 @@ __attribute__((visibility("hidden")))
 - (struct SBProcess)_doRegularDebugWithTarget:(struct SBTarget)arg1 usingDebugServer:(BOOL)arg2 errTargetString:(id)arg3;
 - (void)_reportTarget:(id)arg1 failedToLaunchError:(struct SBError)arg2;
 - (struct SBProcess)_doAttachWithTarget:(struct SBTarget)arg1 childPID:(unsigned long long *)arg2;
+- (void)_showLaunchErrorForTitle:(id)arg1 message:(id)arg2;
 - (id)parseConsoleOutputFromOriginalOutput:(id)arg1;
 - (id)parseConsoleInputFromOriginalInput:(id)arg1;
 - (void)_executeLLDBCommands:(id)arg1;

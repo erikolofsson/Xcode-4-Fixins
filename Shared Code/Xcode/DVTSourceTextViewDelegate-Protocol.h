@@ -10,7 +10,7 @@
 
 #import "DVTCompletingTextViewDelegate-Protocol.h"
 
-@class DVTAnnotationContext, DVTMutableRangeArray, DVTSourceTextView, NSArray, NSDictionary, NSEvent, NSMenu, NSNotification, NSString;
+@class DVTAnnotationContext, DVTMutableRangeArray, DVTSourceTextView, NSArray, NSEvent, NSMenu, NSNotification, NSString;
 
 @protocol DVTSourceTextViewDelegate <DVTCompletingTextViewDelegate>
 
@@ -31,7 +31,6 @@
 - (void)textView:(DVTSourceTextView *)arg1 didRemoveAnnotations:(NSArray *)arg2;
 - (void)textView:(DVTSourceTextView *)arg1 didAddAnnotations:(NSArray *)arg2;
 - (DVTAnnotationContext *)annotationContextForTextView:(DVTSourceTextView *)arg1;
-- (NSDictionary *)syntaxColoringContextForTextView:(DVTSourceTextView *)arg1;
 - (void)textViewDidChangeFolding:(NSNotification *)arg1;
 - (void)textViewWillChangeFolding:(NSNotification *)arg1;
 - (void)textView:(DVTSourceTextView *)arg1 didClickOnTemporaryLinkAtCharacterIndex:(unsigned long long)arg2 event:(NSEvent *)arg3 isAltEvent:(BOOL)arg4;

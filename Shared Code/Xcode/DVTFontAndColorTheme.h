@@ -42,6 +42,7 @@
     NSColor *_markupTextPrimaryHeadingColor;
     NSColor *_markupTextSecondaryHeadingColor;
     NSColor *_markupTextOtherHeadingColor;
+    NSColor *_markupTextInlineCodeColor;
     NSColor *_markupTextLinkColor;
     NSFont *_markupTextNormalFont;
     NSFont *_markupTextStrongFont;
@@ -70,7 +71,7 @@
     NSFont *_sourcePlainTextFont;
     NSPointerArray *_syntaxColorsByNodeType;
     NSPointerArray *_syntaxFontsByNodeType;
-    NSColor *_sourceTextCompletionPreviewColor;
+    NSColor *_ghostComplementTextColor;
     BOOL _builtIn;
     BOOL _loadedData;
     BOOL _contentNeedsSaving;
@@ -137,6 +138,7 @@
 - (void)setMarkupTextStrongFont:(NSFont *)arg1;
 - (void)setMarkupTextNormalFont:(NSFont *)arg1;
 - (void)setMarkupTextLinkColor:(NSColor *)arg1;
+- (void)setMarkupTextInlineCodeColor:(NSColor *)arg1;
 - (void)setMarkupTextOtherHeadingColor:(NSColor *)arg1;
 - (void)setMarkupTextSecondaryHeadingColor:(NSColor *)arg1;
 - (void)setMarkupTextPrimaryHeadingColor:(NSColor *)arg1;
@@ -174,6 +176,7 @@
 @property(readonly) NSFont *markupTextStrongFont;
 @property(readonly) NSFont *markupTextNormalFont;
 @property(readonly) NSColor *markupTextLinkColor;
+@property(readonly) NSColor *markupTextInlineCodeColor;
 @property(readonly) NSColor *markupTextOtherHeadingColor;
 @property(readonly) NSColor *markupTextSecondaryHeadingColor;
 @property(readonly) NSColor *markupTextPrimaryHeadingColor;
@@ -187,7 +190,7 @@
 @property(readonly) NSColor *sourceTextTokenizedBackgroundColor;
 @property(readonly) NSColor *sourceTextTokenizedBorderColor;
 @property(readonly) NSColor *sourceTextLinkColor;
-@property(readonly) NSColor *sourceTextCompletionPreviewColor;
+@property(readonly) NSColor *ghostComplementTextColor;
 @property(readonly) NSColor *sourceTextBlockDimBackgroundColor;
 @property(readonly) NSColor *sourceTextInvisiblesColor;
 @property(readonly) NSColor *sourceTextInsertionPointColor;

@@ -94,6 +94,7 @@
 - (void)_themeFontsAndColorsUpdated;
 - (void)viewWillMoveToWindow:(id)arg1;
 - (void)setCompletionStrategies:(id)arg1;
+- (void)invalidateCompletionsDataSource;
 - (id)completionsDataSource;
 - (BOOL)shouldAutoCompleteAtLocation:(unsigned long long)arg1;
 - (id)autoCompleteChars;

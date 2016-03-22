@@ -14,7 +14,7 @@
 
 #import "DVTSourceTextScrollViewDelegate-Protocol.h"
 
-@class DVTAnnotationManager, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSDictionary, NSHashTable, NSMutableArray, NSString, NSTimer, NSView, NSWindow;
+@class DVTAnnotationManager, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSHashTable, NSMutableArray, NSString, NSTimer, NSView, NSWindow;
 @protocol DVTCancellable, DVTSourceTextViewDelegate;
 
 @interface DVTSourceTextView : DVTCompletingTextView <NSAnimationDelegate, NSLayoutManagerDelegate, DVTSourceTextScrollViewDelegate>
@@ -55,7 +55,6 @@
     struct {
         unsigned int dDidFinishAnimatingScroll:1;
         unsigned int dDidScroll:1;
-        unsigned int dColoringContext:1;
         unsigned int delegateRespondsToWillReturnPrintJobTitle:1;
         unsigned int updatingInsertionPoint:1;
         unsigned int wasPostsFrameChangedNotifications:1;
@@ -72,7 +71,6 @@
     BOOL _animatesCurrentScroll;
     BOOL _disableUpdatingInsertionPointCount;
     BOOL _currentlyAutoCompletingBracket;
-    BOOL _currentlyDoingNonUserEditing;
     BOOL _wrapsLines;
     BOOL _postsLayoutManagerNotifications;
     BOOL _scrollingInScrollView;
@@ -127,7 +125,6 @@
 - (void)foldRecursive:(id)arg1;
 - (void)fold:(id)arg1;
 - (BOOL)writeSelectionToPasteboard:(id)arg1 type:(id)arg2;
-- (BOOL)writeRTFSelectionToPasteboard:(id)arg1;
 - (id)writablePasteboardTypes;
 - (void)balance:(id)arg1;
 - (void)shiftLeft:(id)arg1;
@@ -151,7 +148,7 @@
 - (id)accessibilityAXAttributedStringForCharacterRange:(struct _NSRange)arg1 parent:(id)arg2;
 - (BOOL)scrollRectToVisible:(struct CGRect)arg1;
 - (void)scrollPoint:(struct CGPoint)arg1;
-- (void)setMarkedText:(id)arg1 selectedRange:(struct _NSRange)arg2;
+- (void)setMarkedText:(id)arg1 selectedRange:(struct _NSRange)arg2 replacementRange:(struct _NSRange)arg3;
 - (BOOL)shouldChangeTextInRanges:(id)arg1 replacementStrings:(id)arg2;
 - (void)_invalidateAllRevealovers;
 - (BOOL)isEditable;
@@ -325,9 +322,6 @@
 - (struct _NSRange)lineNumberRangeForBoundingRect:(struct CGRect)arg1;
 - (unsigned long long)lineNumberForPoint:(struct CGPoint)arg1;
 - (id)printJobTitle;
-- (void)setIsCurrentlyDoingNonUserEditing:(BOOL)arg1;
-@property(readonly) BOOL isCurrentlyDoingNonUserEditing;
-@property(readonly) NSDictionary *syntaxColoringContext;
 - (id)language;
 - (BOOL)allowsCodeFolding;
 - (void)setAllowsCodeFolding:(BOOL)arg1;

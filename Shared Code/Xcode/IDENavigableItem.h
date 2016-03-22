@@ -11,17 +11,20 @@
 #include "Shared.h"
 
 #import "DVTInvalidation-Protocol.h"
+#import "DVTTableCellViewLazyProperties-Protocol.h"
 
 @class DVTDocumentLocation, DVTFileDataType, DVTStackBacktrace, IDEFileReference, IDENavigableItemCoordinator, NSArray, NSColor, NSImage, NSMutableArray, NSString;
 @protocol IDENavigableItemDebugAreaDelegate, IDENavigableItemDebugBarDelegate;
 
-@interface IDENavigableItem : NSObject <DVTInvalidation>
+@interface IDENavigableItem : NSObject <DVTTableCellViewLazyProperties, DVTInvalidation>
 {
     id _observationInfo;
     IDENavigableItemCoordinator *_coordinator;
     NSMutableArray *_childItems;
     NSArray *_arrangedChildItems;
     unsigned long long _changeCount;
+    int _filterMatchGeneration;
+    int _filterMatchesChildGeneration;
     struct {
         unsigned int _childItemsNeedsUpdate:1;
         unsigned int _invalidatingChildItems:1;
@@ -31,7 +34,6 @@
     } _ideniFlags;
     id _representedObject;
     IDENavigableItem *_parentItem;
-    long long __filteringGeneration;
 }
 
 + (Class)_navigableItemClassForModelObject:(id)arg1;
@@ -56,7 +58,8 @@
 + (void)initialize;
 + (id)imageOfRepresentedObject:(id)arg1;
 + (id)nameOfRepresentedObject:(id)arg1;
-@property(nonatomic) long long _filteringGeneration; // @synthesize _filteringGeneration=__filteringGeneration;
++ (id)keyPathsForValuesAffecting_titleStyleForReferencedContentExistance;
++ (id)keyPathsForValuesAffectingIde_canStructureEditName;
 @property(readonly, nonatomic) IDENavigableItem *parentItem; // @synthesize parentItem=_parentItem;
 @property(readonly, nonatomic) id representedObject; // @synthesize representedObject=_representedObject;
 @property(readonly, nonatomic) IDENavigableItemCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_coordinator;
@@ -70,6 +73,12 @@
 - (unsigned long long)indexOfChildItemForIdentifier:(id)arg1;
 - (id)identifierForChildItem:(id)arg1;
 - (id)archivableRepresentation;
+- (BOOL)_filterMatchingChildrenIsCurrentGeneration;
+- (BOOL)_filterMatchesSelfOrChildForGeneration:(int)arg1;
+- (BOOL)_filterMatchesSelfOrAncestorForGeneration:(int)arg1;
+- (void)_setHasChildFilteringMatchForGeneration:(int)arg1;
+- (void)_setFilterMatch:(BOOL)arg1 forGeneration:(int)arg2;
+- (void)_clearFilterMatch;
 - (void)_didChangeArrangedChildItems;
 - (void)_willChangeArrangedChildItems;
 - (unsigned long long)_currentNumberOfArrangedChildItems;
@@ -117,12 +126,15 @@
 - (id)coordinator;
 - (void)_setRepresentedObject:(id)arg1;
 - (id)initWithRepresentedObject:(id)arg1;
+@property(readonly, nonatomic) NSString *accessibleImageDescription;
+@property(readonly, nonatomic) NSString *subtitle;
 @property(readonly, nonatomic) NSString *toolTip;
 - (void)updateChildItemsForChangeKind:(unsigned long long)arg1 atIndexes:(id)arg2;
 - (void)invalidateChildItems;
 - (id)nearestDocumentFileReferenceProvidingAncestor;
 - (id)greatestDocumentAncestor;
 @property(readonly, nonatomic) NSString *groupIdentifier;
+@property(readonly, nonatomic) BOOL referencedContentExists;
 @property(readonly, nonatomic) IDEFileReference *fileReference;
 @property(readonly, nonatomic) NSColor *textColor;
 @property(readonly, nonatomic) BOOL shouldNavigateToContentDocumentLocation;
@@ -130,17 +142,9 @@
 @property(readonly, nonatomic, getter=isMajorGroup) BOOL majorGroup;
 @property(readonly, nonatomic) DVTFileDataType *documentType;
 @property(readonly, nonatomic) BOOL isDocumentNavigableItem;
-@property(readonly) id <IDENavigableItemDebugAreaDelegate> debugAreaDelegate;
-@property(readonly) id <IDENavigableItemDebugBarDelegate> debugBarDelegate;
+- (int)_titleStyleForReferencedContentExistance;
 - (id)ide_inferredURLFromRepresentedObject;
-- (id)navigableItemsForPersistentNameTree:(id)arg1;
-- (void)_fillItems:(id)arg1 fromNameDictionary:(id)arg2 withParent:(id)arg3 andChildren:(id)arg4;
-- (id)persistentNameTreeForNavigableItems:(id)arg1 errorOnInvalidItems:(BOOL)arg2 error:(id *)arg3;
-- (BOOL)_checkInvalidItemsAndFillRootDict:(id)arg1 forItem:(id)arg2 errorOnInvalidItems:(BOOL)arg3 error:(id *)arg4;
-- (id)persistentNameTreeForNavigableItemsIgnoringInvalid:(id)arg1;
-- (id)persistentNameTreeForNavigableItems:(id)arg1 error:(id *)arg2;
-- (id)_fillRootDict:(id)arg1 withItem:(id)arg2 isTerminus:(BOOL)arg3;
-- (id)_navigableItemWithName:(id)arg1 inArray:(id)arg2;
+- (BOOL)ide_canStructureEditName;
 - (BOOL)_alwaysBypassFilter;
 - (BOOL)coordinatorFilteringShouldFilterChildItems;
 - (unsigned long long)navigableItem_conflictStateForUpdateOrMerge;
@@ -150,6 +154,16 @@
 - (int)sourceControlServerStatusFlag;
 - (id)sourceControlLocalStatus;
 - (int)sourceControlLocalStatusFlag;
+@property(readonly) id <IDENavigableItemDebugAreaDelegate> debugAreaDelegate;
+@property(readonly) id <IDENavigableItemDebugBarDelegate> debugBarDelegate;
+- (id)navigableItemsForPersistentNameTree:(id)arg1;
+- (void)_fillItems:(id)arg1 fromNameDictionary:(id)arg2 withParent:(id)arg3 andChildren:(id)arg4;
+- (id)persistentNameTreeForNavigableItems:(id)arg1 errorOnInvalidItems:(BOOL)arg2 error:(id *)arg3;
+- (BOOL)_checkInvalidItemsAndFillRootDict:(id)arg1 forItem:(id)arg2 errorOnInvalidItems:(BOOL)arg3 error:(id *)arg4;
+- (id)persistentNameTreeForNavigableItemsIgnoringInvalid:(id)arg1;
+- (id)persistentNameTreeForNavigableItems:(id)arg1 error:(id *)arg2;
+- (id)_fillRootDict:(id)arg1 withItem:(id)arg2 isTerminus:(BOOL)arg3;
+- (id)_navigableItemWithName:(id)arg1 inArray:(id)arg2;
 
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;

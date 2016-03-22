@@ -25,6 +25,10 @@
     BOOL _isSafeToLoadMobileDevice;
 }
 
++ (id)_informativeTextFieldForAlert:(id)arg1;
++ (id)_informativeTextForQuarantineProperties:(id)arg1;
++ (id)_documentDisplayNameForDocumentType:(id)arg1;
++ (BOOL)_shouldOpenURL:(id)arg1 documentType:(id)arg2;
 + (void)_setOpenAsContextMenu:(id)arg1 withViewController:(id)arg2;
 + (BOOL)_isWorkspaceWrappingDocumentURL:(id)arg1;
 + (BOOL)_isWorkspaceDocumentURL:(id)arg1;
@@ -131,6 +135,7 @@
 - (id)openDocumentWithContentsOfURL:(id)arg1 display:(BOOL)arg2;
 - (void)asyncOpenDocumentsWithContentsOfURLs:(id)arg1 display:(BOOL)arg2 completionHandler:(CDUnknownBlockType)arg3;
 - (id)openDocumentWithContentsOfURL:(id)arg1 display:(BOOL)arg2 error:(id *)arg3;
+- (id)openUntitledDocumentAndDisplay:(BOOL)arg1 error:(id *)arg2;
 - (void)openDocumentWithContentsOfURL:(id)arg1 display:(BOOL)arg2 completionHandler:(CDUnknownBlockType)arg3;
 - (void)asyncOpenDocumentLocation:(id)arg1 display:(BOOL)arg2 completionHandler:(CDUnknownBlockType)arg3;
 - (void)_openDocumentsForDocumentLocations:(id)arg1 display:(BOOL)arg2 completionHandler:(CDUnknownBlockType)arg3;

@@ -8,11 +8,9 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-#import "DVTInvalidation-Protocol.h"
+@class DVTTextDocumentLocation;
 
-@class NSArray;
-
-@protocol IDEIndexableProvider <DVTInvalidation, NSObject>
-- (NSArray *)indexables;
+@protocol DVTTextDocumentLocationEncodingConverter
+- (DVTTextDocumentLocation *)compatibleLocationFromLocation:(DVTTextDocumentLocation *)arg1;
 @end
 

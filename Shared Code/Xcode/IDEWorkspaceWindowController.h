@@ -54,14 +54,14 @@
     BOOL _exitingFullScreenMode;
     BOOL _fullScreenTabBarAlwaysVisible;
     BOOL _createNewTabUponLoadIfNoTabsExist;
-    BOOL _didSetupFirstResponderInterposer;
     BOOL _shouldPerformWindowClose;
+    BOOL _didSetupFirstResponderInterposer;
     DVTTabBarEnclosureView *_tabBarEnclosureView;
     NSTabView *_tabView;
     NSString *_uniqueIdentifier;
-    DVTWeakInterposer *_firstResponderInterposer;
     DVTBarBackground *_tabBarView;
     DVTStateToken *_stateToken;
+    DVTWeakInterposer *_firstResponderInterposer;
 }
 
 + (id)keyPathsForValuesAffectingUserWantsBreakpointsActivated;
@@ -71,12 +71,12 @@
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)workspaceWindowControllers;
-@property BOOL shouldPerformWindowClose; // @synthesize shouldPerformWindowClose=_shouldPerformWindowClose;
-@property(retain) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
-@property(retain, nonatomic) DVTBarBackground *tabBarView; // @synthesize tabBarView=_tabBarView;
 @property BOOL didSetupFirstResponderInterposer; // @synthesize didSetupFirstResponderInterposer=_didSetupFirstResponderInterposer;
 @property(retain) DVTWeakInterposer *firstResponderInterposer; // @synthesize firstResponderInterposer=_firstResponderInterposer;
 @property(nonatomic) BOOL showToolbar; // @synthesize showToolbar=_showToolbar;
+@property BOOL shouldPerformWindowClose; // @synthesize shouldPerformWindowClose=_shouldPerformWindowClose;
+@property(retain) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
+@property(retain, nonatomic) DVTBarBackground *tabBarView; // @synthesize tabBarView=_tabBarView;
 @property BOOL createNewTabUponLoadIfNoTabsExist; // @synthesize createNewTabUponLoadIfNoTabsExist=_createNewTabUponLoadIfNoTabsExist;
 @property(copy, nonatomic) NSString *uniqueIdentifier; // @synthesize uniqueIdentifier=_uniqueIdentifier;
 @property(retain, nonatomic) NSTabView *tabView; // @synthesize tabView=_tabView;
@@ -121,6 +121,7 @@
 - (void)workspaceWindowIsClosing:(id)arg1;
 - (void)_pushDefaultPrimaryEditorFrameSizes;
 - (BOOL)_isLastWindowControllerOfDocument;
+- (void)_removeTabForClosingWorkspace:(id)arg1;
 - (void)primitiveInvalidate;
 - (void)_prepareBarsToExitFullScreen;
 - (void)_prepareBarsToEnterFullScreen;

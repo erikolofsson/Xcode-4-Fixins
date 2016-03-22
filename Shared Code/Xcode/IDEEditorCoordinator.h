@@ -22,6 +22,10 @@
 + (void)_setDefaultTarget:(int)arg1 forEventBehavior:(int)arg2;
 + (BOOL)_getTarget:(int *)arg1 forDefaultsValue:(id)arg2;
 + (id)_defaultsValueForTarget:(int)arg1;
++ (id)_symbolNameForEditorCoordinatorTarget:(int)arg1;
++ (id)_symbolNameForEditorCoordinatorEventType:(unsigned long long)arg1;
++ (id)_symbolNameForEditorCoordinatorTakeFocus:(int)arg1;
++ (id)_symbolNameForEditorCoordinatorEventBehavior:(int)arg1;
 + (id)_defaultsKeyForEventBehavior:(int)arg1;
 + (int)_eventBehaviorForEventType:(unsigned long long)arg1;
 + (void)_openNavigationHUDSelection:(id)arg1 forWorkspaceDocument:(id)arg2 documentURL:(id)arg3 usingBlock:(CDUnknownBlockType)arg4;

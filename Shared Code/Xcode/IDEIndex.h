@@ -13,7 +13,7 @@
 #import "DVTInvalidation-Protocol.h"
 #import "IDEIndexDatabaseDelegate-Protocol.h"
 
-@class DVTDispatchLock, DVTFilePath, DVTObservingToken, DVTStackBacktrace, IDEIndexDatabase, IDEIndexQPManager, IDEIndexingEngine, IDEIndexingPrebuildController, IDEWorkspace, NSDate, NSMutableDictionary, NSSet, NSString;
+@class DVTDispatchLock, DVTFilePath, DVTNotificationToken, DVTObservingToken, DVTStackBacktrace, IDEIndexDatabase, IDEIndexQPManager, IDEIndexingEngine, IDEIndexingPrebuildController, IDEWorkspace, NSDate, NSMutableDictionary, NSSet, NSString;
 
 @interface IDEIndex : NSObject <IDEIndexDatabaseDelegate, DVTInvalidation>
 {
@@ -41,12 +41,12 @@
     DVTObservingToken *_indexFolderPathObservingToken;
     DVTObservingToken *_activeRunContextObservingToken;
     DVTObservingToken *_activeRunDestinationObservingToken;
-    id _indexableFileWasAddedNotificationObservingToken;
-    id _indexableFileWillBeRemovedNotificationObservingToken;
-    id _indexableDidRenameFileNotificationObservingToken;
-    id _buildablesDidChangeNotificationObservingToken;
-    id _buildSettingsDidChangeNotificationObservingToken;
-    id _buildOperationDidStopNotificationObservingToken;
+    DVTNotificationToken *_indexableFileWasAddedNotificationObservingToken;
+    DVTNotificationToken *_indexableFileWillBeRemovedNotificationObservingToken;
+    DVTNotificationToken *_indexableDidRenameFileNotificationObservingToken;
+    DVTNotificationToken *_buildablesDidChangeNotificationObservingToken;
+    DVTNotificationToken *_buildSettingsDidChangeNotificationObservingToken;
+    DVTNotificationToken *_buildOperationDidStopNotificationObservingToken;
 }
 
 + (BOOL)languageSupportsSymbolColoring:(id)arg1;

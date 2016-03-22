@@ -20,7 +20,7 @@
 #import "IDEWorkspaceWrappingContainer-Protocol.h"
 #import "Xcode3SourceListItemEditing-Protocol.h"
 
-@class DVTModelObjectGraph, DVTObservingToken, IDEActivityLogSection, IDEDirectoryBasedCustomDataStore, NSArray, NSMapTable, NSMutableArray, NSString, PBXProject, PBXReference;
+@class DVTModelObjectGraph, DVTObservingToken, DVTStackBacktrace, IDEActivityLogSection, IDEDirectoryBasedCustomDataStore, NSArray, NSMapTable, NSMutableArray, NSString, PBXProject, PBXReference;
 
 @interface Xcode3Project : IDEContainer <IDEBlueprintProvider, IDEIndexableProvider, IDETestableProvider, Xcode3SourceListItemEditing, IDECustomDataStoring, IDEWorkspaceWrappingContainer, IDELocalizedContainer>
 {
@@ -161,10 +161,13 @@
 - (id)supportedSourceListItemEditorClasses;
 
 // Remaining properties
+@property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
+@property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic) DVTModelObjectGraph *objectGraph;
 @property(readonly) Class superclass;
+@property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end
 

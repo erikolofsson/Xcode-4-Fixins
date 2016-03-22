@@ -28,8 +28,8 @@
     int _findType;
     int _matchStyle;
     NSPopover *_popover;
-    IDEBatchFindScopeEditor *_scopeEditor;
     NSString *_findWorkspacePathDescription;
+    IDEBatchFindScopeEditor *_scopeEditor;
     NSArray *_customScopePredicates;
 }
 
@@ -40,8 +40,8 @@
 + (void)initialize;
 + (id)sharedStrategiesController;
 @property(retain) NSArray *customScopePredicates; // @synthesize customScopePredicates=_customScopePredicates;
-@property(retain) NSString *findWorkspacePathDescription; // @synthesize findWorkspacePathDescription=_findWorkspacePathDescription;
 @property(retain, nonatomic) IDEBatchFindScopeEditor *scopeEditor; // @synthesize scopeEditor=_scopeEditor;
+@property(retain) NSString *findWorkspacePathDescription; // @synthesize findWorkspacePathDescription=_findWorkspacePathDescription;
 @property(copy, nonatomic) NSString *findWorkspacePath; // @synthesize findWorkspacePath=_findWorkspacePath;
 @property(copy, nonatomic) NSString *findScopeUUID; // @synthesize findScopeUUID=_findScopeUUID;
 @property(retain) NSPopover *popover; // @synthesize popover=_popover;

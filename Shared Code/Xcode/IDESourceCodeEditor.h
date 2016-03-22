@@ -32,6 +32,7 @@
     DVTLayoutManager *_layoutManager;
     IDESourceCodeEditorContainerView *_containerView;
     DVTTextSidebarView *_sidebarView;
+    IDESourceCodeEditorAnnotationProvider *_annotationProvider;
     NSArray *_currentSelectedItems;
     NSDictionary *_syntaxColoringContext;
     DVTSourceExpression *_selectedExpression;
@@ -63,7 +64,7 @@
     DVTNotificationToken *_indexDidChangeNotificationToken;
     id <DVTCancellable> _prefetchingNodeTypesToken;
     DVTObservingToken *_semanticsDisabledObservingToken;
-    IDESourceCodeEditorAnnotationProvider *_annotationProvider;
+    DVTObservingToken *_sourceLanguageServiceCotnextObservingToken;
     IDEAnalyzerResultsExplorer *_analyzerResultsExplorer;
     DVTWeakInterposer *_analyzerResultsScopeBar_dvtWeakInterposer;
     BOOL _hidingAnalyzerExplorer;
@@ -106,6 +107,7 @@
     NSPulseGestureRecognizer *_recognizeGestureInSideBarView;
     NSImmediateActionGestureRecognizer *_immediateActionRecognizer;
     DVTScopeBarController *_languageServiceStatusScopeBarController;
+    DVTScopeBarController *_toolchainsOutOfSyncScopeBarController;
 }
 
 + (id)keyPathsForValuesAffectingIsWorkspaceBuilding;
@@ -113,12 +115,13 @@
 + (void)commitStateToDictionary:(id)arg1 withSourceTextView:(id)arg2 withSourceCodeDocument:(id)arg3;
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
+@property(retain) DVTScopeBarController *toolchainsOutOfSyncScopeBarController; // @synthesize toolchainsOutOfSyncScopeBarController=_toolchainsOutOfSyncScopeBarController;
 @property(retain) DVTScopeBarController *languageServiceStatusScopeBarController; // @synthesize languageServiceStatusScopeBarController=_languageServiceStatusScopeBarController;
 @property(retain) NSImmediateActionGestureRecognizer *immediateActionRecognizer; // @synthesize immediateActionRecognizer=_immediateActionRecognizer;
 @property(retain) NSPulseGestureRecognizer *recognizeGestureInSideBarView; // @synthesize recognizeGestureInSideBarView=_recognizeGestureInSideBarView;
 @property(retain) IDESourceLanguageEditorExtension *editorExtension; // @synthesize editorExtension=_editorExtension;
 @property(retain) IDECoverageTextVisualization *coverageTextVisualization; // @synthesize coverageTextVisualization=_coverageTextVisualization;
-@property(retain) IDESchemeActionCodeCoverageFile *coverageData; // @synthesize coverageData=_coverageData;
+@property(retain, nonatomic) IDESchemeActionCodeCoverageFile *coverageData; // @synthesize coverageData=_coverageData;
 @property(retain) IDESingleFileProcessingToolbarController *singleFileProcessingToolbarController; // @synthesize singleFileProcessingToolbarController=_singleFileProcessingToolbarController;
 @property struct _NSRange lastEditedCharacterRange; // @synthesize lastEditedCharacterRange=_lastEditedCharRange;
 @property(retain) IDEAnalyzerResultsExplorer *analyzerResultsExplorer; // @synthesize analyzerResultsExplorer=_analyzerResultsExplorer;
@@ -227,6 +230,7 @@
 - (void)continueToCurrentLine:(id)arg1;
 - (void)continueToHere:(id)arg1;
 - (void)toggleCodeCoverageShown:(id)arg1;
+- (void)toggleIgnoreWhitespace:(id)arg1;
 - (void)toggleInvisibleCharactersShown:(id)arg1;
 - (void)toggleBreakpointAtCurrentLine:(id)arg1;
 - (void)flattenMultiPathTokens:(id)arg1;
@@ -271,6 +275,8 @@
 - (void)didEndTokenizedEditingWithRanges:(id)arg1;
 - (void)willStartTokenizedEditingWithRanges:(id)arg1;
 - (void)tokenizableRangesWithRange:(struct _NSRange)arg1 completionBlock:(CDUnknownBlockType)arg2;
+- (unsigned long long)textView:(id)arg1 lineEndingForWritingSelectionToPasteboard:(id)arg2 type:(id)arg3;
+- (unsigned long long)textView:(id)arg1 lineEndingForReadingSelectionFromPasteboard:(id)arg2 type:(id)arg3;
 - (void)textViewBoundsDidChange:(id)arg1;
 - (void)textView:(id)arg1 handleMouseDidExitSidebar:(id)arg2;
 - (void)textView:(id)arg1 handleMouseDidMoveOverSidebar:(id)arg2 atLineNumber:(unsigned long long)arg3;
@@ -311,7 +317,10 @@
 - (BOOL)canBecomeMainViewController;
 - (id)undoManagerForTextView:(id)arg1;
 - (void)viewWillUninstall;
+- (void)_moreViewDidInstall;
 - (void)viewDidInstall;
+- (id)_toolchainsOutOfSyncBannerReportErrorButtonTitleWithActiveToolchain:(id)arg1 sourceLanguageServiceToolchain:(id)arg2;
+- (id)_toolchainsOutOfSyncBannerPhrasesWithActiveDefaultToolchain:(id)arg1 sourceLanguageServiceToolchain:(id)arg2;
 - (void)contentViewDidCompleteLayout;
 - (void)_doInitialSetup;
 - (void)_endObservingDiagnosticController;
@@ -329,7 +338,7 @@
 - (void)_refreshCurrentSelectedItemsIfNeeded;
 - (BOOL)_isCurrentSelectedItemsValid;
 @property __weak IDEViewController<IDESourceEditorViewControllerHost> *hostViewController;
-@property(readonly) IDESourceCodeEditorAnnotationProvider *annotationProvider; // @synthesize annotationProvider=_annotationProvider;
+@property(readonly) IDESourceCodeEditorAnnotationProvider *annotationProvider;
 - (id)mainScrollView;
 @property(readonly) IDESourceCodeDocument *sourceCodeDocument;
 - (void)loadView;

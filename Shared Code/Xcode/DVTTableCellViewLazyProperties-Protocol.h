@@ -8,11 +8,13 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-#import "DVTInvalidation-Protocol.h"
 
-@class NSArray;
+@class NSString;
 
-@protocol IDEIndexableProvider <DVTInvalidation, NSObject>
-- (NSArray *)indexables;
+@protocol DVTTableCellViewLazyProperties <NSObject>
+
+@optional
+@property(readonly, nonatomic) NSString *accessibleImageDescription;
+@property(readonly, nonatomic) NSString *toolTip;
 @end
 

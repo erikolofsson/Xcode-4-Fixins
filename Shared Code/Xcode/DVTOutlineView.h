@@ -32,25 +32,21 @@
     } _dvtOVFlags;
     unsigned long long _gridLineStyleBeforeEmptyContentStringShown;
     BOOL _skipGridLinesOnLastRow;
-    BOOL _skipGridLinesOnCollapsedGroupRows;
     BOOL _drawsGridLinesForEmptyContent;
     BOOL _wantsMouseEnteredExitedAndMovedEvents;
     int _emptyContentStringStyle;
     int _indentationStyle;
     NSString *_emptyContentString;
     NSString *_emptyContentSubtitle;
-    double _gridLineInset;
     NSEvent *_event;
     long long _rowUnderHoveredMouse;
 }
 
 + (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
+@property BOOL wantsMouseEnteredExitedAndMovedEvents; // @synthesize wantsMouseEnteredExitedAndMovedEvents=_wantsMouseEnteredExitedAndMovedEvents;
 @property long long rowUnderHoveredMouse; // @synthesize rowUnderHoveredMouse=_rowUnderHoveredMouse;
 @property(retain) NSEvent *event; // @synthesize event=_event;
-@property BOOL wantsMouseEnteredExitedAndMovedEvents; // @synthesize wantsMouseEnteredExitedAndMovedEvents=_wantsMouseEnteredExitedAndMovedEvents;
-@property double gridLineInset; // @synthesize gridLineInset=_gridLineInset;
 @property BOOL drawsGridLinesForEmptyContent; // @synthesize drawsGridLinesForEmptyContent=_drawsGridLinesForEmptyContent;
-@property BOOL skipGridLinesOnCollapsedGroupRows; // @synthesize skipGridLinesOnCollapsedGroupRows=_skipGridLinesOnCollapsedGroupRows;
 @property BOOL skipGridLinesOnLastRow; // @synthesize skipGridLinesOnLastRow=_skipGridLinesOnLastRow;
 @property int indentationStyle; // @synthesize indentationStyle=_indentationStyle;
 @property int emptyContentStringStyle; // @synthesize emptyContentStringStyle=_emptyContentStringStyle;

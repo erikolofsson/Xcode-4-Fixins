@@ -12,7 +12,7 @@
 
 #import "DVTFileSystemRepresentationProviding-Protocol.h"
 
-@class DVTFileDataType, DVTFileSystemVNode, NSArray, NSDate, NSDictionary, NSString, NSURL;
+@class DVTFileDataType, DVTFileSystemVNode, NSArray, NSDate, NSDictionary, NSNumber, NSString, NSURL;
 
 @interface DVTFilePath : NSObject <NSCopying, DVTFileSystemRepresentationProviding, NSSecureCoding>
 {
@@ -64,6 +64,8 @@
 - (BOOL)_hasChangeObservers;
 - (BOOL)_addInfoForObserversOfChangedFilePath:(id)arg1 toObjects:(id)arg2 blocks:(id)arg3 dispatchQueues:(id)arg4 operationQueues:(id)arg5;
 - (id)cachedValueForKey:(id)arg1;
+- (id)recursiveFileSizeWithError:(id *)arg1;
+@property(readonly) NSNumber *recursiveFileSize;
 - (id)machOArchitecturesWithError:(id *)arg1;
 @property(readonly) DVTFileDataType *fileDataTypePresumed;
 @property(readonly) DVTFileDataType *fileDataTypeFromFileContent;

@@ -29,6 +29,7 @@
 + (id)generatedURLForOriginalURL:(id)arg1;
 + (void)enumerateSupportedContextScopesForLanguage:(id)arg1 block:(CDUnknownBlockType)arg2;
 + (BOOL)canGenerateContentsForURL:(id)arg1;
++ (BOOL)supportsInvalidationPrevention;
 + (void)initialize;
 + (Class)sourceLanguageServiceClassForLanguage:(id)arg1;
 + (id)sourceLanguageServiceForLanguage:(id)arg1 withDelegate:(id)arg2;

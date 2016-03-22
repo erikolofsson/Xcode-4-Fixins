@@ -37,7 +37,7 @@
     NSMutableArray *_debuggingUIControllerLifeCycleObservers;
     NSString *_userDefinedTabLabel;
     NSString *_lastValidUserDefinedName;
-    NSMapTable *_observerTokenForLaunchSessionTable;
+    NSMapTable *_notificationTokenForLaunchSessionTable;
     NSMapTable *_observerTokenForLaunchSessionsDebuggingAdditionsTable;
     NSMutableArray *_uiControllerObserverEntries;
     DVTObservingToken *_mainCurrentLaunchSessionObserverToken;
@@ -58,8 +58,8 @@
     BOOL _userWantsUtilitiesVisible;
     BOOL _userWantsNavigatorVisible;
     BOOL _isAnimatingUtilities;
-    BOOL _tabLoadingCompleted;
     BOOL _stateRestoreCompleted;
+    BOOL _tabLoadingCompleted;
     int _assistantEditorsLayout;
     IDEWorkspaceDocument *_workspaceDocument;
     NSString *_name;
@@ -82,13 +82,15 @@
 + (id)keyPathsForValuesAffectingShowNavigator;
 + (id)keyPathsForValuesAffectingShowUtilities;
 + (id)keyPathsForValuesAffectingWorkspace;
-+ (BOOL)automaticallyNotifiesObserversOfCurrentLaunchSession;
++ (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (int)defaultAssistantEditorsLayout;
 + (void)setDefaultAssistantEditorsLayout:(int)arg1;
 + (BOOL)automaticallyNotifiesObserversOfSavedTabFilePath;
 + (BOOL)automaticallyNotifiesObserversOfSavedTabLabel;
+@property(nonatomic) BOOL tabLoadingCompleted; // @synthesize tabLoadingCompleted=_tabLoadingCompleted;
+@property(nonatomic) int assistantEditorsLayout; // @synthesize assistantEditorsLayout=_assistantEditorsLayout;
 @property(retain) IDEExecutionHoldAlertHelper *executionHoldAlertHelper; // @synthesize executionHoldAlertHelper=_executionHoldAlertHelper;
 @property(retain) IDEAppChooserWindowController *appChooserWindowController; // @synthesize appChooserWindowController=_appChooserWindowController;
 @property(retain, nonatomic) DVTFilePath *savedTabFilePath; // @synthesize savedTabFilePath=_savedTabFilePath;
@@ -98,8 +100,6 @@
 @property(retain) DVTObservingToken *documentLoadingObservationToken; // @synthesize documentLoadingObservationToken=_documentLoadingObservationToken;
 @property BOOL stateRestoreCompleted; // @synthesize stateRestoreCompleted=_stateRestoreCompleted;
 @property(retain) DVTReplacementView *editorReplacementView; // @synthesize editorReplacementView=_editorReplacementView;
-@property(nonatomic) BOOL tabLoadingCompleted; // @synthesize tabLoadingCompleted=_tabLoadingCompleted;
-@property(nonatomic) int assistantEditorsLayout; // @synthesize assistantEditorsLayout=_assistantEditorsLayout;
 @property(retain, nonatomic) IDELaunchSession *currentLaunchSession; // @synthesize currentLaunchSession=_currentLaunchSession;
 @property(copy) NSString *name; // @synthesize name=_name;
 @property BOOL isAnimatingUtilities; // @synthesize isAnimatingUtilities=_isAnimatingUtilities;
@@ -168,7 +168,6 @@
 - (void)_selectRunContext:(CDUnknownBlockType)arg1;
 - (void)editActiveRunContext:(id)arg1;
 - (void)editAndAnalyzeActiveRunContext:(id)arg1;
-- (void)editBuildAndIntegrateActiveRunContext:(id)arg1;
 - (void)editBuildAndArchiveActiveRunContext:(id)arg1;
 - (void)editAndBuildForTestingActiveRunContext:(id)arg1;
 - (void)editAndTestActiveRunContext:(id)arg1;
@@ -194,7 +193,6 @@
 - (void)analyzeActiveRunContext:(id)arg1;
 - (void)buildAndRunToGenerateOptimizationProfileActiveRunContext:(id)arg1;
 - (void)buildForInstallActiveRunContext:(id)arg1;
-- (void)buildAndIntegrateActiveRunContext:(id)arg1;
 - (void)buildAndArchiveActiveRunContext:(id)arg1;
 - (void)buildActiveRunContext:(id)arg1;
 - (void)testActiveRunContextWithoutBuilding:(id)arg1;
@@ -218,6 +216,8 @@
 - (BOOL)textView:(id)arg1 clickedOnLink:(id)arg2 atIndex:(unsigned long long)arg3;
 - (void)_silentlySwitchToLLDBIfNecessary:(id)arg1;
 - (void)_performDebuggableSchemeTask:(int)arg1 onScheme:(id)arg2 runDestination:(id)arg3 command:(id)arg4 commandName:(id)arg5 buildCommand:(int)arg6 filePath:(id)arg7 overridingTestingSpecifiers:(id)arg8 invocationRecord:(id)arg9 completionBlock:(CDUnknownBlockType)arg10;
+- (BOOL)_validToolchainForSchemeAction:(id)arg1 schemeCommand:(id)arg2;
+- (id)_runtimeLLDBFilePath;
 - (void)_debugSessionCoalescedStateChanged:(id)arg1 forDebugSession:(id)arg2;
 - (BOOL)isActiveWorkspaceTabController;
 - (id)debuggingAdditionUIControllersForLaunchSession:(id)arg1;

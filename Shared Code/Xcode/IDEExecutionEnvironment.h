@@ -75,6 +75,7 @@
 // - (void).cxx_destruct;
 - (id)queuedBuildOperationsDescription;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
+- (void)_completeBuildOperation:(id)arg1 andPostLastBuildCompleted:(BOOL)arg2 andPostLastUserInitiatedBuildCompleted:(BOOL)arg3;
 - (void)_addMissingErrorForFailedBuildToRecorder:(id)arg1 buildLog:(id)arg2;
 - (void)_handleLaunchSession:(id)arg1 stateChange:(id)arg2;
 - (void)_setStatusDisplayNameForLaunchSession:(id)arg1;

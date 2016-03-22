@@ -61,7 +61,6 @@
     NSArray *_rootNavigables;
     IDENavigableItem *_selectedNavigable;
     IDENavigableItemCoordinator *_findMenuNavigableItemCoordinator;
-    NSString *_findResultFilterString;
     int _firstLevelIndex;
     int _secondLevelIndex;
     int _thirdLevelIndex;
@@ -75,6 +74,7 @@
     NSPopUpButton *_matchCaseButton;
     DVTLayoutView_ML *_contentView;
     IDEBatchFindTwoButtonLayout *_twoButtonLayout;
+    NSString *_findResultFilterString;
     NSString *_lastFindString;
     IDEBatchFindResultsOutlineController *_resultsOutlineController;
     NSPopUpButtonCell *_matchCasePopUpButtonCell;
@@ -122,9 +122,6 @@
 - (id)_findField;
 - (BOOL)supportsPatterns;
 - (void)searchField:(id)arg1 receivedCommandSelector:(SEL)arg2;
-- (void)updateFilterPredicate;
-- (void)setFilterPredicate:(id)arg1;
-- (void)_synchronizeFilteringWithOutlineView;
 - (id)filterDefinitionIdentifier;
 - (id)control:(id)arg1 textView:(id)arg2 completions:(id)arg3 forPartialWordRange:(struct _NSRange)arg4 indexOfSelectedItem:(long long *)arg5;
 - (void)_cancelFindOperation;

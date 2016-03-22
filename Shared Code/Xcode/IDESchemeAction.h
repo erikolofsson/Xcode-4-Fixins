@@ -13,13 +13,15 @@
 #import "DVTInvalidation-Protocol.h"
 #import "DVTXMLUnarchiving-Protocol.h"
 
-@class DVTStackBacktrace, IDEProfileOptimizationActionController, IDERunnable, IDEScheme, IDESchemeBuildableReference, NSArray, NSMutableArray, NSString;
+@class DVTNotificationToken, DVTStackBacktrace, IDEProfileOptimizationActionController, IDERunnable, IDEScheme, IDESchemeBuildableReference, NSArray, NSMutableArray, NSString;
 
 @interface IDESchemeAction : NSObject <DVTXMLUnarchiving, DVTInvalidation>
 {
+    DVTNotificationToken *_buildSettingsDidChangeNotificationObservingToken;
     BOOL _hasAwoken;
     NSMutableArray *_prePhaseExecutionActions;
     NSMutableArray *_postPhaseExecutionActions;
+    int _toolchainState;
     IDEScheme *_runContext;
     IDERunnable *_runnable;
     IDESchemeBuildableReference *_buildableReferenceToUseForMacroExpansion;
@@ -31,8 +33,8 @@
 + (BOOL)shouldAllowCustomPhaseActions;
 + (void)forceAddressSanitizerEnabledTo:(BOOL)arg1;
 + (void)initialize;
+@property int toolchainState; // @synthesize toolchainState=_toolchainState;
 @property(retain) IDEProfileOptimizationActionController *pgoController; // @synthesize pgoController=_pgoController;
-@property(copy) NSString *buildConfiguration; // @synthesize buildConfiguration=_buildConfiguration;
 @property(retain) IDESchemeBuildableReference *buildableReferenceToUseForMacroExpansion; // @synthesize buildableReferenceToUseForMacroExpansion=_buildableReferenceToUseForMacroExpansion;
 @property(readonly) IDEScheme *runContext; // @synthesize runContext=_runContext;
 // - (void).cxx_destruct;
@@ -69,6 +71,7 @@
 - (id)bundleIdentifierWithRunnablePath:(id)arg1;
 - (id)absolutePathOfBuildSetting:(id)arg1 forSchemeCommand:(id)arg2;
 - (id)expandMacrosInString:(id)arg1 forSchemeCommand:(id)arg2;
+- (id)stringListForBuildSettings:(id)arg1 forSchemeCommand:(id)arg2;
 - (BOOL)addAddressSanitizerEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildable:(id)arg3 error:(id *)arg4;
 - (BOOL)addressSanitizerEnabledForSchemeCommand:(id)arg1;
 - (id)setUpActionDependenciesForCorePhaseOperation:(id)arg1 shouldRunPostActionsBlock:(CDUnknownBlockType)arg2 prePhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg3 postPhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg4 buildParameters:(id)arg5 schemeActionResultOperation:(id)arg6 error:(id *)arg7;
@@ -76,11 +79,14 @@
 - (id)extensionInfosForExtensions:(id)arg1;
 - (void)updateBuildableForChangeInRunnable;
 @property(readonly, nonatomic) BOOL debugAppExtensions;
+- (void)_resetToolchainStatus;
+@property(copy) NSString *buildConfiguration; // @synthesize buildConfiguration=_buildConfiguration;
 @property(retain, nonatomic) IDERunnable *runnable; // @synthesize runnable=_runnable;
 - (void)setRunContext:(IDEScheme *)arg1;
 @property(readonly) BOOL doesNonActionWork;
 @property(readonly) NSString *subtitle;
 @property(readonly) NSString *name;
+- (void)setupObservers;
 - (id)initFromXMLUnarchiver:(id)arg1 archiveVersion:(float)arg2;
 - (id)init;
 

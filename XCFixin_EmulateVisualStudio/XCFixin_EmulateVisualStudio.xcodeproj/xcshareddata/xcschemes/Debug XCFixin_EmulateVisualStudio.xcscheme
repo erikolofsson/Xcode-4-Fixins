@@ -60,32 +60,32 @@
          <EnvironmentVariable
             key = "IDEIndexingClangInvocationLogLevel"
             value = "9"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "IDEBuildOnlyMetricLogLevel"
             value = "9"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "IDEIndexingSchedulingLogLevel"
             value = "9"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "IDEIndexingLogLevel"
             value = "9"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "DVTFileTypeLogLevel"
             value = "9"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "IDENavigableItemLogLevel"
             value = "9"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>

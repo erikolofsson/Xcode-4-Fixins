@@ -1083,16 +1083,18 @@ static NSView* findSubViewWithController(NSView* _pView, Class ClassToFind)
 	return NULL;
 }
 
-static NSView* findParentViewWithClassName(NSView* _pView, char const* _pClassName)
+static NSView* findParentViewWithClassName(NSView* _pView, char const* _pClassName, bool _bTrace)
 {
 	char const* pClassName = object_getClassName([_pView class]);
+	if (_bTrace)
+		NSLog(@"%s", pClassName);
 	if (strcmp(pClassName, _pClassName) == 0)
 		return _pView;
 	NSView * pView;
 	if ((pView = [_pView superview])) 
 	{
 		NSView * pFound;
-		if ((pFound = findParentViewWithClassName(pView, _pClassName)))
+		if ((pFound = findParentViewWithClassName(pView, _pClassName, _bTrace)))
 			return pFound;
 	}
 	return NULL;
@@ -1263,7 +1265,6 @@ static bool stringRangeContainsCharacters(NSString *text, NSRange range, NSChara
 	return codeStartRange.location != NSNotFound;
 }
 
-
 static void potentialView(IDENavigatorOutlineView* _pView)
 {
 //	IDEBatchFindResultsOutlineController
@@ -1428,7 +1429,7 @@ static BOOL resignFirstResponder_DVTFindPatternFieldEditor(DVTFindPatternFieldEd
 
 static DVTFindBar* getFindBar(DVTFindPatternFieldEditor* self_)
 {
-	NSView* pParentView = findParentViewWithClassName(self_, "DVTFindPatternFieldEditor");
+	NSView* pParentView = findParentViewWithClassName(self_, "DVTFindPatternFieldEditor", false);
 	if (pParentView)
 	{
 		DVTFindBar* pViewController = (DVTFindBar*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"DVTFindBar")];
@@ -1441,7 +1442,7 @@ static DVTFindBar* getFindBar(DVTFindPatternFieldEditor* self_)
 
 static IDEBatchFindStrategiesController* getBatchFindStrategiesController(DVTFindPatternFieldEditor* self_)
 {
-	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView_ControlledBy_IDEBatchFindResultsOutlineController");
+	NSView* pParentView = findParentViewWithClassName(self_, "NSView_ControlledBy_IDEBatchFindNavigator", false);
 	if (pParentView)
 	{
 		IDEBatchFindNavigator* pViewController = (IDEBatchFindNavigator*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"IDEBatchFindNavigator")];
@@ -1454,7 +1455,7 @@ static IDEBatchFindStrategiesController* getBatchFindStrategiesController(DVTFin
 
 static IDEBatchFindNavigator* getBatchFindNavigator(DVTFindPatternFieldEditor* self_)
 {
-	NSView* pParentView = findParentViewWithClassName(self_, "DVTControllerContentView_ControlledBy_IDEBatchFindResultsOutlineController");
+	NSView* pParentView = findParentViewWithClassName(self_, "NSView_ControlledBy_IDEBatchFindNavigator", false);
 	if (pParentView)
 	{
 		IDEBatchFindNavigator* pViewController = (IDEBatchFindNavigator*)[pParentView firstAvailableResponderOfClass:NSClassFromString(@"IDEBatchFindNavigator")];
@@ -2047,7 +2048,7 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	g_pSourceLocationColumnRegex = [NSRegularExpression regularExpressionWithPattern:@"^(.*?):([0-9]*):([0-9]*):?"
                                                                        options:NSRegularExpressionCaseInsensitive
                                                                          error:&error];
-	
+
 	original_doCommandBySelector = XCFixinOverrideMethodString(@"DVTSourceTextView", @selector(doCommandBySelector:), (IMP)&doCommandBySelector);
 	XCFixinAssertOrPerform(original_doCommandBySelector, goto failed);
 
@@ -2136,7 +2137,6 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	
 	original_compileSourceCodeFileAtPath = XCFixinOverrideMethodString(@"PBXCompilerSpecificationGcc2_95_2", @selector(compileSourceCodeFileAtPath: ofType: toOutputDirectory: withMacroExpansionScope:), (IMP)&compileSourceCodeFileAtPath);
 	XCFixinAssertOrPerform(original_compileSourceCodeFileAtPath, goto failed);
-	
 	
 	XCFixinPostflight();
 }
@@ -2380,9 +2380,6 @@ static void displayIfNeeded(id self_, SEL _Sel)
 	
 	((void(*)(id, SEL))original_displayIfNeeded)(self_, _Sel);
 }
-
-
-
 
 NSHashTable *g_pPendingChanges = NULL;
 

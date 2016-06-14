@@ -718,6 +718,16 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			}
 			else if ([pOperatorCharacters characterIsMember:Character])
 			{
+				NSColor *pColor = pOperator;
+
+				if (iChar > 1)
+				{
+					char PrevChar0 = [pString characterAtIndex: iChar - 1];
+					
+					if (PrevChar0 == '_' && Character == '.')
+						pColor = pJSONConstants; 
+				}
+				
 				NSUInteger iEnd = MIN(_pEffectiveRange->location + _pEffectiveRange->length, Length);
 				NSUInteger iStart = iChar;
 				++iChar;
@@ -733,7 +743,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				Range.length = iChar - iStart;
 				*_pEffectiveRange = Range;
 
-				return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+				return FixupCommentBackground2(pTextView, pColor, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
 			}
 /* 			else if ([pStartNumberCharacterSet characterIsMember:Character])
 			{
@@ -759,13 +769,41 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 			{
 				NSUInteger iStart = iChar;
 				
-				++iChar;
+				char StartCharacter = [pString characterAtIndex: iChar];
+				
+				if (iChar < Length)
+				{
+					++iChar;
+					Character = [pString characterAtIndex: iChar];
+
+					if (StartCharacter == '_' && Character == '.')
+					{
+						++iChar;
+						NSRange Range;
+						Range.location = iStart;
+						Range.length = iChar - iStart;
+						*_pEffectiveRange = Range;
+
+						return FixupCommentBackground2(pTextView, pJSONConstants, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+					}
+					else if (StartCharacter == '_' && Character == '=')
+					{
+						++iChar;
+						NSRange Range;
+						Range.location = iStart;
+						Range.length = iChar - iStart;
+						*_pEffectiveRange = Range;
+
+						return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+					}
+				}
+				
 				while (iChar < Length)
 				{
-					Character = [pString characterAtIndex: iChar];
 					if (![pIdentifierCharacterSet characterIsMember:Character])
 						break;
 					++iChar;
+					Character = [pString characterAtIndex: iChar];
 				}
 				
 				NSRange Range;
@@ -907,6 +945,7 @@ static NSColor* pFunction = nil;
 static NSColor* pEnum = nil;
 static NSColor* pMacro = nil;
 static NSColor* pOperator = nil;
+static NSColor* pJSONConstants = nil;
 static NSColor* pPreprocessorEscape = nil;
 static NSColor* pPreprocessorOperator = nil;
 static NSColor* pCommentBackground = nil;
@@ -1369,6 +1408,8 @@ static void AddDefaultKeywords()
 	pMemberConstantPublic = pGlobalConstant;
 	pKeywordBulitInConstants = pGlobalConstant;
 	pConstantVariable = pGlobalConstant;
+	
+	pJSONConstants = CreateColor(0xa8a8a8);
 
 	pMemberConstantPrivate = CreateColor(0xCA97B1);
 
@@ -1751,6 +1792,7 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword(@"true", pKeywordBulitInConstants);
 	AddDefaultKeyword_C(@"nullptr", pKeywordBulitInConstants);
 	AddDefaultKeyword_C(@"NULL", pKeywordBulitInConstants);
+	
 	AddDefaultKeyword_JS(@"null", pKeywordBulitInConstants);
 	AddDefaultKeyword_JS(@"undefined", pKeywordBulitInConstants);
 	AddDefaultKeyword_JS(@"Infinity", pKeywordBulitInConstants);
@@ -1767,7 +1809,10 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword_JS(@"POSITIVE_INFINITY", pKeywordBulitInConstants);
 	AddDefaultKeyword_JS(@"SQRT1_2", pKeywordBulitInConstants);
 	AddDefaultKeyword_JS(@"SQRT2", pKeywordBulitInConstants);
+
 	
+	// JSON constants
+	AddDefaultKeyword_C(@"_", pJSONConstants);
 
 	// Exception handling
 	AddDefaultKeyword_CLike(@"try", pKeywordExceptionHandling);

@@ -13,7 +13,6 @@
 #import "../Shared Code/Xcode/IDEIndex.h"
 #import "../Shared Code/Xcode/DVTLayoutManager.h"
 
-
 @interface XCFixin_Highlight_ViewState : NSObject
 {
 	NSMutableIndexSet* _m_pIndexSet;
@@ -652,7 +651,6 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 
 		if (iChar < Length)
 		{
-		
 			if ([pWhitespaceChars characterIsMember:Character])
 			{
 				// Keep white space separate
@@ -774,36 +772,39 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 				if (iChar < Length)
 				{
 					++iChar;
-					Character = [pString characterAtIndex: iChar];
+                    if (iChar < Length)
+                    {
+                        Character = [pString characterAtIndex: iChar];
 
-					if (StartCharacter == '_' && Character == '.')
-					{
-						++iChar;
-						NSRange Range;
-						Range.location = iStart;
-						Range.length = iChar - iStart;
-						*_pEffectiveRange = Range;
+                        if (StartCharacter == '_' && Character == '.')
+                        {
+                            ++iChar;
+                            NSRange Range;
+                            Range.location = iStart;
+                            Range.length = iChar - iStart;
+                            *_pEffectiveRange = Range;
 
-						return FixupCommentBackground2(pTextView, pJSONConstants, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
-					}
-					else if (StartCharacter == '_' && Character == '=')
-					{
-						++iChar;
-						NSRange Range;
-						Range.location = iStart;
-						Range.length = iChar - iStart;
-						*_pEffectiveRange = Range;
+                            return FixupCommentBackground2(pTextView, pJSONConstants, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+                        }
+                        else if (StartCharacter == '_' && Character == '=')
+                        {
+                            ++iChar;
+                            NSRange Range;
+                            Range.location = iStart;
+                            Range.length = iChar - iStart;
+                            *_pEffectiveRange = Range;
 
-						return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
-					}
+                            return FixupCommentBackground2(pTextView, pOperator, NSIntersectionRange(*_pEffectiveRange, Bounds), false, pViewState);
+                        }
+                    }
 				}
 				
 				while (iChar < Length)
 				{
+					Character = [pString characterAtIndex: iChar];
 					if (![pIdentifierCharacterSet characterIsMember:Character])
 						break;
 					++iChar;
-					Character = [pString characterAtIndex: iChar];
 				}
 				
 				NSRange Range;
@@ -1082,7 +1083,9 @@ static struct CPrefixMap ms_PrefixMap[] =
 		, {"_f", &pFunctionParameter_Functor, false}					ignore( _fTest )
 		, {"p_f", &pFunctionParameter_Pack_Functor, false}				ignore( p_fTest ) 
 		, {"o_f", &pFunctionParameter_Output_Functor, false}			ignore( o_fTest )
+		, {"w_f", &pFunctionParameter_Output_Functor, false}			ignore( w_fTest )
 		, {"po_f", &pFunctionParameter_Output_Pack_Functor, false}		ignore( po_fTest )
+		, {"pw_f", &pFunctionParameter_Output_Pack_Functor, false}		ignore( pw_fTest )
 
 		, {"_of", &pFunctionParameter_Output_Functor, false}			ignore( _ofTest ) // Deprecate?
 		, {"p_of", &pFunctionParameter_Output_Pack_Functor, false}		ignore( p_ofTest ) // Deprecate?
@@ -1115,7 +1118,9 @@ static struct CPrefixMap ms_PrefixMap[] =
 		, {"_", &pFunctionParameter, true}								ignore( _Test )
 		, {"p_", &pFunctionParameter_Pack, true}						ignore( p_Test ) 
 		, {"o_", &pFunctionParameter_Output, true}						ignore( o_Test )
+		, {"w_", &pFunctionParameter_Output, true}						ignore( w_Test )
 		, {"po_", &pFunctionParameter_Output_Pack, true}				ignore( po_Test )
+		, {"pw_", &pFunctionParameter_Output_Pack, true}				ignore( pw_Test )
 
 		
 		, {"_o", &pFunctionParameter_Output, true}						ignore( _oTest ) // Deprecate?
@@ -2870,5 +2875,3 @@ static NSMutableDictionary *pDefaultKeywords_CSS = nil;
 }
 
 @end
-
-

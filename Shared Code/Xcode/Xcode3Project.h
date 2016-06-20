@@ -43,8 +43,8 @@
     DVTObservingToken *_needsArchiveObservingToken;
     BOOL _pbxProjectEdited;
     BOOL _shouldLogUpgradeCheck;
-    BOOL _requestsTestingUpgrade;
     NSArray *_customUpgradeTasks;
+    BOOL _requestsTestingUpgrade;
 }
 
 + (id)keyPathsForValuesAffectingTestables;
@@ -65,6 +65,7 @@
 + (id)containerFileDataType;
 + (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (void)initialize;
+@property BOOL requestsTestingUpgrade; // @synthesize requestsTestingUpgrade=_requestsTestingUpgrade;
 @property(nonatomic) BOOL pbxProjectEdited; // @synthesize pbxProjectEdited=_pbxProjectEdited;
 @property BOOL hasRunUpgradeCheck; // @synthesize hasRunUpgradeCheck=_hasRunUpgradeCheck;
 @property(retain) IDEActivityLogSection *integrityLog; // @synthesize integrityLog=_integrityLog;
@@ -107,12 +108,10 @@
 @property(readonly) BOOL lastSwiftMigrationIsCurrent;
 - (void)updateLastSwiftUpdateVersionToCurrent;
 @property(readonly) NSString *lastSwiftUpdateVersion;
-@property BOOL requestsTestingUpgrade;
-- (void)updateLastTestingUpgradeVersionToCurrent;
-- (id)lastTestingUpgradeVersion;
 @property(readonly) BOOL shouldLogUpgradeCheck;
 - (void)_runUpgradeChecksIfNecessary;
 - (BOOL)setBaseSDKPlatform:(id)arg1 forConfiguration:(id)arg2;
+- (void)enableAnalyzerLocalizabilityCheckIfNeeded;
 - (id)developmentRegion;
 - (void)removeLocalization:(id)arg1 deleteFiles:(BOOL)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (void)moveBaseLocalizationToLocalization:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
@@ -136,6 +135,7 @@
 - (void)_projectNeedsRevert:(id)arg1;
 - (BOOL)writeToFilePath:(id)arg1 forceWrite:(BOOL)arg2 error:(id *)arg3;
 - (BOOL)supportsOnDemandResources;
+- (void)holdOnDiskFilesForICloudDriveIfNecessary;
 - (void)_containerDidLoad;
 - (id)_itemBaseFilePathForFilePath:(id)arg1;
 - (id)createRootGroup;

@@ -10,12 +10,14 @@
 
 
 @class DVTFoldingManager, NSArray;
+@protocol DVTObjectLiteralMediaResourceProvider;
 
 @protocol DVTFoldingManagerDelegate <NSObject>
 - (void)foldingManager:(DVTFoldingManager *)arg1 didUnfoldRange:(struct _NSRange)arg2;
 - (void)foldingManager:(DVTFoldingManager *)arg1 didFoldRange:(struct _NSRange)arg2;
 
 @optional
-- (NSArray *)directoriesForLiteralFoldInManager:(DVTFoldingManager *)arg1;
+- (id <DVTObjectLiteralMediaResourceProvider>)mediaResourceProviderForLiteralInFoldingManager:(DVTFoldingManager *)arg1;
+- (NSArray *)directoriesForLiteralInFoldingManager:(DVTFoldingManager *)arg1;
 @end
 

@@ -14,13 +14,15 @@
 
 #import "DVTOutlineViewDelegate-Protocol.h"
 
-@class DVTNotificationToken, DVTObservingToken, DVTScopeBarView, DVTScrollView, DVTTableCellViewMultiLineHeightEstimator, DVTTimeSlicedMainThreadWorkQueue, NSButton, NSMutableArray, NSMutableSet, NSSet, NSString;
+@class DVTNotificationToken, DVTObservingToken, DVTScopeBarView, DVTScrollView, DVTTableCellViewMultiLineHeightEstimator, DVTTimeSlicedMainThreadWorkQueue, NSArray, NSButton, NSMenuItem, NSMutableArray, NSMutableSet, NSSet, NSString;
 
 @interface IDEIssueNavigator : IDEOutlineBasedNavigator <DVTOutlineViewDelegate>
 {
     DVTScopeBarView *_scopeBarView;
-    NSButton *_scopeByFileButton;
-    NSButton *_scopeByTypeButton;
+    NSButton *_scopeByBuildtimeButton;
+    NSButton *_scopeByRuntimeButton;
+    NSMenuItem *_viewByFileMenuItem;
+    NSMenuItem *_viewByTypeMenuItem;
     NSSet *_collapsedGroupsBeforeFiltering;
     NSSet *_collapsedFilesBeforeFiltering;
     NSSet *_collapsedTypesBeforeFiltering;
@@ -30,13 +32,18 @@
     DVTTableCellViewMultiLineHeightEstimator *_subIssueHeightEstimator;
     NSMutableArray *_stateChangeObservingTokens;
     unsigned long long _issueDetailLevel;
-    DVTObservingToken *_selectedNavigablesObservingToken;
+    unsigned long long _compressionValue;
+    DVTObservingToken *_numBuildtimeIssuesObservingToken;
+    DVTObservingToken *_numRuntimeIssuesObservingToken;
     DVTNotificationToken *_issueDetailLevelObservingToken;
-    BOOL _showByType;
     BOOL _restoringState;
     BOOL _clearingFilter;
+    BOOL _showByRuntime;
     BOOL _errorFilteringEnabled;
     BOOL _recentFilteringEnabled;
+    BOOL _showsCompressedStackFrames;
+    NSArray *_navigableIssueItems;
+    long long _showByType;
     NSString *_filterPatternString;
     NSMutableSet *_collapsedGroups;
     NSMutableSet *_collapsedFiles;
@@ -48,6 +55,7 @@
 
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
++ (id)keyPathsForValuesAffectingNavigableIssueItems;
 + (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (void)initialize;
 @property __weak DVTScrollView *issueNavigatorScrollView; // @synthesize issueNavigatorScrollView=_issueNavigatorScrollView;
@@ -56,9 +64,13 @@
 @property(copy, nonatomic) NSMutableSet *collapsedTypes; // @synthesize collapsedTypes=_collapsedTypes;
 @property(copy, nonatomic) NSMutableSet *collapsedFiles; // @synthesize collapsedFiles=_collapsedFiles;
 @property(copy, nonatomic) NSMutableSet *collapsedGroups; // @synthesize collapsedGroups=_collapsedGroups;
+@property(nonatomic) BOOL showsCompressedStackFrames; // @synthesize showsCompressedStackFrames=_showsCompressedStackFrames;
 @property(nonatomic) BOOL recentFilteringEnabled; // @synthesize recentFilteringEnabled=_recentFilteringEnabled;
 @property(nonatomic) BOOL errorFilteringEnabled; // @synthesize errorFilteringEnabled=_errorFilteringEnabled;
 @property(copy, nonatomic) NSString *filterPatternString; // @synthesize filterPatternString=_filterPatternString;
+@property(nonatomic) long long showByType; // @synthesize showByType=_showByType;
+@property(retain, nonatomic) NSArray *navigableIssueItems; // @synthesize navigableIssueItems=_navigableIssueItems;
+@property(nonatomic) BOOL showByRuntime; // @synthesize showByRuntime=_showByRuntime;
 // - (void).cxx_destruct;
 - (void)_revealNavigableItems:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
@@ -72,7 +84,10 @@
 - (BOOL)_isFiltered;
 - (double)outlineView:(id)arg1 estimatedHeightOfRowByItem:(id)arg2;
 - (void)_configureStandardTableViewCell:(id)arg1;
+- (id)_tableCellViewForCompressedStackFrameItem:(id)arg1;
+- (id)_genericTableCellViewForDebugNavItem:(id)arg1;
 - (id)_tableCellViewForSubIssueNavItem:(id)arg1;
+- (long long)_calculateMaxNumberOfSubtitleLines;
 - (id)_tableCellViewForIssueNavItem:(id)arg1;
 - (id)_tableCellViewForIssueTypeGroupNavItem:(id)arg1;
 - (id)_tableCellViewForFileGroupNavItem:(id)arg1;
@@ -81,6 +96,7 @@
 - (BOOL)outlineView:(id)arg1 writeItems:(id)arg2 toPasteboard:(id)arg3;
 - (void)outlineViewItemDidCollapse:(id)arg1;
 - (void)outlineViewItemDidExpand:(id)arg1;
+- (void)outlineViewItemWillExpand:(id)arg1;
 - (void)_ensureNavigableItem:(id)arg1 expansionStateIsExpanded:(BOOL)arg2;
 - (id)_itemsMatchingState:(id)arg1;
 - (id)_leafIssueNavigableInIssuePath:(id)arg1 parentNavigable:(id)arg2 idToNavigableDict:(id)arg3;
@@ -96,6 +112,8 @@
 - (id)_stateIdentifierForIssueFileGroup:(id)arg1 parentNavigable:(id)arg2;
 - (id)_stateIdentifierForIssueGroup:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+- (void)contextMenu_viewByType:(id)arg1;
+- (void)contextMenu_viewByFile:(id)arg1;
 - (void)contextMenu_revealInLog:(id)arg1;
 - (void)contextMenu_copy:(id)arg1;
 - (void)copy:(id)arg1;
@@ -114,13 +132,15 @@
 - (id)structureEditorOpenSpecifierForLogDocumentForIssue:(id)arg1 error:(id *)arg2;
 - (id)structureNavigableItemForIssuesNavigable:(id)arg1 error:(id *)arg2;
 - (id)_urlOfRepresentedObject:(id)arg1;
-- (void)showByFile:(id)arg1;
-- (void)showByType:(id)arg1;
+- (void)scopeByRuntime:(id)arg1;
+- (void)scopeByBuildtime:(id)arg1;
 - (id)domainIdentifier;
-@property BOOL showByType;
+@property(readonly) BOOL derivedShowByType;
+- (id)issueManager;
 - (void)primitiveInvalidate;
 - (void)_handleDetailLevelDefaultDidChange;
 - (void)viewDidInstall;
+- (void)_updateScopeButtons;
 - (void)loadView;
 
 // Remaining properties

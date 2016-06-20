@@ -65,6 +65,7 @@
 }
 
 + (id)keyPathsForValuesAffectingUserWantsBreakpointsActivated;
++ (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
 + (void)initialize;
 + (id)workspaceWindowControllerForWindow:(id)arg1;
 + (id)keyPathsForValuesAffectingEditorArea;

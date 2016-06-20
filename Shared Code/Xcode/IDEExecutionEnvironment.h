@@ -12,7 +12,7 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTStackBacktrace, IDEActivityLogSection, IDEBreakpointManager, IDEBuildOperation, IDEExecutionTracker, IDEInMemoryLogStore, IDELaunchSession, IDELogStore, IDEWorkspace, IDEWorkspaceArena, NSArray, NSCountedSet, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSOperationQueue, NSSet, NSString;
+@class DVTObservingToken, DVTStackBacktrace, IDEActivityLogSection, IDEBreakpointManager, IDEBuildOperation, IDEExecutionTracker, IDEInMemoryLogStore, IDELaunchSession, IDELogStore, IDEWorkspace, IDEWorkspaceArena, NSArray, NSCountedSet, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSOperationQueue, NSSet, NSString;
 @protocol IDEClientTracking, IDEPreBuildSavingDelegate;
 
 @interface IDEExecutionEnvironment : NSObject <DVTInvalidation>
@@ -35,6 +35,9 @@
     NSMapTable *_ibLogsByBuildable;
     BOOL _handlingLaunchSessionStateChange;
     BOOL _settingLaunchSessionForTabChange;
+    NSMutableArray *_debugSessions;
+    DVTObservingToken *_currentDebugSessionObserverToken;
+    DVTObservingToken *_currentTraceInferiorSessionObserverToken;
     IDEWorkspace *_workspace;
     IDEExecutionTracker *_currentExecutionTracker;
     IDEWorkspaceArena *_workspaceArena;
@@ -103,17 +106,20 @@
 @property(readonly) NSArray *executionTrackersOfOperationsWithBuilds;
 @property(readonly) IDEBreakpointManager *breakpointManager;
 - (void)primitiveInvalidate;
+- (void)_setupDebugSessionsObservation;
 - (id)initWithWorkspaceArena:(id)arg1;
 
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSArray *debugSessions; // @dynamic debugSessions;
 @property(readonly, copy) NSString *description;
 @property(readonly, copy) NSSet *executedActionInvocationRecords; // @dynamic executedActionInvocationRecords;
 @property(readonly, copy) NSArray *executionTrackers; // @dynamic executionTrackers;
 @property(readonly, copy) NSArray *executionTrackersForDisplay; // @dynamic executionTrackersForDisplay;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, copy) NSArray *launchSessions; // @dynamic launchSessions;
+@property(readonly, copy) NSMutableArray *mutableDebugSessions; // @dynamic mutableDebugSessions;
 @property(readonly, copy) NSMutableOrderedSet *mutableExecutedActionInvocationRecords; // @dynamic mutableExecutedActionInvocationRecords;
 @property(readonly, copy) NSMutableArray *mutableExecutionTrackers; // @dynamic mutableExecutionTrackers;
 @property(readonly, copy) NSMutableArray *mutableExecutionTrackersForDisplay; // @dynamic mutableExecutionTrackersForDisplay;

@@ -74,7 +74,9 @@
 // - (void).cxx_destruct;
 - (id)symbolDumpForFile:(id)arg1;
 - (id)targetIdentifiersForFile:(id)arg1;
+- (void)mainFilesForFile:(id)arg1 queue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (id)mainFilesForFile:(id)arg1;
+- (void)sdkForFile:(id)arg1 queue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (id)sdkForFile:(id)arg1;
 - (id)timestampForFile:(id)arg1;
 - (void)_buildOperationDidStop:(id)arg1;
@@ -160,6 +162,7 @@
 - (BOOL)_reopenDatabaseWithRemoval:(BOOL)arg1;
 - (BOOL)_createDatabaseFolder;
 - (void)_setupObservers;
+- (id)collectTestMethodsPerTestTargets;
 - (id)allAutoImportItemsMatchingKind:(id)arg1 symbolLanguage:(id)arg2;
 - (id)allAutoImportItemsMatchingKind:(id)arg1;
 - (id)filesWithSymbolOccurrencesMatchingName:(id)arg1 kind:(id)arg2;
@@ -171,6 +174,8 @@
 - (id)membersMatchingKinds:(id)arg1 forInterfaces:(id)arg2;
 - (id)symbolsForResolutions:(id)arg1;
 - (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2;
+- (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 cursorKindOut:(long long *)arg3;
+- (id)parsedCodeCommentAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 symbolKindOut:(id *)arg3;
 - (id)codeDiagnosticsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2;
 - (id)codeCompletionsAtLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2 completionContext:(id *)arg3;
 - (id)allParentsOfSymbols:(id)arg1 cancelWhen:(CDUnknownBlockType)arg2;
@@ -178,6 +183,7 @@
 - (unsigned long long)countOfSymbolsMatchingKind:(id)arg1 workspaceOnly:(BOOL)arg2;
 - (id)allSymbolsMatchingKind:(id)arg1 workspaceOnly:(BOOL)arg2 cancelWhen:(CDUnknownBlockType)arg3;
 - (id)allSymbolsMatchingKind:(id)arg1 workspaceOnly:(BOOL)arg2;
+- (void)allSymbolsMatchingKind:(id)arg1 queue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (id)allSymbolsMatchingKind:(id)arg1;
 - (id)testMethodsForClasses:(id)arg1;
 - (id)testCaseBaseClasses;
@@ -195,6 +201,7 @@
 - (id)referencesToSymbolMatchingName:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3;
 - (id)referencesToSymbol:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3;
 - (id)symbolsUsedInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2;
+- (void)symbolsOccurrencesInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2 queue:(id)arg3 completionBlock:(CDUnknownBlockType)arg4;
 - (id)symbolsOccurrencesInContext:(id)arg1 withCurrentFileContentDictionary:(id)arg2;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2 withCurrentFileContentDictionary:(id)arg3;
 - (id)symbolsMatchingName:(id)arg1 inContext:(id)arg2;

@@ -58,6 +58,7 @@
 - (BOOL)outlineView:(id)arg1 writeItems:(id)arg2 toPasteboard:(id)arg3;
 - (void)titleDidChangeForTableCellView:(id)arg1;
 - (struct _NSRange)initialSelectionRangeForTableCellView:(id)arg1 usingProposedRange:(struct _NSRange)arg2;
+- (void)_updateContainerLoadStatusViewBindings:(id)arg1;
 - (void)_updateSCMStatusViewBindings:(id)arg1;
 - (id)_tableCellViewForDefaultNavItem:(id)arg1;
 - (id)outlineView:(id)arg1 viewForTableColumn:(id)arg2 item:(id)arg3;
@@ -131,14 +132,12 @@
 - (void)newGroupFolderOrPage:(id)arg1;
 - (void)addTemplateInstantiatedItems:(id)arg1 primaryItem:(id)arg2 shouldEdit:(BOOL)arg3;
 - (void)expandInstantiatedTemplateItem:(id)arg1;
-- (void)setupTemplateContext:(id)arg1;
+- (void)setupTemplateContext:(id)arg1 forTemplateKind:(id)arg2;
 - (id)defaultDestinationGroupForTemplateInstantiationWithDestinationIndex:(long long *)arg1;
-- (BOOL)_setupTemplateContext:(id)arg1 useContextualMenuSelection:(BOOL)arg2;
+- (BOOL)_setupTemplateContext:(id)arg1 forTemplateKind:(id)arg2 useContextualMenuSelection:(BOOL)arg3;
 - (id)_destinationGroupForSelectedItem:(id)arg1 destinationIndex:(long long *)arg2;
 - (void)focusedEditorDidSelectItem:(id)arg1;
-- (BOOL)shouldOpenNavigableItem:(id)arg1 eventType:(unsigned long long)arg2;
-- (BOOL)_shouldSupressContentDocumentLocationForURL:(id)arg1;
-- (void)_toggleExpandedStateOf:(id)arg1;
+- (BOOL)_shouldSupressNavigationForURL:(id)arg1;
 - (id)openSpecifierForNavigableItem:(id)arg1 error:(id *)arg2;
 - (void)_editChildItemAtIndex:(unsigned long long)arg1 ofParentItem:(id)arg2;
 - (void)_editContainerItem:(id)arg1;

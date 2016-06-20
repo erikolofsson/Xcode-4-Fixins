@@ -12,7 +12,7 @@
 
 #import "IDENavigableItem.h"
 
-@class DVTObservingToken, NSDictionary, NSString;
+@class DVTObservingToken, NSDictionary;
 @protocol IDEKeyDrivenNavigableItemRepresentedObject;
 
 @interface IDEKeyDrivenNavigableItem : IDENavigableItem
@@ -58,6 +58,7 @@
 - (id)identifierForChildItem:(id)arg1;
 - (BOOL)_automatic_isMajorGroup;
 - (BOOL)isMajorGroup;
+- (BOOL)missingReferencedContentIsImportant;
 - (BOOL)referencedContentExists;
 - (id)contentDocumentLocation;
 - (id)documentType;
@@ -66,7 +67,7 @@
 - (id)toolTip;
 - (id)accessibleImageDescription;
 - (id)image;
-@property(readonly, nonatomic) NSString *subtitle;
+- (id)subtitle;
 - (id)name;
 - (void)_setRepresentedObject:(id)arg1;
 - (void)_invalidateValueForKey:(id)arg1;

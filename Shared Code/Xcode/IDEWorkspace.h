@@ -14,11 +14,12 @@
 
 #import "IDEClientTracking-Protocol.h"
 #import "IDEIntegrityLogDataSource-Protocol.h"
+#import "IDEProvisionableProvider-Protocol.h"
 
-@class DVTFilePath, DVTObservingToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDEActivityLogSection, IDEBatchFindManager, IDEBreakpointManager, IDEConcreteClientTracker, IDEContainer, IDEContainerQuery, IDEDeviceInstallWorkspaceMonitor, IDEExecutionEnvironment, IDEIndex, IDEIssueManager, IDELocalizationManager, IDELogManager, IDERefactoring, IDERunContextManager, IDESourceControlWorkspaceMonitor, IDETestManager, IDETextIndex, IDEWorkspaceArena, IDEWorkspaceSharedSettings, IDEWorkspaceUpgradeTasksController, IDEWorkspaceUserSettings, NSArray, NSDictionary, NSHashTable, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSMutableSet, NSSet, NSString;
-@protocol IDEActiveRunContextStoring, IDEContinuousIntegrationBotMonitor, IDECustomDataStoring, IDEWorkspaceDelegate;
+@class DVTFilePath, DVTNotificationToken, DVTObservingToken, DVTPortalProfilePurpose, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDEActivityLogSection, IDEBatchFindManager, IDEBreakpointManager, IDEConcreteClientTracker, IDEContainer, IDEContainerQuery, IDEDeviceInstallWorkspaceMonitor, IDEExecutionEnvironment, IDEIndex, IDEIssueManager, IDELocalizationManager, IDELogManager, IDEProvisioningManager, IDEProvisioningWorkspaceMonitor, IDERefactoring, IDERunContextManager, IDESourceControlWorkspaceMonitor, IDETestManager, IDETextIndex, IDEWorkspaceArena, IDEWorkspaceSharedSettings, IDEWorkspaceUpgradeTasksController, IDEWorkspaceUserSettings, NSArray, NSDate, NSDictionary, NSHashTable, NSMapTable, NSMutableArray, NSMutableOrderedSet, NSMutableSet, NSSet, NSString, _TtC16DVTDocumentation23DVTDocumentationManager;
+@protocol IDEActiveRunContextStoring, IDEBuildSystemServiceProvider, IDECustomDataStoring, IDEProvisionable, IDEWorkspaceDelegate;
 
-@interface IDEWorkspace : IDEXMLPackageContainer <IDEClientTracking, IDEIntegrityLogDataSource>
+@interface IDEWorkspace : IDEXMLPackageContainer <IDEClientTracking, IDEIntegrityLogDataSource, IDEProvisionableProvider>
 {
     NSString *_untitledName;
     IDEWorkspaceArena *_workspaceArena;
@@ -42,6 +43,7 @@
     IDEBreakpointManager *_breakpointManager;
     IDEBatchFindManager *_batchFindManager;
     IDETestManager *_testManager;
+    _TtC16DVTDocumentation23DVTDocumentationManager *_documentationManager;
     IDEContainerQuery *_indexableSourceQuery;
     DVTObservingToken *_indexableSourceQueryObservingToken;
     NSMapTable *_observedIndexableSourcesToObservingTokensTable;
@@ -54,14 +56,18 @@
     DVTTimeSlicedMainThreadWorkQueue *_fileReferenceForIndexingQueue;
     IDETextIndex *_textIndex;
     IDEDeviceInstallWorkspaceMonitor *_deviceInstallWorkspaceMonitor;
+    IDEProvisioningWorkspaceMonitor *_provisioningWorkspaceMonitor;
     IDESourceControlWorkspaceMonitor *_sourceControlWorkspaceMonitor;
+    IDEProvisioningManager *_provisioningManager;
     IDELocalizationManager *_localizationManager;
+    id <IDEBuildSystemServiceProvider> _buildSystemServiceProvider;
     DVTFilePath *_wrappedContainerPath;
     IDEContainer<IDECustomDataStoring> *_wrappedContainer;
     DVTObservingToken *_wrappedContainerValidObservingToken;
     DVTObservingToken *_newWrappedContainerObservingToken;
     NSHashTable *_pendingReferencedFileReferences;
     NSHashTable *_pendingReferencedContainers;
+    DVTNotificationToken *_holdFilesOnAppActivationNotificationToken;
     IDEConcreteClientTracker *_clientTracker;
     NSHashTable *_fileReferencesForProblem8727051;
     DVTObservingToken *_finishedLoadingObservingToken;
@@ -86,12 +92,14 @@
     BOOL _hostsOnlyXcode3Project;
     BOOL _hostsOnlyPlayground;
     BOOL _isPotentiallyClosing;
-    id <IDEContinuousIntegrationBotMonitor> _xcs2WorkspaceBotMonitor;
     IDEWorkspaceUpgradeTasksController *_deferredUpgradeTasksController;
+    NSDate *_icloudDriveLastHeldDate;
     long long _indexGenerationCounter;
     id <IDEActiveRunContextStoring> _activeRunContextStore;
 }
 
++ (id)keyPathsForValuesAffectingProvisionableDevices;
++ (id)keyPathsForValuesAffectingProvisionables;
 + (BOOL)_shouldTrackReadOnlyStatus;
 + (id)keyPathsForValuesAffectingRepresentingCustomDataStore;
 + (id)keyPathsForValuesAffectingHostsOnlyPlayground;
@@ -113,6 +121,7 @@
 @property(readonly, nonatomic) long long indexGenerationCounter; // @synthesize indexGenerationCounter=_indexGenerationCounter;
 @property(nonatomic) BOOL isPotentiallyClosing; // @synthesize isPotentiallyClosing=_isPotentiallyClosing;
 @property BOOL isCleaningBuildFolder; // @synthesize isCleaningBuildFolder=_isCleaningBuildFolder;
+@property(copy) NSDate *icloudDriveLastHeldDate; // @synthesize icloudDriveLastHeldDate=_icloudDriveLastHeldDate;
 @property(retain) IDEWorkspaceUpgradeTasksController *deferredUpgradeTasksController; // @synthesize deferredUpgradeTasksController=_deferredUpgradeTasksController;
 @property(retain, nonatomic) IDEWorkspaceSharedSettings *sharedSettings; // @synthesize sharedSettings=_sharedSettings;
 @property(retain, nonatomic) IDEWorkspaceUserSettings *userSettings; // @synthesize userSettings=_userSettings;
@@ -124,8 +133,9 @@
 @property(readonly) DVTFilePath *wrappedContainerPath; // @synthesize wrappedContainerPath=_wrappedContainerPath;
 @property(readonly, nonatomic) BOOL postLoadingPerformanceMetricsAllowed; // @synthesize postLoadingPerformanceMetricsAllowed=_postLoadingPerformanceMetricsAllowed;
 @property(nonatomic) BOOL finishedLoading; // @synthesize finishedLoading=_finishedLoading;
-@property(retain, nonatomic) id <IDEContinuousIntegrationBotMonitor> xcs2WorkspaceBotMonitor; // @synthesize xcs2WorkspaceBotMonitor=_xcs2WorkspaceBotMonitor;
+@property(retain, nonatomic) IDEProvisioningManager *provisioningManager; // @synthesize provisioningManager=_provisioningManager;
 @property(retain) IDESourceControlWorkspaceMonitor *sourceControlWorkspaceMonitor; // @synthesize sourceControlWorkspaceMonitor=_sourceControlWorkspaceMonitor;
+@property(retain) IDEProvisioningWorkspaceMonitor *provisioningWorkspaceMonitor; // @synthesize provisioningWorkspaceMonitor=_provisioningWorkspaceMonitor;
 @property(retain) IDEDeviceInstallWorkspaceMonitor *deviceInstallWorkspaceMonitor; // @synthesize deviceInstallWorkspaceMonitor=_deviceInstallWorkspaceMonitor;
 @property(readonly) IDERefactoring *refactoring; // @synthesize refactoring=_refactoring;
 @property(readonly) IDETextIndex *textIndex; // @synthesize textIndex=_textIndex;
@@ -133,6 +143,10 @@
 @property(retain) IDERunContextManager *runContextManager; // @synthesize runContextManager=_runContextManager;
 @property BOOL initialContainerScanComplete; // @synthesize initialContainerScanComplete=_initialContainerScanComplete;
 // - (void).cxx_destruct;
+@property(readonly, nonatomic) DVTPortalProfilePurpose *automaticProvisioningPurpose;
+@property(readonly, nonatomic) NSSet *provisionableDevices;
+@property(readonly, nonatomic) NSSet<IDEProvisionable> *provisionables;
+- (void)notifyBuildSystemServiceProviderThatBlueprintProviderDidChange:(id)arg1;
 - (id)buildableProductsForBaseName:(id)arg1;
 - (void)_handleIndexablesChange:(id)arg1;
 - (void)didCreateIndex:(id)arg1;
@@ -141,6 +155,7 @@
 - (void)_setupWorkspaceUpgradeTasksController;
 - (void)_setupSourceControlWorkspaceMonitorIfNeeded;
 - (void)_initializeSourceControlWorkspaceMonitor;
+- (void)_setupProvisioningWorkspaceMonitor;
 - (void)_setupDeviceInstallWorkspaceMonitor;
 - (void)beginTextIndexing;
 - (id)tearDownIndexAndRefactoring;
@@ -157,7 +172,6 @@
 @property(readonly, getter=isSimpleFilesFocused) BOOL simpleFilesFocused;
 - (void)_setSimpleFilesFocused:(BOOL)arg1;
 - (void)_primitiveSetSimpleFilesFocused:(BOOL)arg1;
-- (void)setSimpleFilesFocused:(BOOL)arg1;
 @property(readonly) NSString *representingTitle;
 @property(readonly) DVTFilePath *representingFilePath;
 @property(retain) IDEExecutionEnvironment *executionEnvironment;
@@ -167,7 +181,9 @@
 - (float)archiveVersion;
 - (id)displayName;
 @property(readonly) NSString *name;
+@property(readonly) id <IDEBuildSystemServiceProvider> buildSystemServiceProvider;
 @property(readonly) IDELocalizationManager *localizationManager;
+@property(retain) _TtC16DVTDocumentation23DVTDocumentationManager *documentationManager; // @dynamic documentationManager;
 @property(retain) IDETestManager *testManager; // @dynamic testManager;
 - (void)setBatchFindManager:(IDEBatchFindManager *)arg1;
 @property(readonly) IDEBatchFindManager *batchFindManager;
@@ -221,7 +237,7 @@
 - (void)_checkIfHasFinishedLoading;
 - (void)_finishLoadingAsynchronously:(BOOL)arg1 shouldUpgradeFromSimpleFilesFocused:(BOOL)arg2;
 - (void)_setupWorkspaceArenaIfNeeded;
-- (void)_setUpBotMonitor;
+- (void)holdOnDiskFilesForICloudDriveIfNecessary;
 @property(readonly) IDEActivityLogSection *integrityLog;
 - (void)analyzeModelIntegrity;
 - (void)_setFileRefsWithContainerLoadingIssues:(id)arg1;
@@ -235,29 +251,15 @@
 - (id)_openingPerformanceMetricIdentifier;
 - (void)dvt_encodeRelationshipsWithXMLArchiver:(id)arg1 version:(id)arg2;
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1 version:(id)arg2;
-- (void)insertInSdefSupport_symbolicBreakpoints:(id)arg1 atIndex:(unsigned long long)arg2;
-- (void)insertInSdefSupport_fileBreakpoints:(id)arg1 atIndex:(unsigned long long)arg2;
-- (void)insertInSdefSupport_breakpoints:(id)arg1 atIndex:(unsigned long long)arg2;
-- (id)sdefSupport_newXcode3GroupWithProperties:(id)arg1;
-- (id)sdefSupport_newXcode3FileReferenceWithProperties:(id)arg1;
-- (id)sdefSupport_newSymbolicBreakpointWithProperties:(id)arg1;
-- (id)sdefSupport_newRunContextWithProperties:(id)arg1;
-- (id)sdefSupport_newProjectForDocument:(id)arg1 withContentsValue:(id)arg2 andProperties:(id)arg3;
-- (id)sdefSupport_newItemReferenceWithProperties:(id)arg1;
-- (id)sdefSupport_newGroupWithProperties:(id)arg1;
-- (id)sdefSupport_newFileReferenceWithProperties:(id)arg1;
-- (id)sdefSupport_newFileBreakpointWithProperties:(id)arg1;
-- (id)sdefSupport_newBuildMessagesWithProperties:(id)arg1;
-- (id)sdefSupport_newBreakpointWithProperties:(id)arg1;
+- (void)setSdefSupport_activeRunDestination:(id)arg1;
+- (id)sdefSupport_activeRunDestinationForDocument:(id)arg1;
+- (id)sdefSupport_runDestinationsForDocument:(id)arg1;
+- (id)_disambiguatedRunDestinations;
+- (void)setSdefSupport_activeScheme:(id)arg1;
+- (id)sdefSupport_activeSchemeForDocument:(id)arg1;
+- (id)sdefSupport_schemesForDocument:(id)arg1;
 - (id)newScriptingObjectOfClass:(Class)arg1 forValueForKey:(id)arg2 withContentsValue:(id)arg3 properties:(id)arg4;
-- (id)sdefSupport_symbolicBreakpointsForDocument:(id)arg1;
-- (id)sdefSupport_fileBreakpointsForDocument:(id)arg1;
-- (id)sdefSupport_breakpointsForDocument:(id)arg1;
-- (void)setSdefSupport_buildFolderName:(id)arg1;
-- (id)sdefSupport_buildFolderName;
 - (id)ideModelObjectTypeIdentifier;
-- (id)patchesDirectoryWrapper;
-- (id)patchesDirectory;
 
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;

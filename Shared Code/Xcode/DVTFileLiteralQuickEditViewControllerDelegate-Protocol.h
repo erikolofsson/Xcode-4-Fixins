@@ -8,19 +8,11 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-#include "Shared.h"
 
-#import "IDEKeyDrivenNavigableItem.h"
+@class DVTFileLiteralQuickEditViewController, DVTFilePath;
 
-@interface IDEIssueNavigableItem : IDEKeyDrivenNavigableItem
-{
-}
-
-- (id)childRepresentedObjects;
-- (BOOL)isLeaf;
-- (id)subtitle;
-- (id)name;
-- (int)_parentage;
-
+@protocol DVTFileLiteralQuickEditViewControllerDelegate <NSObject>
+- (void)fileQuickEdit:(DVTFileLiteralQuickEditViewController *)arg1 didClickMoreButtonForFilePath:(DVTFilePath *)arg2;
+- (void)fileQuickEdit:(DVTFileLiteralQuickEditViewController *)arg1 didSelectFilePath:(DVTFilePath *)arg2;
 @end
 

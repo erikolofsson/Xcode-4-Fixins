@@ -18,6 +18,7 @@
 
 @interface IDENavigableItem : NSObject <DVTTableCellViewLazyProperties, DVTInvalidation>
 {
+    int _retainCount;
     id _observationInfo;
     IDENavigableItemCoordinator *_coordinator;
     NSMutableArray *_childItems;
@@ -31,6 +32,7 @@
         unsigned int _debug_8061745_shouldCaptureInvalidationBacktrace:1;
         unsigned int _observersRegisteredWithOldOrPriorOption:1;
         unsigned int _isBeingForgotten:1;
+        unsigned int _representedObjectConformsToInvalidation:1;
     } _ideniFlags;
     id _representedObject;
     IDENavigableItem *_parentItem;
@@ -67,6 +69,8 @@
 - (id)_navigableItemForExternalDrag;
 - (id)_navigableItemForNavigation;
 - (id)contextualValueForProperty:(id)arg1;
+- (void)_setDomainProvider:(Class)arg1;
+- (Class)_domainProvider;
 - (id)descendantItemForRepresentedObject:(id)arg1 stopAtClass:(Class)arg2;
 - (id)descendantItemForRepresentedObject:(id)arg1;
 - (id)childItemsToSearchForFindingDescendant:(id)arg1;
@@ -111,6 +115,7 @@
 - (BOOL)_isWrappingDocumentFileReference;
 - (void)setName:(NSString *)arg1;
 @property(nonatomic) BOOL _forgetting; // @dynamic _forgetting;
+@property(readonly, nonatomic) BOOL isEffectivelyValid;
 - (void)primitiveInvalidate;
 - (void)addObserver:(id)arg1 forKeyPath:(id)arg2 options:(unsigned long long)arg3 context:(void *)arg4;
 - (id)observationInfo;
@@ -134,6 +139,7 @@
 - (id)nearestDocumentFileReferenceProvidingAncestor;
 - (id)greatestDocumentAncestor;
 @property(readonly, nonatomic) NSString *groupIdentifier;
+@property(readonly, nonatomic) BOOL missingReferencedContentIsImportant;
 @property(readonly, nonatomic) BOOL referencedContentExists;
 @property(readonly, nonatomic) IDEFileReference *fileReference;
 @property(readonly, nonatomic) NSColor *textColor;
@@ -142,6 +148,7 @@
 @property(readonly, nonatomic, getter=isMajorGroup) BOOL majorGroup;
 @property(readonly, nonatomic) DVTFileDataType *documentType;
 @property(readonly, nonatomic) BOOL isDocumentNavigableItem;
+- (int)_titleStyleForMissingContent;
 - (int)_titleStyleForReferencedContentExistance;
 - (id)ide_inferredURLFromRepresentedObject;
 - (BOOL)ide_canStructureEditName;
@@ -164,6 +171,11 @@
 - (id)persistentNameTreeForNavigableItems:(id)arg1 error:(id *)arg2;
 - (id)_fillRootDict:(id)arg1 withItem:(id)arg2 isTerminus:(BOOL)arg3;
 - (id)_navigableItemWithName:(id)arg1 inArray:(id)arg2;
+- (BOOL)_isDeallocating;
+- (BOOL)_tryRetain;
+- (unsigned long long)retainCount;
+- (oneway void)release;
+- (id)retain;
 
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;

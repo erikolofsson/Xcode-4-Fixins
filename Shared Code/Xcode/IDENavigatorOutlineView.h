@@ -14,37 +14,30 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTDelayedInvocation, DVTNotificationToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDENavigableItemFilter, NSArray, NSHashTable, NSMapTable, NSMutableArray, NSPredicate, NSSet, NSString, _IDENavigatorOutlineViewDataSource, _IDEOutlineViewGroupInfo;
-@protocol IDENavigatorOutlineViewLoadingDelegate;
+@class DVTDelayedInvocation, DVTNotificationToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDENavigableItemFilter, NSArray, NSHashTable, NSMapTable, NSMutableArray, NSPredicate, NSSet, NSString, _IDENavigatorOutlineViewDataSource;
 
 @interface IDENavigatorOutlineView : DVTOutlineView <DVTInvalidation>
 {
     long long _batchRowUpdateCount;
-    id _itemBeingFullyReloaded;
     NSHashTable *_unfilteredRootItems;
     DVTDelayedInvocation *_delayedInvocation;
-    NSString *_emptyContentStringCopy;
     SEL _keyAction;
-    id <IDENavigatorOutlineViewLoadingDelegate> _loadingDelegate;
-    _IDEOutlineViewGroupInfo *_groupInfo;
     NSMapTable *_cachedRowItemsToHeights;
     _IDENavigatorOutlineViewDataSource *_interposedDelegate;
     _IDENavigatorOutlineViewDataSource *_interposedDataSource;
     BOOL _isLiveScrolling;
+    BOOL _suspendPushingOutlineViewSelectionToBoundObjects;
     NSMutableArray *_entriesToRestoreToVisibleRect;
     DVTNotificationToken *_variableRowHeightLiveScrollStartObserver;
     DVTNotificationToken *_variableRowHeightLiveScrollEndObserver;
     DVTDelayedInvocation *_variableRowHeightVisibleRowsHeightCalculatorInvocation;
     struct {
         unsigned int _needsToPushRowSelection:1;
-        unsigned int _needsToRefreshBoundSelectedObjects:1;
         unsigned int _needsToRefreshBoundExpandedItems:1;
         unsigned int _suspendRowHeightInvalidation:1;
         unsigned int _doingBatchExpand:1;
         unsigned int _filteringEnabled:1;
         unsigned int _scrollSelectionToVisibleAfterRefreshingSelection:1;
-        unsigned int _hasContent:1;
-        unsigned int _didDrawContent:1;
         unsigned int _resettingRootItems:1;
         unsigned int _reloadingItems:1;
         unsigned int _didRecieveKeyDownEvent:1;
@@ -56,8 +49,6 @@
     BOOL _filteringActive;
     BOOL _supportsVariableHeightCells;
     BOOL _tracksSelectionVisibleRect;
-    BOOL _disableSourceListSelectionStyle;
-    double _groupHeaderRowHeight;
     IDENavigableItemFilter *_filter;
     NSPredicate *_filterPredicate;
     NSSet *_editorSelectedNavigableItems;
@@ -69,8 +60,6 @@
 + (id)keyPathsForValuesAffectingEmptyContentString;
 + (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (void)initialize;
-@property(nonatomic) BOOL disableSourceListSelectionStyle; // @synthesize disableSourceListSelectionStyle=_disableSourceListSelectionStyle;
-@property(retain) id <IDENavigatorOutlineViewLoadingDelegate> loadingDelegate; // @synthesize loadingDelegate=_loadingDelegate;
 @property(readonly) long long filterProgress; // @synthesize filterProgress=_filterProgress;
 @property(retain) DVTTimeSlicedMainThreadWorkQueue *expandingItemsWorkQueue; // @synthesize expandingItemsWorkQueue=_expandingItemsWorkQueue;
 @property BOOL tracksSelectionVisibleRect; // @synthesize tracksSelectionVisibleRect=_tracksSelectionVisibleRect;
@@ -80,24 +69,13 @@
 @property(readonly, getter=isFilteringActive) BOOL filteringActive; // @synthesize filteringActive=_filteringActive;
 @property(copy, nonatomic) NSPredicate *filterPredicate; // @synthesize filterPredicate=_filterPredicate;
 @property(retain, nonatomic) IDENavigableItemFilter *filter; // @synthesize filter=_filter;
-@property double groupHeaderRowHeight; // @synthesize groupHeaderRowHeight=_groupHeaderRowHeight;
 // - (void).cxx_destruct;
 - (void)processPendingChanges;
-- (void)drawRect:(struct CGRect)arg1;
 - (void)scrollSelectionToVisible;
 - (BOOL)scrollRectToVisible:(struct CGRect)arg1;
 - (struct _NSRange)initialSelectionRangeForCell:(id)arg1 proposedRange:(struct _NSRange)arg2;
 - (struct CGRect)frameOfOutlineCellAtRow:(long long)arg1;
-- (struct CGRect)frameOfCellAtColumn:(long long)arg1 row:(long long)arg2;
 - (double)_indentationForRow:(long long)arg1 withLevel:(long long)arg2 isSourceListGroupRow:(BOOL)arg3;
-- (BOOL)groupWithRangeShouldDrawLeftDivider:(struct _NSRange)arg1;
-- (struct _NSRange)rowRangeForEnclosingGroupOfItem:(id)arg1;
-- (struct _NSRange)rowRangeForEnclosingGroupOfTreeNode:(id)arg1;
-- (id)enclosingGroupItemForItem:(id)arg1;
-- (id)enclosingGroupInfoForRow:(long long)arg1;
-- (void)selectRowIndexes:(id)arg1 byExtendingSelection:(BOOL)arg2;
-- (BOOL)_hasExpandedGroups;
-- (void)_setNeedsDisplayInSelectedRows;
 - (void)accessibilitySetSelectedRowsAttribute:(id)arg1;
 - (void)keyUp:(id)arg1;
 - (void)keyDown:(id)arg1;
@@ -119,11 +97,6 @@
 - (void)reloadItem:(id)arg1 reloadChildren:(BOOL)arg2;
 - (void)_restoreEntriesToVisibleRect;
 - (void)_rememberEntriesToRestoreToVisibleRect;
-- (void)item:(id)arg1 expandedAddingRows:(long long)arg2;
-- (void)registerGroupHeaderItem:(id)arg1 atRow:(unsigned long long)arg2;
-- (void)printGroupInfo;
-- (void)_clearGroupingInfo;
-- (id)itemBeingFullyReloaded;
 @property(readonly, getter=isReloadingItems) BOOL reloadingItems;
 - (BOOL)sendAction:(SEL)arg1 to:(id)arg2;
 - (void)_setSecondaryHighlight:(BOOL)arg1 forNavigableItem:(id)arg2;
@@ -131,7 +104,7 @@
 - (void)_refreshDisplayForItem:(id)arg1;
 - (void)updateBoundExpandedItems;
 - (void)updateBoundSelectedObjects;
-- (void)publishBoundSelectedObjects;
+- (void)_pushOutlineViewSelectionToBoundObjects;
 - (void)_updateBoundContentArrayOrSet;
 - (void)updateBoundContentSet;
 - (void)updateBoundContentArray;
@@ -148,10 +121,8 @@
 - (void)_recalculateAndCacheHeightForRowView:(id)arg1 row:(long long)arg2;
 - (void)noteAllRowHeightsMayHaveChanged;
 - (void)noteHeightOfRowsWithIndexesChanged:(id)arg1;
-- (void)setShouldSuspendPublishBoundSelectedObjects:(BOOL)arg1;
-- (BOOL)shouldSuspendPublishBoundSelectedObjects;
-- (void)concludeBatchRowUpdates;
-- (void)beginBatchRowUpdates;
+- (void)_concludeBatchRowUpdates;
+- (void)_beginBatchRowUpdates;
 - (void)setShouldSuspendRowHeightInvalidation:(BOOL)arg1;
 - (BOOL)shouldSuspendRowHeightInvalidation;
 - (void)collapseItem:(id)arg1;
@@ -160,7 +131,7 @@
 - (void)expandItem:(id)arg1;
 - (void)expandItem:(id)arg1 expandChildren:(BOOL)arg2;
 - (void)expandAncestorsForItem:(id)arg1;
-- (void)_expandAncestorsForItem:(id)arg1;
+- (void)_expandAncestorsForNavigableItem:(id)arg1;
 - (void)setFilteringEnabled:(BOOL)arg1;
 - (BOOL)filteringEnabled;
 - (BOOL)filteringActive;

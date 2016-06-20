@@ -12,7 +12,7 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTStackBacktrace, IDERunDestination, IDEScheme, IDEWorkspace, NSArray, NSCountedSet, NSMapTable, NSMutableArray, NSMutableSet, NSString;
+@class DVTStackBacktrace, IDERunDestination, IDEScheme, IDEWorkspace, NSArray, NSCountedSet, NSEvent, NSMapTable, NSMutableArray, NSMutableSet, NSString;
 
 @interface IDERunContextManager : NSObject <DVTInvalidation>
 {
@@ -25,6 +25,7 @@
     IDERunDestination *_activeRunDestination;
     NSMutableArray *_ignoredChangesDevices;
     NSCountedSet *_schemeNameCounts;
+    NSEvent *_schemeForcedSwitchEvent;
     BOOL _bulkChangingBlueprints;
     BOOL _blueprintChangedDuringBulkChanges;
 }
@@ -75,6 +76,7 @@
 - (void)_ensureActiveRunContext;
 - (void)_restoreActiveRunContextIfPossible;
 - (void)_updateMap:(id)arg1 contextForCustomDataStore:(id)arg2 specifier:(id)arg3;
+- (void)_addScheme:(id)arg1;
 - (void)primitiveInvalidate;
 - (id)initWithWorkspace:(id)arg1;
 - (id)init;

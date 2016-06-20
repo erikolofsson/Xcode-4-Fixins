@@ -14,17 +14,13 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTStackBacktrace, DVTViewController, NSString, NSWindow;
+@class DVTStackBacktrace, NSString;
 
 @interface DVTControllerContentView : DVTWrapperView <DVTInvalidation>
 {
 }
 
-+ (id)keyPathsForValuesAffectingKvoWindow;
 + (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
-@property(readonly, nonatomic) DVTViewController *viewController;
-- (void)setViewController:(DVTViewController *viewController)arg1;
-@property(readonly) NSWindow *kvoWindow;
 - (BOOL)performKeyEquivalent:(id)arg1;
 - (void)setNextResponder:(id)arg1;
 - (void)invalidate;

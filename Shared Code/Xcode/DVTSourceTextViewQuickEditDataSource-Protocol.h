@@ -8,14 +8,9 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-#import "DVTInvalidation-Protocol.h"
+@class DVTSourceTextView, NSDictionary;
 
-@class NSArray;
-
-@protocol IDEContinuousIntegrationBotMonitor <NSObject, DVTInvalidation>
-@property(readonly, copy, nonatomic) NSArray *serversWithMaintenanceTasks;
-@property(readonly, copy, nonatomic) NSArray *bots;
-- (void)updateBotClientsInService:(id)arg1;
-- (void)filterBotsToWorkspace:(BOOL)arg1;
+@protocol DVTSourceTextViewQuickEditDataSource
+- (NSDictionary *)filesInTextView:(DVTSourceTextView *)arg1;
 @end
 

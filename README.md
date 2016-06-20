@@ -1,19 +1,23 @@
-__These plugins are only maintained for the latest version of Xcode (currently 7.3)__
+__These plugins are only maintained for the latest version of Xcode (currently 8.0)__
 
 __===== DESCRIPTION =====__
 
 This project includes plugins (known as _fixins_) that extend Xcode
 and fix some of its annoying behaviors.
 
-__===== INSTALLATION (Xcode 7) =====__
+__===== INSTALLATION (Xcode 8) =====__
 
-Despite the name, the Xcode 4 Fixins are compatible with Xcode 7.
+Despite the name, the Xcode 4 Fixins are compatible with Xcode 8.
 
 To install the fixins:
 
 1. Open the XCFixins workspace
 2. Change the scheme to "Release All maintained"
 3. Build the fixins
+4. Unsign Xcode.app. You can use https://github.com/steakknife/unsign for this purpose
+```./unsign "/Applications/Xcode.app/Contents/MacOS/Xcode" "/Applications/Xcode.app/Contents/MacOS/Xcode"
+./unsign "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild" "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild"
+``` 
 
 The fixins will automatically be installed as a part of the build
 process. Xcode must be relaunched for the fixins to take effect.

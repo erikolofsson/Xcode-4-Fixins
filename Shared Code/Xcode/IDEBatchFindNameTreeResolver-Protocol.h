@@ -8,10 +8,10 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
-@class DVTControllerContentView;
 
-@protocol DVTControllerContentViewViewControllerAdditions
-- (void)_willUninstallContentView:(DVTControllerContentView *)arg1;
-- (void)_didInstallContentView:(DVTControllerContentView *)arg1;
+@class IDEContainer, NSDictionary;
+
+@protocol IDEBatchFindNameTreeResolver <NSObject>
+- (IDEContainer *)containerForNameTree:(NSDictionary *)arg1;
 @end
 

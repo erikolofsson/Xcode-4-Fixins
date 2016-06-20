@@ -8,11 +8,10 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
 //
 
+@class IDEProvisioningManager, IDEProvisioningUserAction;
+@protocol IDERepairable;
 
-@class IDENavigatorOutlineView;
-
-@protocol IDENavigatorOutlineViewLoadingDelegate <NSObject>
-- (void)outlineViewDidDrawInitialContent:(IDENavigatorOutlineView *)arg1;
-- (void)outlineViewWillDrawInitialContent:(IDENavigatorOutlineView *)arg1;
+@protocol IDEProvisioningManagerDelegate
+- (void)provisioningManager:(IDEProvisioningManager *)arg1 repairable:(id <IDERepairable>)arg2 shouldAuthorizeUserAction:(IDEProvisioningUserAction *)arg3 authorizationCallback:(void (^)(BOOL))arg4;
 @end
 

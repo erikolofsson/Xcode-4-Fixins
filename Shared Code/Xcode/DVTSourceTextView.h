@@ -12,12 +12,15 @@
 
 #import "DVTCompletingTextView.h"
 
+#import "DVTColorLiteralQuickEditViewControllerDelegate-Protocol.h"
+#import "DVTFileLiteralQuickEditViewControllerDelegate-Protocol.h"
+#import "DVTImageLiteralQuickEditViewControllerDelegate-Protocol.h"
 #import "DVTSourceTextScrollViewDelegate-Protocol.h"
 
-@class DVTAnnotationManager, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSHashTable, NSMutableArray, NSString, NSTimer, NSView, NSWindow;
-@protocol DVTCancellable, DVTSourceTextViewDelegate;
+@class DVTAnnotationManager, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSColor, NSHashTable, NSMutableArray, NSMutableIndexSet, NSString, NSTimer, NSView, NSWindow;
+@protocol DVTCancellable, DVTSourceTextViewDelegate, DVTSourceTextViewQuickEditDataSource;
 
-@interface DVTSourceTextView : DVTCompletingTextView <NSAnimationDelegate, NSLayoutManagerDelegate, DVTSourceTextScrollViewDelegate>
+@interface DVTSourceTextView : DVTCompletingTextView <NSAnimationDelegate, NSLayoutManagerDelegate, DVTSourceTextScrollViewDelegate, DVTColorLiteralQuickEditViewControllerDelegate, DVTFileLiteralQuickEditViewControllerDelegate, DVTImageLiteralQuickEditViewControllerDelegate>
 {
     unsigned long long _oldFocusLocation;
     NSAnimation *_blockAnimation;
@@ -51,6 +54,7 @@
     DVTMutableRangeArray *_typeOverCompletionOpenRanges;
     NSString *_pendingTypeOverCompletion;
     struct _NSRange _pendingTypeOverCompletionOpenRange;
+    NSMutableIndexSet *_linesNeedingToTrimTrailingShitespace;
     BOOL _didChangeText;
     struct {
         unsigned int dDidFinishAnimatingScroll:1;
@@ -59,6 +63,7 @@
         unsigned int updatingInsertionPoint:1;
         unsigned int wasPostsFrameChangedNotifications:1;
         unsigned int doingDidChangeSelection:1;
+        unsigned int disableDrawingCurrentLineHighlight:1;
         unsigned int delegateRespondsToConstrainMinAccessoryAnnotationWidth:1;
         unsigned int delegateRespondsToConstrainMaxAccessoryAnnotationWidth:1;
         unsigned int delegateRespondsToConstrainAccessoryAnnotationWidth:1;
@@ -78,6 +83,10 @@
     id <DVTCancellable> _delayedAnnotationLayoutToken;
     struct _NSRange _selectedRangeBeforeMouseDown;
     BOOL _ensuringLayoutForScroll;
+    BOOL _suppressRecentColorTracking;
+    NSColor *_recentlySelectedColorToTrack;
+    struct _NSRange _recentlySelectedColorLiteralRange;
+    id <DVTSourceTextViewQuickEditDataSource> _quickEditDataSource;
 }
 
 + (BOOL)isCompatibleWithResponsiveScrolling;
@@ -87,6 +96,7 @@
 + (id)foldingLogAspect;
 + (id)drawingLogAspect;
 + (void)initialize;
+@property id <DVTSourceTextViewQuickEditDataSource> quickEditDataSource; // @synthesize quickEditDataSource=_quickEditDataSource;
 @property BOOL postsLayoutManagerNotifications; // @synthesize postsLayoutManagerNotifications=_postsLayoutManagerNotifications;
 @property int findResultStyle; // @synthesize findResultStyle=_findResultStyle;
 @property(nonatomic) unsigned long long pageGuideColumn; // @synthesize pageGuideColumn=_pageGuideColumn;
@@ -96,6 +106,33 @@
 @property unsigned long long temporaryLinkHoverModifierFlags; // @synthesize temporaryLinkHoverModifierFlags=_temporaryLinkHoverModifierFlags;
 @property(nonatomic) BOOL wrapsLines; // @synthesize wrapsLines=_wrapsLines;
 // - (void).cxx_destruct;
+- (id)mediaResourceProviderForLiteralInLayoutManager:(id)arg1;
+- (id)directoriesForLiteralInLayoutManager:(id)arg1;
+- (id)foldingTokenTypesForLayoutManager:(id)arg1;
+- (void)doubleClickedOnCell:(id)arg1 inRect:(struct CGRect)arg2 atIndexInToken:(unsigned long long)arg3;
+- (void)colorQuickEdit:(id)arg1 didSelectMoreColorOptions:(id)arg2;
+- (void)colorQuickEdit:(id)arg1 didSelectColor:(id)arg2;
+- (void)colorQuickEdit:(id)arg1 didHighlightColor:(id)arg2;
+- (void)imageQuickEdit:(id)arg1 didClickMoreButtonForFilePath:(id)arg2;
+- (void)imageQuickEdit:(id)arg1 didSelectFilePath:(id)arg2;
+- (void)fileQuickEdit:(id)arg1 didClickMoreButtonForFilePath:(id)arg2;
+- (void)fileQuickEdit:(id)arg1 didSelectFilePath:(id)arg2;
+- (void)changeColor:(id)arg1;
+- (void)updateSelectedColorLiteralWithColor:(id)arg1;
+- (void)presentOpenPanelForObjectLiteralAtFilePath:(id)arg1;
+- (void)presentPopoverRelativeToSelection:(id)arg1;
+- (void)presentObjectLiteralPickerForImageAtFilePath:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
+- (void)presentObjectLiteralPickerForFileAtFilePath:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
+- (void)presentObjectLiteralPickerForColor:(id)arg1 addDefaultColorToken:(BOOL)arg2 completionBlock:(CDUnknownBlockType)arg3;
+- (void)presentObjectLiteralPickerForTextFold:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
+- (void)insertObjectLiteralSyntaxForObjects:(id)arg1 selectLastObjectLiteral:(BOOL)arg2;
+- (BOOL)readObjectLiteralFromPasteboard:(id)arg1 type:(id)arg2;
+- (BOOL)readSelectionFromPasteboard:(id)arg1 type:(id)arg2;
+- (id)readablePasteboardTypes;
+- (BOOL)performDragOperation:(id)arg1;
+- (unsigned long long)dragOperationForDraggingInfo:(id)arg1 type:(id)arg2;
+- (id)acceptableDragTypes;
+- (id)_addingRedablePasteboardTypesForObjectLiterals:(id)arg1;
 - (void)viewDidEndLiveResize;
 - (void)viewWillStartLiveResize;
 - (void)updateInsertionPointStateAndRestartTimer:(BOOL)arg1;
@@ -134,7 +171,6 @@
 - (void)indentSelectionIfIndentable:(id)arg1;
 - (void)indentSelection:(id)arg1;
 - (struct _NSRange)_adjustedSelectedRange:(struct _NSRange)arg1 fromChangeIndex:(unsigned long long)arg2;
-- (void)commentAndUncommentCurrentLines:(id)arg1;
 - (void)moveCurrentLineDown:(id)arg1;
 - (void)moveCurrentLineUp:(id)arg1;
 - (void)_didChangeSelection:(id)arg1;
@@ -199,7 +235,7 @@
 - (void)addTypeOverCompletionForRange:(struct _NSRange)arg1 openRange:(struct _NSRange)arg2;
 - (struct _NSRange)lastTypeOverCompletionRange;
 - (struct _NSRange)typeOverCompletionRangeFollowingLocation:(unsigned long long)arg1;
-- (void)didInsertCompletionTextAtRange:(struct _NSRange)arg1;
+- (void)textCompletionSession:(id)arg1 didInsertCompletionItem:(id)arg2 range:(struct _NSRange)arg3;
 - (struct _NSRange)_suggestedOpenRangeForTypeOverRange:(struct _NSRange)arg1;
 - (BOOL)shouldAutoCompleteAtLocation:(unsigned long long)arg1;
 - (BOOL)shouldSuppressTextCompletion;
@@ -223,6 +259,7 @@
 - (void)paste:(id)arg1;
 - (void)_paste:(id)arg1 indent:(BOOL)arg2;
 - (void)insertNewline:(id)arg1;
+- (BOOL)handleInsertNewline;
 - (BOOL)handleInsertTab;
 - (BOOL)handleSelectPreviousPlaceholder;
 - (BOOL)handleSelectNextPlaceholder;
@@ -248,6 +285,7 @@
 - (void)mouseMoved:(id)arg1;
 - (void)_mouseInside:(id)arg1;
 - (void)resetCursorRects;
+- (void)keyDown:(id)arg1;
 - (void)removeFromSuperview;
 - (void)viewDidMoveToWindow;
 - (void)_refreshScrollerMarkers;
@@ -276,6 +314,7 @@
 - (void)toggleCodeFocus:(id)arg1;
 - (BOOL)codeFocusFollowsSelection;
 - (void)_drawViewBackgroundInRect:(struct CGRect)arg1;
+- (void)_drawCurrentLineHighlight:(struct CGRect)arg1;
 - (void)_drawCaretForTextAnnotationsInRect:(struct CGRect)arg1;
 - (void)drawTextAnnotationsInRect:(struct CGRect)arg1;
 - (long long)_drawRoundedBackgroundForFoldableBlockRangeAtLocation:(unsigned long long)arg1;
@@ -283,14 +322,14 @@
 - (id)alternateColor;
 - (void)setFoldingHoverRange:(struct _NSRange)arg1;
 - (struct _NSRange)foldingHoverRange;
-- (void)_loadColorsFromCurrentTheme;
-- (void)_themeColorsChanged:(id)arg1;
+- (void)_loadFontsAndColorsFromTheme:(id)arg1;
+- (void)_fontAndColorSettingsChanged:(id)arg1;
 - (void)_scheduleAnnotationLayout;
 - (void)drawRect:(struct CGRect)arg1;
 - (void)prepareContentInRect:(struct CGRect)arg1;
 - (unsigned long long)foldedCharacterIndexForPoint:(struct CGPoint)arg1;
 - (void)setSelectedRanges:(id)arg1 affinity:(unsigned long long)arg2 stillSelecting:(BOOL)arg3;
-- (void)_delayedTrimTrailingWhitespaceForLine:(id)arg1;
+- (void)_delayedTrimTrailingWhitespaceForLines;
 - (void)trimTrailingWhitespaceOnLine:(unsigned long long)arg1;
 - (void)_trimTrailingWhitespaceOnLineAfterIndent:(unsigned long long)arg1 trimWhitespaceOnlyLine:(BOOL)arg2;
 - (void)trimTrailingWhitespaceOnLine:(unsigned long long)arg1 trimWhitespaceOnlyLine:(BOOL)arg2;
@@ -330,6 +369,7 @@
 - (void)setTextContainer:(id)arg1;
 @property id <DVTSourceTextViewDelegate> delegate; // @dynamic delegate;
 - (id)initWithCoder:(id)arg1;
+- (void)dealloc;
 - (id)initWithFrame:(struct CGRect)arg1 textContainer:(id)arg2;
 - (void)_commonInitDVTSourceTextView;
 - (id)menuForEvent:(id)arg1;

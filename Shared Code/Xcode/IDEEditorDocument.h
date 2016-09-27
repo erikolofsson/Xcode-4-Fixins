@@ -73,6 +73,7 @@
 + (BOOL)autosavesInPlace;
 + (id)editedFileContents;
 + (id)keyPathsForValuesAffectingIde_displayName;
++ (BOOL)documentSupportsInconsistentState;
 + (id)readableTypes;
 + (BOOL)_shouldShowUtilititesAreaAtLoadForSimpleFilesFocusedWorkspace;
 + (BOOL)shouldTrackFileSystemChanges;

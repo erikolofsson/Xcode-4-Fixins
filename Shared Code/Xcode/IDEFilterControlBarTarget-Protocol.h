@@ -12,12 +12,10 @@
 @class NSMenu, NSString, NSView;
 
 @protocol IDEFilterControlBarTarget <NSObject>
+- (NSString *)filterButtonAccessibilityDescription;
+- (NSString *)filterButtonToolTip;
 - (NSView *)view;
 - (NSMenu *)filterButtonMenu;
 - (NSString *)filterDefinitionIdentifier;
-
-@optional
-- (NSString *)filterButtonAccessibilityDescription;
-- (NSString *)filterButtonToolTip;
 @end
 

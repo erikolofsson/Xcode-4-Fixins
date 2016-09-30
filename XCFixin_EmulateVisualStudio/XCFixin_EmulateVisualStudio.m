@@ -71,6 +71,7 @@ static IMP original_becomeFirstResponder_NavigatorOutlineView = nil;
 static IMP original_becomeFirstResponder_DVTFindPatternFieldEditor = nil;
 static IMP original_resignFirstResponder_DVTFindPatternFieldEditor = nil;
 static IMP original_menuItemWithKeyEquivalentMatchingEventRef = nil;
+static IMP original_menuItemWithKeyEquivalentMatchingEventRef_macOS1012 = nil;
 static IMP original_LLDBLauncherStart = nil;
 static IMP original_compositeEnvironmentVariables = nil;
 static IMP original_filePathDidChangeWithPendingChangeDictionary = nil;
@@ -1495,11 +1496,7 @@ static void LLDBLauncherStart(DBGLLDBLauncher* self_, SEL _Sel)
 //	XCFixinLog(@"LLDBLauncherStart finished: %p\n", self_);
 	[g_LLDBLaunchLock unlock];
 }
-
-
-
-// + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
-static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu)
+static BOOL menuItemWithKeyEquivalentMatchingEventRef_Shared(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu)
 {
 	OSType EventClass = GetEventClass(_pEventRef);
 	
@@ -1529,12 +1526,27 @@ static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearch
 				_pRetVal->_field2 = nil;
 				_pRetVal->_field1 = nil;
 				_pRetVal->_field3 = 0;
-				return;
+				return true;
 			}
 		}
 	}
-	
+	return false;
+}
+
+// + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
+static void menuItemWithKeyEquivalentMatchingEventRef(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu)
+{
+	if (menuItemWithKeyEquivalentMatchingEventRef_Shared(_pRetVal, self_, _Sel, _pEventRef, _pInMenu))
+		return;
 	return ((void(*)(struct _NSCarbonMenuSearchReturn *, id, SEL, EventRef, id))original_menuItemWithKeyEquivalentMatchingEventRef)(_pRetVal, self_, _Sel, _pEventRef, _pInMenu);
+}
+
+// + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2 includingDisabledItems:(BOOL)arg3;
+static void menuItemWithKeyEquivalentMatchingEventRef_macOS1012(struct _NSCarbonMenuSearchReturn *_pRetVal, id self_, SEL _Sel, EventRef _pEventRef, id _pInMenu, BOOL _includingDisabledItems)
+{
+	if (menuItemWithKeyEquivalentMatchingEventRef_Shared(_pRetVal, self_, _Sel, _pEventRef, _pInMenu))
+		return;
+	return ((void(*)(struct _NSCarbonMenuSearchReturn *, id, SEL, EventRef, id, BOOL))original_menuItemWithKeyEquivalentMatchingEventRef_macOS1012)(_pRetVal, self_, _Sel, _pEventRef, _pInMenu, _includingDisabledItems);
 }
 
 
@@ -2079,7 +2091,9 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	XCFixinAssertOrPerform(original_resignFirstResponder_DVTFindPatternFieldEditor, goto failed);
 	
 	original_menuItemWithKeyEquivalentMatchingEventRef = XCFixinOverrideStaticMethodString(@"NSCarbonMenuImpl", @selector(_menuItemWithKeyEquivalentMatchingEventRef:inMenu:), (IMP)&menuItemWithKeyEquivalentMatchingEventRef);
-	XCFixinAssertOrPerform(original_menuItemWithKeyEquivalentMatchingEventRef, goto failed);
+	original_menuItemWithKeyEquivalentMatchingEventRef_macOS1012 = XCFixinOverrideStaticMethodString(@"NSCarbonMenuImpl", @selector(_menuItemWithKeyEquivalentMatchingEventRef:inMenu:includingDisabledItems:), (IMP)&menuItemWithKeyEquivalentMatchingEventRef_macOS1012);
+	
+	XCFixinAssertOrPerform(original_menuItemWithKeyEquivalentMatchingEventRef || original_menuItemWithKeyEquivalentMatchingEventRef_macOS1012, goto failed);
 
 	{
 		id pDebuggerExtension = [NSClassFromString(@"DBGLLDBDebugLocalService") _loadDebuggerExtension];

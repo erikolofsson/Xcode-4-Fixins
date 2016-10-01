@@ -1668,6 +1668,7 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword_C(@"int128", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"int160", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"int256", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"int320", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"int512", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"int1024", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"int2048", pKeywordBulitInIntegerTypes);
@@ -1683,6 +1684,7 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword_C(@"uint128", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"uint160", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"uint256", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"uint320", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"uint512", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"uint1024", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"uint2048", pKeywordBulitInIntegerTypes);
@@ -1705,6 +1707,8 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword_C(@"zuint160", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"zint256", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"zuint256", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zint320", pKeywordBulitInIntegerTypes);
+	AddDefaultKeyword_C(@"zuint320", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"zint512", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"zuint512", pKeywordBulitInIntegerTypes);
 	AddDefaultKeyword_C(@"zint1024", pKeywordBulitInIntegerTypes);
@@ -2868,6 +2872,7 @@ static NSMutableDictionary *pDefaultKeywords_CSS = nil;
 	original_colorAtCharacterIndex = XCFixinOverrideMethodString(@"DVTTextStorage", @selector(colorAtCharacterIndex: effectiveRange: context:), (IMP)&colorAtCharacterIndex);
 	XCFixinAssertOrPerform(original_colorAtCharacterIndex, goto failed);
 
+	(void)IDESourceCodeEditor.class;
 	original_IDESourceCodeEditor_doInitialSetup = XCFixinOverrideMethodString(@"IDESourceCodeEditor", @selector(_doInitialSetup), (IMP)&IDESourceCodeEditor_doInitialSetup);
 	XCFixinAssertOrPerform(original_IDESourceCodeEditor_doInitialSetup, goto failed);
 	

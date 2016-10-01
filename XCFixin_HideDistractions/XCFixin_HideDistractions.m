@@ -42,7 +42,7 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 	[self sharedPlugin];
 
 	NSMenu *mainMenu 				= [NSApp mainMenu];
-	NSMenuItem *viewMenuItem  	= [mainMenu itemWithTitle: @"View"];
+	NSMenuItem *viewMenuItem  	= [mainMenu itemWithTitle: @"Edit"];
 	XCFixinAssertOrPerform(mainMenu, return);
 	XCFixinAssertOrPerform(viewMenuItem, return);
 
@@ -115,7 +115,7 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 
 	if (NSClassFromString(kDisableAnimationsClassName))	[activeWindow disableFlushWindow];
 
-	[self clickMenuItem: [self menuItemWithPath: @"View > Hide Toolbar"]];
+//	[self clickMenuItem: [self menuItemWithPath: @"View > Hide Toolbar"]];
 	[self clickMenuItem: [self menuItemWithPath: @"View > Hide Tab Bar"]];
 
 	/* Zoom our window after hiding the toolbar. */
@@ -148,7 +148,7 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 
 	if (NSClassFromString(kDisableAnimationsClassName)) [activeWindow disableFlushWindow];
 
-	[self clickMenuItem: [self menuItemWithPath: @"View > Show Toolbar"]];
+//	[self clickMenuItem: [self menuItemWithPath: @"View > Show Toolbar"]];
 	[self clickMenuItem: [self menuItemWithPath: @"View > Show Tab Bar"]];
 
 	/* Perform the rest of our menu items now that the toolbar's taken care of. */

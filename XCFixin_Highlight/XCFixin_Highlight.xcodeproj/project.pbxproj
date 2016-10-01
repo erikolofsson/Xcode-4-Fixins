@@ -12,6 +12,7 @@
 		03329EC81937AA1A000E475B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 03329EC71937AA1A000E475B /* README.md */; };
 		03424047193F9ACE0038ACA5 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03424046193F9ACE0038ACA5 /* DVTKit.framework */; };
 		03580362198C284000A2EF45 /* DumpXcode.sh in Resources */ = {isa = PBXBuildFile; fileRef = 03580361198C284000A2EF45 /* DumpXcode.sh */; };
+		037159C11D9F32D600E82B72 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 037159C01D9F32D600E82B72 /* IDEKit.framework */; };
 		0372C85519378E9400364146 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 0372C85419378E9400364146 /* XCFixin.m */; };
 		435E248813A8E5A40052479A /* XCFixin_Highlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 435E248513A8E5A40052479A /* XCFixin_Highlight.m */; };
 		437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 437DCBC314D41E700039CB49 /* InfoPlist.strings */; };
@@ -23,6 +24,8 @@
 		03329EC71937AA1A000E475B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		03424046193F9ACE0038ACA5 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = ../../../Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework; sourceTree = "<group>"; };
 		03580361198C284000A2EF45 /* DumpXcode.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = DumpXcode.sh; path = "../Shared Code/DumpXcode.sh"; sourceTree = "<group>"; };
+		037159C01D9F32D600E82B72 /* IDEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEKit.framework; path = /Applications/Xcode.app/Contents/Frameworks/IDEKit.framework; sourceTree = "<absolute>"; };
+		037159C21D9F344800E82B72 /* IDESourceEditor.ideplugin */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = IDESourceEditor.ideplugin; path = ../../../Applications/Xcode.app/Contents/PlugIns/IDESourceEditor.ideplugin; sourceTree = "<group>"; };
 		0372C85319378E9400364146 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		0372C85419378E9400364146 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		038959F419943FD3000941CA /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -37,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				037159C11D9F32D600E82B72 /* IDEKit.framework in Frameworks */,
 				03424047193F9ACE0038ACA5 /* DVTKit.framework in Frameworks */,
 				03076770193944490038CE28 /* DVTFoundation.framework in Frameworks */,
 				03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */,
@@ -46,6 +50,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		032A8B291D9F2D4E0034FB6C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				037159C21D9F344800E82B72 /* IDESourceEditor.ideplugin */,
+				037159C01D9F32D600E82B72 /* IDEKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		038959F619943FDD000941CA /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -65,6 +78,7 @@
 				03318EDA1937BC3B00132304 /* Cocoa.framework */,
 				435E248913A8E5B70052479A /* Sources */,
 				435E247313A8E4A20052479A /* Products */,
+				032A8B291D9F2D4E0034FB6C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -228,10 +242,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Plugins/",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				OTHER_LDFLAGS = /Applications/Xcode.app/Contents/Plugins/IDESourceEditor.ideplugin/Contents/MacOS/IDESourceEditor;
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_Highlight;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -252,10 +269,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/SharedFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Plugins/",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
+				OTHER_LDFLAGS = /Applications/Xcode.app/Contents/Plugins/IDESourceEditor.ideplugin/Contents/MacOS/IDESourceEditor;
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = XCFixin_Highlight;
 				STRIP_INSTALLED_PRODUCT = NO;

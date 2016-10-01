@@ -15,20 +15,6 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_CurrentLineHighlighter.xcplugin"
-               BlueprintName = "XCFixin_CurrentLineHighlighter"
-               ReferencedContainer = "container:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
                BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
                BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
                ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
@@ -127,6 +113,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+            BuildableName = "XCFixin_CurrentLineHighlighter.xcplugin"
+            BlueprintName = "XCFixin_CurrentLineHighlighter"
+            ReferencedContainer = "container:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -144,15 +139,6 @@
          runnableDebuggingMode = "0"
          FilePath = "/Applications/Xcode.app">
       </PathRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-            BuildableName = "XCFixin_CurrentLineHighlighter.xcplugin"
-            BlueprintName = "XCFixin_CurrentLineHighlighter"
-            ReferencedContainer = "container:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -162,6 +148,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+            BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
+            BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
+            ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

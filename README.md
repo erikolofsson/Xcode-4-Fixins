@@ -1,13 +1,13 @@
-__These plugins are only maintained for the latest version of Xcode (currently 8.1)__
+__These plugins are only maintained for the latest version of Xcode (currently 8.2)__
 
 __===== DESCRIPTION =====__
 
 This project includes plugins (known as _fixins_) that extend Xcode
 and fix some of its annoying behaviors.
 
-__===== INSTALLATION (Xcode 8.1) =====__
+__===== INSTALLATION (Xcode 8.2) =====__
 
-Despite the name, the Xcode 4 Fixins are compatible with Xcode 8.1.
+Despite the name, the Xcode 4 Fixins are compatible with Xcode 8.2.
 
 To install the fixins:
 

@@ -98,6 +98,8 @@
 @property(readonly) NSString *cachedLastUpgradeVersion;
 - (void)updateLastUpgradeVersionToCurrent;
 @property(readonly) NSString *lastUpgradeVersion;
+- (void)setCachedValue:(id)arg1 forName:(id)arg2;
+- (id)cachedValueWithName:(id)arg1;
 - (id)serializedSourceListItem;
 - (id)indexables;
 - (BOOL)installSourcesToPath:(id)arg1;
@@ -108,6 +110,8 @@
 @property(readonly) BOOL lastSwiftMigrationIsCurrent;
 - (void)updateLastSwiftUpdateVersionToCurrent;
 @property(readonly) NSString *lastSwiftUpdateVersion;
+- (void)cacheLastSwiftUpdateCheck;
+@property(readonly) BOOL shouldShowSwiftDeprecationWarning;
 @property(readonly) BOOL shouldLogUpgradeCheck;
 - (void)_runUpgradeChecksIfNecessary;
 - (BOOL)setBaseSDKPlatform:(id)arg1 forConfiguration:(id)arg2;

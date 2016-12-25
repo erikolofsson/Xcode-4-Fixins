@@ -2323,14 +2323,21 @@ static id evaluatedStringListValueForMacroNamed(DVTMacroExpansionScope *self_, S
 				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCPLUSPLUSFLAGS_ONLY");
 			else if ([pFileType.identifier isEqualToString:@"sourcecode.asm"])
 			{
-				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_CPLUSPLUSFLAGS_ONLY");
-				if (!pOnlyFlags)
+				pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_ASSEMBLERFLAGS_ONLY");
+				if (!pOnlyFlags || [pOnlyFlags count] == 0)
+                    pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_CPLUSPLUSFLAGS_ONLY");
+				if (!pOnlyFlags || [pOnlyFlags count] == 0)
 					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_CFLAGS_ONLY");
-				if (!pOnlyFlags)
+				if (!pOnlyFlags || [pOnlyFlags count] == 0)
 					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCPLUSPLUSFLAGS_ONLY");
-				if (!pOnlyFlags)
+				if (!pOnlyFlags || [pOnlyFlags count] == 0)
 					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCFLAGS_ONLY");
+                NSLog(@"Running: %@ - %@ = %@", _pMacroName, pFileType.identifier, pOnlyFlags);
 			}
+            else
+            {
+                NSLog(@"Unknown identefier: %@", pFileType.identifier);
+            }
 			
 			if (pOnlyFlags)
 			{
@@ -2345,6 +2352,9 @@ static id evaluatedStringListValueForMacroNamed(DVTMacroExpansionScope *self_, S
 					pFlags = pOnlyFlags;
 			}
 		}
+        else
+            NSLog(@"Unknown file type: %@", _pMacroName);
+        
 	}
 
 	return pFlags;

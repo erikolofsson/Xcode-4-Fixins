@@ -31,8 +31,9 @@ static DVTTextAnnotationTheme * grayTheme;
 
 static double override_defaultMessageFontSize(SEL _cmd)
 {	
-	//double Return = ((double (*)(SEL))gOriginal_defaultMessageFontSize)(_cmd );
-	return 7.0;
+	double Return = ((double (*)(SEL))gOriginal_defaultMessageFontSize)(_cmd );
+	return Return*0.9;
+	//return 7.0*1.5;
 }
 
 

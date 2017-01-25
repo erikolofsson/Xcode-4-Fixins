@@ -20,6 +20,10 @@
 #import "../Shared Code/Xcode/DVTFilePath.h"
 #import "../Shared Code/Xcode/DVTTextSidebarView.h"
 #import "../Shared Code/Xcode/DVTMacroExpansionScope.h"
+#import "../Shared Code/Xcode/DVTMacroExpansionStringList_NonLiteral.h"
+#import "../Shared Code/Xcode/DVTMacroDefinitionTable.h"
+
+
 
 #import "../Shared Code/Xcode/IDENavigatorOutlineView.h"
 #import "../Shared Code/Xcode/IDEBatchFindResultsOutlineController.h"
@@ -52,6 +56,11 @@
 #import "../Shared Code/Xcode/IDEBuildOperationQueueSet.h"
 
 #import "../Shared Code/Xcode/XCCompilerSpecification.h"
+#import "../Shared Code/Xcode/XCBuildPhaseDGSnapshot.h"
+#import "../Shared Code/Xcode/XCMacroExpansionScope.h"
+#import "../Shared Code/Xcode/XCBuildFileRefArrayDGSnapshot.h"
+#import "../Shared Code/Xcode/XCBuildFileRefDGSnapshot.h"
+
 
 #import "../Shared Code/Xcode/DBGLLDBDebugLocalService.h"
 #import "../Shared Code/Xcode/DBGLLDBLauncher.h"
@@ -87,6 +96,7 @@ static IMP original_recalculateSidebarWidthToFit = nil;
 static IMP original_evaluatedStringListValueForMacroNamed = nil;
 static IMP original_adjustedFileTypeForInputFileAtPath = nil;
 static IMP original_compileSourceCodeFileAtPath = nil;
+static IMP original_filteredBuildFileReferencesWithMacroExpansionScope = nil;
 
 @interface IDEContainer (EmulateVisualStudioIDEContainer)
 
@@ -2151,6 +2161,9 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	
 	original_compileSourceCodeFileAtPath = XCFixinOverrideMethodString(@"PBXCompilerSpecificationGcc2_95_2", @selector(compileSourceCodeFileAtPath: ofType: toOutputDirectory: withMacroExpansionScope:), (IMP)&compileSourceCodeFileAtPath);
 	XCFixinAssertOrPerform(original_compileSourceCodeFileAtPath, goto failed);
+
+	original_filteredBuildFileReferencesWithMacroExpansionScope = XCFixinOverrideMethodString(@"XCBuildPhaseDGSnapshot", @selector(filteredBuildFileReferencesWithMacroExpansionScope:), (IMP)&filteredBuildFileReferencesWithMacroExpansionScope);
+	XCFixinAssertOrPerform(original_filteredBuildFileReferencesWithMacroExpansionScope, goto failed);
 	
 	XCFixinPostflight();
 }
@@ -2332,11 +2345,10 @@ static id evaluatedStringListValueForMacroNamed(DVTMacroExpansionScope *self_, S
 					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCPLUSPLUSFLAGS_ONLY");
 				if (!pOnlyFlags || [pOnlyFlags count] == 0)
 					pOnlyFlags = ((id(*)(id, SEL, id))original_evaluatedStringListValueForMacroNamed)(self_, _Sel, @"OTHER_OBJCFLAGS_ONLY");
-                NSLog(@"Running: %@ - %@ = %@", _pMacroName, pFileType.identifier, pOnlyFlags);
 			}
             else
             {
-                NSLog(@"Unknown identefier: %@", pFileType.identifier);
+                NSLog(@"Unknown identifier: %@", pFileType.identifier);
             }
 			
 			if (pOnlyFlags)
@@ -2384,6 +2396,37 @@ static id compileSourceCodeFileAtPath(XCCompilerSpecification *self_, SEL _Sel, 
 	[ThreadDict removeObjectForKey: @"EmulateVisualStudio_FileType"];
 
 	return Ret;
+}
+
+static NSArray *filteredBuildFileReferencesWithMacroExpansionScope(XCBuildPhaseDGSnapshot *self_, SEL _Sel, XCMacroExpansionScope *_pScope)
+{
+	NSArray *pRet = ((id(*)(id, SEL, id))original_filteredBuildFileReferencesWithMacroExpansionScope)(self_, _Sel, _pScope);
+	
+	NSArray *pExcludedFileRefs = [_pScope evaluatedStringListValueForMacroNamed:@"EXCLUDED_FILE_REFS"];
+	
+	if (pExcludedFileRefs.count == 0)
+		return pRet;
+	
+	NSSet *pExcludedSet = [NSSet setWithArray:pExcludedFileRefs];
+	
+	NSMutableArray *pNewArray = [NSMutableArray arrayWithCapacity: pRet.count]; 
+	
+	for (XCBuildFileRefArrayDGSnapshot *pBuildRef in pRet)
+	{
+		NSMutableArray *pAllRefs = [pBuildRef allReferences];
+		bool bRemove = false;
+		for (XCBuildFileRefDGSnapshot *pRef in pAllRefs)
+		{
+			if ([pExcludedSet containsObject: pRef.referenceGlobalID])
+			{
+				bRemove = true;
+			}
+		}
+		if (!bRemove)
+			[pNewArray addObject: pBuildRef];
+	}
+	
+	return pNewArray;
 }
 
 // -[NSWindow displayIfNeeded]

@@ -5,10 +5,10 @@ IFS=$'\n'
 set -f
 set -x
 
-XcodeExecutables="$XcodeExecutables
-$(find /System/Library/Frameworks -type f -perm +111)"
-XcodeExecutables="$XcodeExecutables
-$(find /System/Library/PrivateFrameworks -type f -perm +111)"
+#XcodeExecutables="$XcodeExecutables
+#$(find /System/Library/Frameworks -type f -perm +111)"
+#XcodeExecutables="$XcodeExecutables
+#$(find /System/Library/PrivateFrameworks -type f -perm +111)"
 XcodeExecutables="$XcodeExecutables
 $(find /Applications/Xcode.app/Contents/Plugins -type f -perm +111)"
 XcodeExecutables="$XcodeExecutables

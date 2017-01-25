@@ -70,3 +70,33 @@ struct DVTMacroNameLookupCursor {
     void* _field6;
 };
 
+#ifndef classdump_DVTNestedMacroExpansionState
+#define classdump_DVTNestedMacroExpansionState
+struct DVTNestedMacroExpansionState {
+    void * _field1; //(id)
+    unsigned int _field2;
+    struct DVTMacroNameLookupCursor _field3;
+    void * _field4; //(id)
+    struct DVTNestedMacroExpansionState *_field5;
+};
+#endif
+
+#ifndef classdump_ArrayBuilder
+#define classdump_ArrayBuilder
+struct ArrayBuilder {
+    void * _field1[62]; //(id)
+    void* *_field2; //(id *)
+    unsigned int _field3;
+    unsigned int _field4;
+};
+#endif
+
+#ifndef classdump___va_list_tag
+#define classdump___va_list_tag
+struct __va_list_tag {
+    unsigned int _field1;
+    unsigned int _field2;
+    void *_field3;
+    void *_field4;
+};
+#endif

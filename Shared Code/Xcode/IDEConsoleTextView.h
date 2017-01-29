@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -47,6 +47,7 @@
 @property(retain) id <IDEConsoleTextViewObjectiveCExpressionRangeDelegate> openingBracketLocationDelegate; // @synthesize openingBracketLocationDelegate=_openingBracketLocationDelegate;
 @property(retain) id <IDEConsoleTextViewStandardIODelegate> standardIODelegate; // @synthesize standardIODelegate=_standardIODelegate;
 // - (void).cxx_destruct;
+- (id)_URLForDocumentLocations;
 - (id)startingLocationForFindBar:(id)arg1 findingBackwards:(BOOL)arg2;
 - (void)dvtFindBar:(id)arg1 didUpdateCurrentResult:(id)arg2;
 - (id)findStringMatchingDescriptor:(id)arg1 backwards:(BOOL)arg2 from:(id)arg3 to:(id)arg4;

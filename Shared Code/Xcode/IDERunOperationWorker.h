@@ -5,20 +5,21 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTStackBacktrace, IDEExecutionRunnableTracker, IDELaunchSession, IDERunOperationWorkerGroup, NSString;
+@class DVTStackBacktrace, IDEExecutionRunnableTracker, IDELaunchSession, IDERunOperationWorkerGroup, NSError, NSString;
 
 @interface IDERunOperationWorker : NSObject <DVTInvalidation>
 {
     NSString *_extensionIdentifier;
     IDELaunchSession *_launchSession;
     IDERunOperationWorkerGroup *_workerGroup;
+    NSError *_recoverablePreflightError;
     BOOL _isLongTerm;
     IDEExecutionRunnableTracker *_runnableTracker;
 }
@@ -34,7 +35,10 @@
 - (void)terminate;
 - (id)notFinishedReasonWithDepth:(unsigned long long)arg1;
 - (void)finishedWithError:(id)arg1;
+- (void)recoveredFromPreflightError;
 - (void)start;
+- (void)performWorkerAction;
+- (BOOL)preflightWithError:(id *)arg1 recoverable:(char *)arg2;
 - (void)startNextWorkerFromCompletedWorker:(id)arg1 error:(id)arg2;
 - (void)setWorkerGroup:(id)arg1;
 - (id)initWithExtensionIdentifier:(id)arg1 launchSession:(id)arg2;

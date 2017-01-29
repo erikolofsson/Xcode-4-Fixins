@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -57,7 +57,7 @@
     IDESchemeOrderedWorkspaceNotificationManager *_orderedWorkspaceNotificationManager;
 }
 
-+ (id)_buildParametersForPurpose:(int)arg1 schemeCommand:(id)arg2 configurationName:(id)arg3 workspaceArena:(id)arg4 overridingProperties:(id)arg5 activeRunDestination:(id)arg6 activeArchitecture:(id)arg7;
++ (id)_buildParametersForPurpose:(long long)arg1 schemeCommand:(id)arg2 configurationName:(id)arg3 workspaceArena:(id)arg4 overridingProperties:(id)arg5 activeRunDestination:(id)arg6 activeArchitecture:(id)arg7;
 + (BOOL)automaticallyNotifiesObserversOfOrderHint;
 + (BOOL)automaticallyNotifiesObserversOfIsShown;
 + (id)keyPathsForValuesAffectingDisambiguatedName;
@@ -121,11 +121,11 @@
 - (id)_buildOperationGroupForSchemeOperationParameters:(id)arg1 buildParameters:(id)arg2 buildLog:(id)arg3 dontActuallyRunCommands:(BOOL)arg4 restorePersistedBuildResults:(BOOL)arg5 schemeActionRecord:(id)arg6 overridingBuildables:(id)arg7 error:(id *)arg8;
 - (id)_cleanOperationGroupForExecutionEnvironment:(id)arg1 orderedBuildables:(id)arg2 buildConfiguration:(id)arg3 buildLog:(id)arg4 overridingProperties:(id)arg5 activeRunDestination:(id)arg6 schemeActionRecord:(id)arg7 error:(id *)arg8;
 - (id)_executionOperationForSchemeOperationParameters:(id)arg1 build:(BOOL)arg2 onlyBuild:(BOOL)arg3 buildParameters:(id)arg4 title:(id)arg5 buildLog:(id)arg6 dontActuallyRunCommands:(BOOL)arg7 restorePersistedBuildResults:(BOOL)arg8 error:(id *)arg9 actionCallbackBlock:(CDUnknownBlockType)arg10;
-- (id)_buildParametersForTask:(int)arg1 executionEnvironment:(id)arg2 buildPurpose:(int)arg3 schemeCommand:(id)arg4 destination:(id)arg5 overridingProperties:(id)arg6 overridingBuildConfiguration:(id)arg7 overridingTestingSpecifiers:(id)arg8;
+- (id)_buildParametersForTask:(long long)arg1 executionEnvironment:(id)arg2 buildPurpose:(long long)arg3 schemeCommand:(id)arg4 destination:(id)arg5 overridingProperties:(id)arg6 overridingBuildConfiguration:(id)arg7 overridingTestingSpecifiers:(id)arg8;
 - (id)_overridingBuildSettingsForSchemeCommand:(id)arg1 runDestination:(id)arg2;
 - (id)startedOperationForSchemeOperationParameters:(id)arg1 error:(id *)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (id)schemeOperationForSchemeOperationParameters:(id)arg1 buildLog:(id)arg2 overridingProperties:(id)arg3 overridingBuildConfiguration:(id)arg4 dontActuallyRunCommands:(BOOL)arg5 restorePersistedBuildResults:(BOOL)arg6 error:(id *)arg7 completionBlock:(CDUnknownBlockType)arg8;
-- (id)computeNameForCommand:(id)arg1 task:(int)arg2;
+- (id)computeNameForCommand:(id)arg1 task:(long long)arg2;
 - (id)_cleanOperationWithExecutionContext:(id)arg1 destination:(id)arg2 overridingProperties:(id)arg3 schemeCommand:(id)arg4 invocationRecord:(id)arg5 error:(id *)arg6;
 - (void)_reportExecutionOperationForParameters:(id)arg1 shouldBuild:(BOOL)arg2 onlyBuild:(BOOL)arg3;
 - (id)_addActionRecordToInvocationRecord:(id)arg1 shouldBuild:(BOOL)arg2 onlyBuild:(BOOL)arg3 schemeCommand:(id)arg4 runDestination:(id)arg5 title:(id)arg6;
@@ -150,6 +150,7 @@
 - (id)buildParametersForSchemeCommand:(id)arg1;
 - (id)buildParametersForLaunchSchemeCommandAndBuildable:(id)arg1;
 - (id)buildConfigurationForSchemeCommand:(id)arg1;
+- (id)buildablesIncludingDependenciesForSchemeCommand:(id)arg1;
 - (id)buildablesForSchemeCommand:(id)arg1;
 - (id)runnablePathForSchemeCommand:(id)arg1 destination:(id)arg2;
 - (id)schemeActionForSchemeCommand:(id)arg1;

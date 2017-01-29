@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -14,7 +14,7 @@
 {
 }
 
-+ (BOOL)nodeType:(short)arg1 conformsToNodeTypesInList:(long long *)arg2;
++ (BOOL)nodeType:(short)arg1 conformsToNodeTypesInList:(const long long *)arg2;
 + (long long *)nodeTypeListForTypeNames:(id)arg1;
 + (BOOL)nodeType:(short)arg1 conformsToNodeTypeNamed:(id)arg2;
 + (long long)nodeTypesCount;

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -16,9 +16,9 @@
 #import "DVTTabbedWindowControlling-Protocol.h"
 #import "IDEEditorAreaContainer-Protocol.h"
 
-@class DVTBarBackground, DVTNotificationToken, DVTObservingToken, DVTStackBacktrace, DVTStateToken, DVTTabBarEnclosureView, DVTWeakInterposer, IDEEditorArea, IDEEditorDocument, IDEToolbarDelegate, IDEWorkspace, IDEWorkspaceTabController, IDEWorkspaceWindow, NSMapTable, NSMutableArray, NSString, NSTabView, NSTimer, _IDEWindowFullScreenSavedDebuggerTransitionValues;
+@class DVTBarBackground, DVTNotificationToken, DVTObservingToken, DVTStackBacktrace, DVTStateToken, DVTTabBarEnclosureView, DVTWeakInterposer, IDEEditorArea, IDEEditorDocument, IDEToolbarDelegate, IDEWorkspace, IDEWorkspaceDFRController, IDEWorkspaceTabController, IDEWorkspaceWindow, NSMapTable, NSMutableArray, NSString, NSTabView, NSTimer, NSTouchBar, _IDEWindowFullScreenSavedDebuggerTransitionValues;
 
-@interface IDEWorkspaceWindowController : NSWindowController <NSWindowDelegate, IDEEditorAreaContainer, DVTStatefulObject, DVTTabbedWindowControlling, DVTEditor, DVTInvalidation>
+@interface IDEWorkspaceWindowController : NSWindowController <NSTouchBarProvider, NSTouchBarDelegate, NSWindowDelegate, IDEEditorAreaContainer, DVTStatefulObject, DVTTabbedWindowControlling, DVTEditor, DVTInvalidation>
 {
     NSTimer *_springToFrontTimer;
     int _debugSessionState;
@@ -62,6 +62,8 @@
     DVTBarBackground *_tabBarView;
     DVTStateToken *_stateToken;
     DVTWeakInterposer *_firstResponderInterposer;
+    IDEWorkspaceDFRController *_standardWorkspaceTouchBarController;
+    IDEWorkspaceDFRController *_systemModalWorkspaceTouchBarController;
 }
 
 + (id)keyPathsForValuesAffectingUserWantsBreakpointsActivated;
@@ -72,6 +74,9 @@
 + (long long)version;
 + (void)configureStateSavingObjectPersistenceByName:(id)arg1;
 + (id)workspaceWindowControllers;
++ (unsigned long long)supplimental23378396AssertionBehaviorForKeyValueObservationsAtEndOfEvent;
+@property(retain) IDEWorkspaceDFRController *systemModalWorkspaceTouchBarController; // @synthesize systemModalWorkspaceTouchBarController=_systemModalWorkspaceTouchBarController;
+@property(retain) IDEWorkspaceDFRController *standardWorkspaceTouchBarController; // @synthesize standardWorkspaceTouchBarController=_standardWorkspaceTouchBarController;
 @property BOOL didSetupFirstResponderInterposer; // @synthesize didSetupFirstResponderInterposer=_didSetupFirstResponderInterposer;
 @property(retain) DVTWeakInterposer *firstResponderInterposer; // @synthesize firstResponderInterposer=_firstResponderInterposer;
 @property(nonatomic) BOOL showToolbar; // @synthesize showToolbar=_showToolbar;
@@ -228,6 +233,41 @@
 - (void)_showWindowBehindWorkspaceWindow:(id)arg1;
 - (void)observeValueForKeyPath:(id)arg1 ofObject:(id)arg2 change:(id)arg3 context:(void *)arg4;
 - (id)init;
+- (id)systemModalWorkspaceDFRController;
+- (unsigned long long)_factoryTypeForTracing:(BOOL)arg1;
+- (id)standardWorkspaceDFRController;
+- (void)_observeToolbarMenuButton:(id)arg1 toUpdateButton:(id)arg2;
+- (id)_standardDebugControlsItemWithIdentifier:(id)arg1;
+- (void)_registerWorkspaceWindowControllerObservations;
+- (void)standardDFRDebugBarStopAction:(id)arg1;
+- (void)runActiveRunContextWithGesture:(id)arg1;
+- (void)switchToAndAnalyze:(id)arg1;
+- (void)switchToAndProfile:(id)arg1;
+- (void)switchToAndTest:(id)arg1;
+- (void)switchToAndRun:(id)arg1;
+- (void)_invokeCurrentActionForButton:(id)arg1;
+- (void)_switchMenuButton:(id)arg1 toItemWithSelector:(SEL)arg2;
+- (id)runStopButtonFromToolbar;
+- (id)runButtonPopoverBar;
+- (id)_runItem;
+- (id)_runGroupItem;
+- (void)workspaceTabDFRShouldBecomeVisible;
+- (void)updateButtonsForDebugSessionState:(int)arg1;
+- (id)touchBar:(id)arg1 makeItemForIdentifier:(id)arg2;
+- (BOOL)_debuggerItemShouldBeSuppressed;
+- (id)_editorRunGroupOverrideIdentifier;
+- (id)_touchBarDebugSessionActive;
+- (id)_touchBarIdleSession;
+- (id)_touchBarForCurrentRunState;
+- (id)makeTouchBar;
+- (void)updateTouchBar;
+- (void)minimizeDebugBar;
+- (void)updateDebuggerControlsGroupOnSystemModalDebugBar:(id)arg1;
+- (id)_identifierForCurrentDebuggerControls;
+- (void)updateSystemModalDebugBar;
+- (id)_systemModalDebugControlsGroupItemWithIdentifier:(id)arg1;
+- (id)_createSystemModalDebuggingFunctionBar;
+- (id)systemModalFunctionBarForDebugSession;
 
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
@@ -235,6 +275,7 @@
 @property(readonly, copy) NSString *description;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly) Class superclass;
+@property(readonly) NSTouchBar *touchBar;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 
 @end

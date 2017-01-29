@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -23,8 +23,8 @@
     NSMutableArray *_queuedBuildOperationInfos;
     NSCountedSet *_activeBuildLogs;
     IDEBuildOperation *_currentBuildOperation;
-    int _buildState;
-    int _lastBuildResult;
+    long long _buildState;
+    long long _lastBuildResult;
     unsigned long long _disableSubmissionOfBuildOperationsCount;
     NSString *_disableBuildSubmissionsReason;
     NSMutableArray *_launchSessions;
@@ -71,8 +71,8 @@
 @property(retain) IDEWorkspaceArena *workspaceArena; // @synthesize workspaceArena=_workspaceArena;
 @property(retain) IDEExecutionTracker *currentExecutionTracker; // @synthesize currentExecutionTracker=_currentExecutionTracker;
 @property(readonly) IDEWorkspace *workspace; // @synthesize workspace=_workspace;
-@property(readonly) int lastBuildResult; // @synthesize lastBuildResult=_lastBuildResult;
-@property(readonly) int buildState; // @synthesize buildState=_buildState;
+@property(readonly) long long lastBuildResult; // @synthesize lastBuildResult=_lastBuildResult;
+@property(readonly) long long buildState; // @synthesize buildState=_buildState;
 @property(readonly) NSArray *queuedBuildOperationInfos; // @synthesize queuedBuildOperationInfos=_queuedBuildOperationInfos;
 @property(retain) IDEBuildOperation *currentBuildOperation; // @synthesize currentBuildOperation=_currentBuildOperation;
 // - (void).cxx_destruct;

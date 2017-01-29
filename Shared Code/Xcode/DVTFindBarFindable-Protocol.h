@@ -5,12 +5,13 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
+
 
 @class DVTDocumentLocation, DVTFindBar, DVTFindResult, NSArray;
 
-@protocol DVTFindBarFindable
+@protocol DVTFindBarFindable <NSObject>
 
 @optional
 - (struct _NSRange)selectedRangeForFindBar:(DVTFindBar *)arg1;

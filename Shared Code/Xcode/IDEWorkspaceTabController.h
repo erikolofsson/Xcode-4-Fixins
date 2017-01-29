@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -181,7 +181,7 @@
 - (void)editAndBuildForRunningActiveRunContext:(id)arg1;
 - (void)editAndRunActiveRunContext:(id)arg1;
 - (void)_doCommandForEditAndSchemeCommand:(id)arg1;
-- (void)_doCommandForEditAndSchemeCommand:(id)arg1 schemeTask:(int)arg2;
+- (void)_doCommandForEditAndSchemeCommand:(id)arg1 schemeTask:(long long)arg2;
 - (void)showAppChooserIfNecessaryForScheme:(id)arg1 runDestination:(id)arg2 command:(id)arg3 onCompletion:(CDUnknownBlockType)arg4;
 - (id)_extensionRunnableForBundleIdentifier:(id)arg1 BuildableProduct:(id)arg2 Scheme:(id)arg3 extensionRunMode:(int)arg4;
 - (BOOL)_shouldShowAppChooserForScheme:(id)arg1 command:(id)arg2;
@@ -234,12 +234,12 @@
 - (id)currentDebuggingAdditionUIControllers;
 - (id)debugSessionController;
 - (BOOL)_contentSizeCanBeZeroSize;
-- (void)_performContextTask:(int)arg1 command:(id)arg2 commandName:(id)arg3 buildCommand:(int)arg4 filePath:(id)arg5 invocationRecord:(id)arg6 useLegacyCompletionBehavior:(BOOL)arg7 completionBlock:(CDUnknownBlockType)arg8;
-- (void)_checkNeedToStopExistingExecutionForScheme:(id)arg1 runDestination:(id)arg2 task:(int)arg3 command:(id)arg4 trackersToStop:(id)arg5 needToStopCurrentBuild:(char *)arg6 needToStopCurrentTest:(char *)arg7 needToStopCurrentExecution:(char *)arg8;
+- (void)_performContextTask:(long long)arg1 command:(id)arg2 commandName:(id)arg3 buildCommand:(long long)arg4 filePath:(id)arg5 invocationRecord:(id)arg6 useLegacyCompletionBehavior:(BOOL)arg7 completionBlock:(CDUnknownBlockType)arg8;
+- (void)_checkNeedToStopExistingExecutionForScheme:(id)arg1 runDestination:(id)arg2 task:(long long)arg3 command:(id)arg4 trackersToStop:(id)arg5 needToStopCurrentBuild:(char *)arg6 needToStopCurrentTest:(char *)arg7 needToStopCurrentExecution:(char *)arg8;
 - (void)_performTaskOnScheme:(id)arg1 forSchemeOperationParameters:(id)arg2 useLegacyCompletionBehavior:(BOOL)arg3 invokedViaScripting:(BOOL)arg4 completionBlock:(CDUnknownBlockType)arg5;
 - (id)_errorForNoActiveSchemeForCommandName:(id)arg1;
 - (CDUnknownBlockType)_legacyEnqueuingErrorBlock;
-- (BOOL)_launchingOrProfiling:(int)arg1 withNonExistentWorkingDirectory:(id)arg2;
+- (BOOL)_launchingOrProfiling:(long long)arg1 withNonExistentWorkingDirectory:(id)arg2;
 - (void)_showWarningForBuild:(BOOL)arg1 forTest:(BOOL)arg2 forOtherExecution:(BOOL)arg3 trackersToStop:(id)arg4 taskActionBlock:(CDUnknownBlockType)arg5;
 - (void)_runAnotherInstance:(id)arg1;
 - (void)_acceptStoppingExecutionAlert:(id)arg1;

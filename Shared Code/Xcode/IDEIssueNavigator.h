@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -26,7 +26,7 @@
     NSSet *_collapsedGroupsBeforeFiltering;
     NSSet *_collapsedFilesBeforeFiltering;
     NSSet *_collapsedTypesBeforeFiltering;
-    NSSet *_expandedIssuesBeforeFiltering;
+    NSSet *_expandedModelObjectsBeforeFiltering;
     DVTTimeSlicedMainThreadWorkQueue *_autoExpandingWorkQueue;
     DVTTableCellViewMultiLineHeightEstimator *_issueHeightEstimator;
     DVTTableCellViewMultiLineHeightEstimator *_subIssueHeightEstimator;
@@ -48,7 +48,7 @@
     NSMutableSet *_collapsedGroups;
     NSMutableSet *_collapsedFiles;
     NSMutableSet *_collapsedTypes;
-    NSMutableSet *_expandedIssues;
+    NSMutableSet *_expandedModelObjects;
     DVTScrollView *_issueNavigatorScrollView;
     struct _NSRange _visibleRows;
 }
@@ -60,7 +60,7 @@
 + (void)initialize;
 @property __weak DVTScrollView *issueNavigatorScrollView; // @synthesize issueNavigatorScrollView=_issueNavigatorScrollView;
 @property struct _NSRange visibleRows; // @synthesize visibleRows=_visibleRows;
-@property(copy, nonatomic) NSMutableSet *expandedIssues; // @synthesize expandedIssues=_expandedIssues;
+@property(copy, nonatomic) NSMutableSet *expandedModelObjects; // @synthesize expandedModelObjects=_expandedModelObjects;
 @property(copy, nonatomic) NSMutableSet *collapsedTypes; // @synthesize collapsedTypes=_collapsedTypes;
 @property(copy, nonatomic) NSMutableSet *collapsedFiles; // @synthesize collapsedFiles=_collapsedFiles;
 @property(copy, nonatomic) NSMutableSet *collapsedGroups; // @synthesize collapsedGroups=_collapsedGroups;
@@ -107,6 +107,7 @@
 - (id)_fullIdentifierPathForNavigables:(id)arg1;
 - (id)_fullIdentifierPathForNavigable:(id)arg1;
 - (id)_stateIdentifierForNavigable:(id)arg1;
+- (id)_issueFromChildNavigableItem:(id)arg1;
 - (id)_stateIdentifierForIssue:(id)arg1;
 - (id)_stateIdentifierForIssueTypeGroup:(id)arg1 parentNavigable:(id)arg2;
 - (id)_stateIdentifierForIssueFileGroup:(id)arg1 parentNavigable:(id)arg2;

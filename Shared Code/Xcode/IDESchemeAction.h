@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -31,6 +31,7 @@
     IDEProfileOptimizationActionController *_pgoController;
     NSString *_selectedInternalDebuggerToolchainIdentifier;
     DVTToolchain *_lldbToolchain;
+    NSString *_intentQueryString;
 }
 
 + (id)bundleIdentifierFromBuildableProduct:(id)arg1 withBuildParameters:(id)arg2;
@@ -42,6 +43,7 @@
 + (void)forceThreadSanitizerEnabledTo:(BOOL)arg1;
 + (void)forceAddressSanitizerEnabledTo:(BOOL)arg1;
 + (void)initialize;
+@property(retain) NSString *intentQueryString; // @synthesize intentQueryString=_intentQueryString;
 @property(retain) DVTToolchain *lldbToolchain; // @synthesize lldbToolchain=_lldbToolchain;
 @property int toolchainState; // @synthesize toolchainState=_toolchainState;
 @property(retain) NSString *selectedInternalDebuggerToolchainIdentifier; // @synthesize selectedInternalDebuggerToolchainIdentifier=_selectedInternalDebuggerToolchainIdentifier;
@@ -72,6 +74,7 @@
 - (void)dvt_encodeAttributesWithXMLArchiver:(id)arg1 version:(id)arg2;
 - (void)dvt_awakeFromXMLUnarchiver:(id)arg1;
 - (void)modifyEnvironmentForLogging:(id)arg1 buildParameters:(id)arg2;
+- (void)_addIDEDisabledOSActivityDTMode:(id)arg1;
 @property(readonly) NSArray *_postPhaseExecutionActionsProxies;
 @property(readonly) NSArray *_prePhaseExecutionActionsProxies;
 - (id)createAdditionalDiagnosticsDict;

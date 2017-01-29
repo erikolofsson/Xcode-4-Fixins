@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -30,6 +30,7 @@
 // - (void).cxx_destruct;
 - (void)revertState;
 - (long long)filterProgress;
+- (void)setFilter:(id)arg1;
 - (id)contextMenuSelection;
 - (void)willForgetNavigableItems:(id)arg1;
 - (void)primitiveInvalidate;
@@ -43,7 +44,6 @@
 - (void)openSelectedNavigableItemsKeyAction:(id)arg1;
 - (id)openSpecifierForNavigableItem:(id)arg1 error:(id *)arg2;
 - (BOOL)_shouldOpenNavigableItem:(id)arg1 eventType:(unsigned long long)arg2;
-- (BOOL)shouldOpenNavigableItem:(id)arg1 eventType:(unsigned long long)arg2;
 - (BOOL)delegateFirstResponder;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 - (void)loadView;

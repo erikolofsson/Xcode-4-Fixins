@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -152,7 +152,6 @@
 - (void)_updateOutputSelection;
 - (void)_statusNeedsUpdating:(BOOL)arg1;
 - (void)_updateStatus;
-- (id)_statusAttributes;
 - (void)_setupSearchField;
 - (void)_uninstallBindings;
 - (void)_setupBindings;

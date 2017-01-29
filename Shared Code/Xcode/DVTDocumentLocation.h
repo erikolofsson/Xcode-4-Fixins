@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -41,7 +41,6 @@
 - (long long)compare:(id)arg1;
 @property(readonly, copy) NSString *description;
 - (BOOL)isEqualDisregardingTimestamp:(id)arg1;
-- (BOOL)isEqualToDocumentLocationDisregardingDocumentURL:(id)arg1;
 - (BOOL)isEqual:(id)arg1;
 - (id)copyWithURL:(id)arg1;
 - (id)copyWithZone:(struct _NSZone *)arg1;

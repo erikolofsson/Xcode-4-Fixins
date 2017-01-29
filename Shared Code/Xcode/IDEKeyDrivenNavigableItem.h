@@ -5,34 +5,36 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
 
 #import "IDENavigableItem.h"
 
-@class DVTObservingToken, NSDictionary;
+@class DVTObservingToken, NSMutableDictionary;
 @protocol IDEKeyDrivenNavigableItemRepresentedObject;
 
 @interface IDEKeyDrivenNavigableItem : IDENavigableItem
 {
-    NSDictionary *_cachedPropertyValues;
+    NSMutableDictionary *_cachedPropertyValues;
     DVTObservingToken *_parentChildBreakdownObserver;
     struct {
         unsigned int _invalidatingChildItems:1;
         unsigned int _disposing:1;
-        unsigned int _reserved:30;
+        unsigned int _observingForReFiltering:1;
     } _idekdniFlags;
 }
 
-+ (void)_customizeNewNavigableItemClass:(Class)arg1 forModelObjectClass:(Class)arg2 extension:(id)arg3;
++ (void)_customizeNewNavigableItemClass:(Class)arg1 forModelObjectClass:(Class)arg2;
 + (id)_automatic_keyPathsForValuesAffectingMajorGroup;
++ (id)keyPathsForValuesAffecting_filtered;
 + (id)keyPathsForValuesAffectingReferencedContentExists;
 + (id)keyPathsForValuesAffectingContentDocumentLocation;
 + (id)keyPathsForValuesAffectingDocumentType;
 + (id)keyPathsForValuesAffectingFileReference;
 + (id)keyPathsForValuesAffectingGroupIdentifier;
++ (id)keyPathsForValuesAffectingAdditionalFilterMatchingText;
 + (id)keyPathsForValuesAffectingToolTip;
 + (id)keyPathsForValuesAffectingAccessibleDescription;
 + (id)keyPathsForValuesAffectingImage;
@@ -58,12 +60,14 @@
 - (id)identifierForChildItem:(id)arg1;
 - (BOOL)_automatic_isMajorGroup;
 - (BOOL)isMajorGroup;
+- (void)_setFilterMatch:(BOOL)arg1 forGeneration:(int)arg2;
 - (BOOL)missingReferencedContentIsImportant;
 - (BOOL)referencedContentExists;
 - (id)contentDocumentLocation;
 - (id)documentType;
 - (id)fileReference;
 - (id)groupIdentifier;
+- (id)additionalFilterMatchingText;
 - (id)toolTip;
 - (id)accessibleImageDescription;
 - (id)image;

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -16,7 +16,6 @@
 
 @interface DVTModelObject : NSObject <DVTModelObject>
 {
-    int _retainCount;
     DVTModelObjectGraph *_objectGraph;
     id _observationInfo;
 }
@@ -25,11 +24,6 @@
 @property(retain, nonatomic) DVTModelObjectGraph *objectGraph;
 - (void)setObservationInfo:(id)arg1;
 - (id)observationInfo;
-- (BOOL)_isDeallocating;
-- (BOOL)_tryRetain;
-- (unsigned long long)retainCount;
-- (oneway void)release;
-- (id)retain;
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;

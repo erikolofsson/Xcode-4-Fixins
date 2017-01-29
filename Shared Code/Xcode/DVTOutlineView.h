@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -94,7 +94,6 @@
 - (void)_registerNibWithName:(id)arg1 usingIdentifier:(id)arg2;
 - (void)registerDVTTableRowViewNibUsingIdentifier:(id)arg1;
 - (void)registerDVTTableCellViewMultiLineNibUsingIdentifier:(id)arg1;
-- (void)registerDVTTableCellViewTwoLineNibUsingIdentifier:(id)arg1;
 - (void)registerDVTTableCellViewOneLineNibUsingIdentifier:(id)arg1;
 - (void)dealloc;
 - (id)initWithCoder:(id)arg1;

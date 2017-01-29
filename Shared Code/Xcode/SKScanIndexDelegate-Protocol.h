@@ -8,9 +8,12 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-@class IDECustomUpgradeTask;
 
-@protocol IDEUpgradeableItem
-- (void)enumerateUpgradeTasksWithBlock:(void (^)(IDECustomUpgradeTask *))arg1;
+@class SKScanIndex;
+
+@protocol SKScanIndexDelegate <NSObject>
+- (void)scanIndexDidFinishScanning:(SKScanIndex *)arg1;
+- (void)scanIndexIsScanning:(SKScanIndex *)arg1 completed:(long long)arg2 remaining:(long long)arg3;
+- (void)scanIndexStartedScanning:(SKScanIndex *)arg1;
 @end
 

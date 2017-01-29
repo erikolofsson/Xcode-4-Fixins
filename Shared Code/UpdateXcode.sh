@@ -19,6 +19,8 @@ for File in $FilesToUpdate; do
 		if [ -e "XcodeDump/$File" ]; then
 			echo $File 1>&2
 			cp XcodeDump/$File Xcode/$File
+		else
+			echo -e "\033[31mMISSING:\033[0m XcodeDump/$File"
 		fi
 	fi
 done

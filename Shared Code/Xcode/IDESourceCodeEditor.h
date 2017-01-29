@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -24,10 +24,10 @@
 #import "IDETextVisualizationHost-Protocol.h"
 #import "NSImmediateActionAnimationController-Protocol.h"
 
-@class DVTDispatchLock, DVTLayoutManager, DVTNotificationToken, DVTObservingToken, DVTOperation, DVTSDK, DVTScopeBarController, DVTSourceExpression, DVTSourceLanguageService, DVTSourceTextView, DVTStackBacktrace, DVTTextDocumentLocation, DVTTextSidebarView, DVTWeakInterposer, IDEAnalyzerResultsExplorer, IDECoverageTextVisualization, IDENoteAnnotationExplorer, IDESchemeActionCodeCoverageFile, IDESelection, IDESingleFileProcessingToolbarController, IDESourceCodeDocument, IDESourceCodeEditorAnnotationProvider, IDESourceCodeEditorContainerView, IDESourceCodeHelpNavigationRequest, IDESourceCodeNavigationRequest, IDESourceCodeSingleLineBlameProvider, IDESourceControlLogDetailViewController, IDESourceLanguageEditorExtension, IDEViewController, IDEWorkspaceTabController, NSArray, NSDictionary, NSImmediateActionGestureRecognizer, NSMutableArray, NSObject, NSOperationQueue, NSPopover, NSProgressIndicator, NSPulseGestureRecognizer, NSScrollView, NSString, NSTimer, NSTrackingArea, NSView;
+@class DVTDispatchLock, DVTLayoutManager, DVTNotificationToken, DVTObservingToken, DVTOperation, DVTSDK, DVTScopeBarController, DVTSourceExpression, DVTSourceLanguageService, DVTSourceTextView, DVTStackBacktrace, DVTTextDocumentLocation, DVTTextSidebarView, DVTWeakInterposer, IDEAnalyzerResultsExplorer, IDECoverageTextVisualization, IDENoteAnnotationExplorer, IDESchemeActionCodeCoverageFile, IDESelection, IDESingleFileProcessingToolbarController, IDESourceCodeDocument, IDESourceCodeEditorAnnotationProvider, IDESourceCodeEditorContainerView, IDESourceCodeHelpNavigationRequest, IDESourceCodeNavigationRequest, IDESourceCodeSingleLineBlameProvider, IDESourceControlLogDetailViewController, IDESourceLanguageEditorExtension, IDEViewController, IDEWorkspaceTabController, NSArray, NSDictionary, NSImmediateActionGestureRecognizer, NSMutableArray, NSObject, NSOperationQueue, NSPopover, NSProgressIndicator, NSPulseGestureRecognizer, NSScrollView, NSString, NSTimer, NSTouchBar, NSTrackingArea, NSView;
 @protocol DVTCancellable, IDESourceEditorViewControllerHost, OS_dispatch_queue;
 
-@interface IDESourceCodeEditor : IDEEditor <NSImmediateActionAnimationController, NSTextViewDelegate, NSMenuDelegate, NSPopoverDelegate, DVTSourceTextViewDelegate, DVTSourceTextViewQuickEditDataSource, DVTFindBarFindable, IDESourceExpressionSource, IDERefactoringExpressionSource, IDETextVisualizationHost, IDEOpenQuicklyJumpToSupport, IDEComparisonEditorHostContext, IDESourceControlLogDetailDelegate, IDETestingSelection>
+@interface IDESourceCodeEditor : IDEEditor <NSTouchBarProvider, NSTouchBarDelegate, NSImmediateActionAnimationController, NSTextViewDelegate, NSMenuDelegate, NSPopoverDelegate, DVTSourceTextViewDelegate, DVTSourceTextViewQuickEditDataSource, DVTFindBarFindable, IDESourceExpressionSource, IDERefactoringExpressionSource, IDETextVisualizationHost, IDEOpenQuicklyJumpToSupport, IDEComparisonEditorHostContext, IDESourceControlLogDetailDelegate, IDETestingSelection>
 {
     NSScrollView *_scrollView;
     DVTSourceTextView *_textView;
@@ -48,6 +48,7 @@
     DVTObservingToken *_navigatorLiveIssuesEnabledObserverToken;
     DVTNotificationToken *_workspaceLiveSourceIssuesEnabledObserver;
     DVTObservingToken *_diagnosticControllerObserverToken;
+    DVTObservingToken *_workspaceObserverToken;
     DVTObservingToken *_needsDiagnosisObserverToken;
     DVTObservingToken *_diagnosticItemsObserverToken;
     NSOperationQueue *_diagnoseRelatedFilesQueue;
@@ -211,12 +212,11 @@
 - (void)_invalidateMouseOverExpression;
 @property(readonly) DVTSourceExpression *quickHelpExpression;
 @property(readonly) DVTSourceExpression *contextMenuExpression;
-- (void)_updatedMouseOverExpression;
-- (void)_updateSelectedExpression;
 - (BOOL)_expression:(id)arg1 representsTheSameLocationAsExpression:(id)arg2;
 - (id)_expressionAtCharacterIndex:(unsigned long long)arg1;
 - (id)refactoringExpressionUsingContextMenu:(BOOL)arg1;
 - (id)selectedTestsAndTestables;
+- (id)selectedTest;
 - (id)_testFromModelItem:(id)arg1 fromTests:(id)arg2;
 - (void)specialPaste:(id)arg1;
 - (id)_specialPasteContext;
@@ -264,7 +264,7 @@
 - (void)analyzeCurrentFile;
 - (void)preprocessCurrentFile;
 - (void)assembleCurrentFile;
-- (void)_processCurrentFileUsingBuildCommand:(int)arg1;
+- (void)_processCurrentFileUsingBuildCommand:(long long)arg1;
 - (id)_singleFileProcessingFilePath;
 - (void)startSingleProcessingModeForURL:(id)arg1;
 @property(readonly) BOOL isWorkspaceBuilding;
@@ -347,7 +347,6 @@
 - (void)_doInitialSetup;
 - (void)_endObservingDiagnosticController;
 - (void)_startObservingDiagnosticController;
-- (void)_blueprintDidChangeForSourceCodeEditor:(id)arg1;
 - (void)primitiveInvalidate;
 - (void)selectDocumentLocations:(id)arg1 highlightSelection:(BOOL)arg2;
 - (void)selectAndHighlightDocumentLocations:(id)arg1;
@@ -367,6 +366,34 @@
 - (void)loadView;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2 document:(id)arg3;
 @property __weak DVTScopeBarController *analyzerResultsScopeBar;
+- (id)_commentButton;
+- (id)_codeIndentButton;
+- (BOOL)_hasFoldsIn:(struct _NSRange)arg1;
+- (BOOL)_hasFoldsInSelectedRange;
+- (id)_titleForFoldButton;
+- (void)foldAction:(id)arg1;
+- (void)_updateCodeFoldingButtonState;
+- (id)_codeFoldingButton;
+- (id)_codeFoldingItemWithIdentifier:(id)arg1;
+- (id)_commentItem;
+- (id)_indentItem;
+- (id)_editInScopeItem;
+- (id)_jumpToDefinitionItem;
+- (void)_indexDidChange:(id)arg1;
+- (void)_retrieveAutoHighlightTokens;
+- (void)_registerAutoHighlightTokensObserver;
+- (void)_requestTokenizationAndUpdateTokenButtons;
+- (void)dfr_didChangeSelection:(id)arg1;
+- (BOOL)_isEditingAllInScope;
+- (void)_registerSelectionChangedObserver;
+- (id)completionsForKeyboardShortcuts;
+- (id)sourceTextEditingDFRController;
+- (id)touchBar:(id)arg1 makeItemForIdentifier:(id)arg2;
+- (id)_functionBarWithoutCompletions;
+- (id)_functionBarForCompletions;
+- (id)_functionBarForCurrentCompletionState;
+- (void)registerDFRTextObservers;
+- (id)makeTouchBar;
 
 // Remaining properties
 @property(readonly, copy) IDESelection *contextMenuSelection;
@@ -377,6 +404,7 @@
 @property(readonly, copy) IDESelection *outputSelection;
 @property(readonly) DVTSDK *sdk;
 @property(readonly) Class superclass;
+@property(readonly) NSTouchBar *touchBar;
 @property(readonly, nonatomic, getter=isValid) BOOL valid;
 @property(readonly, nonatomic) IDEWorkspaceTabController *workspaceTabController;
 

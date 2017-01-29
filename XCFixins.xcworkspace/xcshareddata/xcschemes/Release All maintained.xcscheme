@@ -140,6 +140,15 @@
          BundleIdentifier = "com.apple.dt.Xcode"
          FilePath = "/Applications/Xcode.app">
       </PathRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
+            BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
+            BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
+            ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

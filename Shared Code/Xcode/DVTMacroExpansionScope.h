@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -25,8 +25,7 @@
     unsigned int _defnLevel:8;
     unsigned int _highestDefnLevel:8;
     unsigned int _unused:8;
-    int _retainCount;
-    id __weak *_nextScopeByDefnLevel;
+    id const*_nextScopeByDefnLevel;
 }
 
 + (id)newWithParentScope:(id)arg1 macroDefinitionTables:(id)arg2;
@@ -77,11 +76,6 @@
 - (id)evaluatedStringValueForMacroNamed:(id)arg1;
 - (id)evaluatedStringValueForMacroNamed:(id)arg1 returningFallbackConditionsUsed:(id *)arg2;
 - (id)lookupValueForMacroName:(id)arg1 hash:(unsigned int)arg2 withCursor:(struct DVTMacroNameLookupCursor *)arg3;
-- (BOOL)_isDeallocating;
-- (BOOL)_tryRetain;
-- (unsigned long long)retainCount;
-- (oneway void)release;
-- (id)retain;
 
 @end
 

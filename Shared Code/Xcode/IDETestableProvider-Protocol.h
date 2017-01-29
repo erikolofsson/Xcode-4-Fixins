@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #import "DVTInvalidation-Protocol.h"
@@ -16,7 +16,6 @@
 @protocol IDETestableProvider <DVTInvalidation, NSObject>
 @property(readonly) NSString *name;
 @property(readonly, copy) NSArray *testables;
-@property(readonly, copy) NSArray *allTestables;
 - (id <IDETestable>)testableForBlueprint:(id <IDEBlueprint>)arg1;
 @end
 

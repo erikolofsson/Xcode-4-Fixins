@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -16,33 +16,31 @@
 #import "IDEFilterControlBarTarget-Protocol.h"
 #import "IDENavigableItemCoordinatorDelegate-Protocol.h"
 
-@class DVTNotificationToken, IDENavigableItem, IDENavigableItemAsyncFilteringCoordinator, IDENavigableItemFilter, NSMenu, NSMutableDictionary, NSPredicate, NSString, NSView;
+@class DVTNotificationToken, IDENavigableItem, IDENavigableItemAsyncFilteringCoordinator, IDENavigableItemFilter, NSMenu, NSMutableDictionary, NSString, NSView;
 
 @interface IDENavigator : IDEViewController <IDENavigableItemCoordinatorDelegate, IDEFilterControlBarTarget, DVTReplacementViewDelegate>
 {
     BOOL _usesManualNavigableItemCoordinatorManagement;
     DVTNotificationToken *_willForgetNavigableItemsNotificationToken;
-    BOOL _filteringEnabled;
     BOOL _wantsCachedNavigableItemCoordinator;
     BOOL _wantsUniquingNavigableItemCoordinator;
+    BOOL _filteringEnabled;
     IDENavigableItem *_rootNavigableItem;
     IDENavigableItemAsyncFilteringCoordinator *_navigableItemCoordinator;
     IDENavigableItemFilter *_filter;
-    NSPredicate *_filterPredicate;
     NSMutableDictionary *_cachedStateForParentViewController;
     NSView *__primaryFilterControl;
 }
 
-+ (id)keyPathsForValuesAffectingFilterProgress;
 + (id)keyPathsForValuesAffectingFilteringEnabled;
++ (id)keyPathsForValuesAffectingFilterProgress;
 + (BOOL)automaticallyNotifiesObserversOfRootNavigableItem;
 + (void)initialize;
 @property(retain) NSView *_primaryFilterControl; // @synthesize _primaryFilterControl=__primaryFilterControl;
+@property(nonatomic, getter=isFilteringEnabled) BOOL filteringEnabled; // @synthesize filteringEnabled=_filteringEnabled;
 @property BOOL wantsUniquingNavigableItemCoordinator; // @synthesize wantsUniquingNavigableItemCoordinator=_wantsUniquingNavigableItemCoordinator;
 @property BOOL wantsCachedNavigableItemCoordinator; // @synthesize wantsCachedNavigableItemCoordinator=_wantsCachedNavigableItemCoordinator;
 @property __weak NSMutableDictionary *cachedStateForParentViewController; // @synthesize cachedStateForParentViewController=_cachedStateForParentViewController;
-@property(nonatomic, getter=isFilteringEnabled) BOOL filteringEnabled; // @synthesize filteringEnabled=_filteringEnabled;
-@property(retain, nonatomic) NSPredicate *filterPredicate; // @synthesize filterPredicate=_filterPredicate;
 @property(retain, nonatomic) IDENavigableItemFilter *filter; // @synthesize filter=_filter;
 @property(readonly, nonatomic) IDENavigableItemAsyncFilteringCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_navigableItemCoordinator;
 @property(retain, nonatomic) IDENavigableItem *rootNavigableItem; // @synthesize rootNavigableItem=_rootNavigableItem;
@@ -74,6 +72,7 @@
 - (void)loadView;
 - (void)updateBoundContent;
 - (id)dvtExtraBindings;
+- (id)navigatorFilterContextsForFunctionBar;
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;

@@ -1,6 +1,8 @@
 
 #pragma once
 
+@class IDEIndexCollection;
+
 typedef void (^CDUnknownBlockType)(void);
 typedef void (*CDUnknownFunctionPointerType)(void);
 
@@ -100,3 +102,8 @@ struct __va_list_tag {
     void *_field4;
 };
 #endif
+
+ struct shared_ptr_c987a6b6 {
+	struct IndexerCallbacks *__ptr_;
+	struct __shared_weak_count *__cntrl_;
+};

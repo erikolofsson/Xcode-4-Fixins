@@ -5,17 +5,16 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 
 @class DVTPortalProfilePurpose, NSSet;
-@protocol IDEProvisionable;
 
 @protocol IDEProvisionableProvider <NSObject>
 @property(readonly, nonatomic) DVTPortalProfilePurpose *automaticProvisioningPurpose;
 @property(readonly, nonatomic) NSSet *provisionableDevices;
-@property(readonly, nonatomic) NSSet<IDEProvisionable> *provisionables;
+@property(readonly, nonatomic) NSSet *provisionables;
 @property(readonly, nonatomic) BOOL finishedLoading;
 @end
 

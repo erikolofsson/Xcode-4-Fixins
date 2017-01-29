@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -14,7 +14,7 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTDelayedInvocation, DVTNotificationToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDENavigableItemFilter, NSArray, NSHashTable, NSMapTable, NSMutableArray, NSPredicate, NSSet, NSString, _IDENavigatorOutlineViewDataSource;
+@class DVTDelayedInvocation, DVTNotificationToken, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDENavigableItemFilter, NSArray, NSHashTable, NSMapTable, NSMutableArray, NSSet, NSString, _IDENavigatorOutlineViewDataSource;
 
 @interface IDENavigatorOutlineView : DVTOutlineView <DVTInvalidation>
 {
@@ -28,6 +28,7 @@
     BOOL _isLiveScrolling;
     BOOL _suspendPushingOutlineViewSelectionToBoundObjects;
     NSMutableArray *_entriesToRestoreToVisibleRect;
+    DVTNotificationToken *_sidebarIconSizeObserver;
     DVTNotificationToken *_variableRowHeightLiveScrollStartObserver;
     DVTNotificationToken *_variableRowHeightLiveScrollEndObserver;
     DVTDelayedInvocation *_variableRowHeightVisibleRowsHeightCalculatorInvocation;
@@ -36,7 +37,6 @@
         unsigned int _needsToRefreshBoundExpandedItems:1;
         unsigned int _suspendRowHeightInvalidation:1;
         unsigned int _doingBatchExpand:1;
-        unsigned int _filteringEnabled:1;
         unsigned int _scrollSelectionToVisibleAfterRefreshingSelection:1;
         unsigned int _resettingRootItems:1;
         unsigned int _reloadingItems:1;
@@ -50,24 +50,26 @@
     BOOL _supportsVariableHeightCells;
     BOOL _tracksSelectionVisibleRect;
     IDENavigableItemFilter *_filter;
-    NSPredicate *_filterPredicate;
     NSSet *_editorSelectedNavigableItems;
+    long long _systemRowSizeStyle;
     DVTTimeSlicedMainThreadWorkQueue *_expandingItemsWorkQueue;
     long long _filterProgress;
 }
 
 + (id)keyPathsForValuesAffectingFilteringActive;
 + (id)keyPathsForValuesAffectingEmptyContentString;
++ (unsigned long long)rowHeightFromRowSizeStyle:(long long)arg1;
++ (long long)systemRowSizeStyle;
 + (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (void)initialize;
 @property(readonly) long long filterProgress; // @synthesize filterProgress=_filterProgress;
 @property(retain) DVTTimeSlicedMainThreadWorkQueue *expandingItemsWorkQueue; // @synthesize expandingItemsWorkQueue=_expandingItemsWorkQueue;
+@property long long systemRowSizeStyle; // @synthesize systemRowSizeStyle=_systemRowSizeStyle;
 @property BOOL tracksSelectionVisibleRect; // @synthesize tracksSelectionVisibleRect=_tracksSelectionVisibleRect;
 @property(retain, nonatomic) NSSet *editorSelectedNavigableItems; // @synthesize editorSelectedNavigableItems=_editorSelectedNavigableItems;
 @property(nonatomic) BOOL supportsVariableHeightCells; // @synthesize supportsVariableHeightCells=_supportsVariableHeightCells;
 @property(nonatomic) SEL keyAction; // @synthesize keyAction=_keyAction;
 @property(readonly, getter=isFilteringActive) BOOL filteringActive; // @synthesize filteringActive=_filteringActive;
-@property(copy, nonatomic) NSPredicate *filterPredicate; // @synthesize filterPredicate=_filterPredicate;
 @property(retain, nonatomic) IDENavigableItemFilter *filter; // @synthesize filter=_filter;
 // - (void).cxx_destruct;
 - (void)processPendingChanges;
@@ -93,6 +95,7 @@
 - (double)_cachedOrEstimatedOrDefaultHeightOfItem:(id)arg1;
 - (void)viewDidEndLiveResize;
 - (BOOL)_isVariableRowHeightViewBasedOutlineView;
+- (id)makeViewWithIdentifier:(id)arg1 owner:(id)arg2;
 - (void)reloadData;
 - (void)reloadItem:(id)arg1 reloadChildren:(BOOL)arg2;
 - (void)_restoreEntriesToVisibleRect;
@@ -132,11 +135,10 @@
 - (void)expandItem:(id)arg1 expandChildren:(BOOL)arg2;
 - (void)expandAncestorsForItem:(id)arg1;
 - (void)_expandAncestorsForNavigableItem:(id)arg1;
-- (void)setFilteringEnabled:(BOOL)arg1;
-- (BOOL)filteringEnabled;
 - (BOOL)filteringActive;
 - (id)emptyContentString;
 - (void)_updateCachedRowHeightsForVisibleRows;
+- (void)_systemSizeModeDidChange;
 - (id)init;
 - (id)initWithCoder:(id)arg1;
 - (id)initWithFrame:(struct CGRect)arg1;

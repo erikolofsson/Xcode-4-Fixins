@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -29,10 +29,8 @@
     int _saveErrorCode;
     NSArray *_targets;
     NSMapTable *_pbxTargetsToXc3Targets;
-    NSArray *_allTestables;
     NSArray *_testables;
     NSMapTable *_xc3TargetsToTestables;
-    NSMapTable *_xc3TargetsToDeprecatedTestables;
     NSMutableArray *_localizations;
     BOOL _isBaseLocalized;
     IDEActivityLogSection *_integrityLog;
@@ -44,7 +42,6 @@
     BOOL _pbxProjectEdited;
     BOOL _shouldLogUpgradeCheck;
     NSArray *_customUpgradeTasks;
-    BOOL _requestsTestingUpgrade;
 }
 
 + (id)keyPathsForValuesAffectingTestables;
@@ -65,7 +62,6 @@
 + (id)containerFileDataType;
 + (unsigned long long)assertionBehaviorForKeyValueObservationsAtEndOfEvent;
 + (void)initialize;
-@property BOOL requestsTestingUpgrade; // @synthesize requestsTestingUpgrade=_requestsTestingUpgrade;
 @property(nonatomic) BOOL pbxProjectEdited; // @synthesize pbxProjectEdited=_pbxProjectEdited;
 @property BOOL hasRunUpgradeCheck; // @synthesize hasRunUpgradeCheck=_hasRunUpgradeCheck;
 @property(retain) IDEActivityLogSection *integrityLog; // @synthesize integrityLog=_integrityLog;
@@ -81,7 +77,6 @@
 - (void)clearTestablesCache;
 - (void)_updateTestablesForTargetProxies:(id)arg1;
 - (id)testableForBlueprint:(id)arg1;
-@property(readonly, copy) NSArray *allTestables;
 @property(readonly, copy) NSArray *testables;
 - (id)testableProvider;
 - (void)addSpecifier:(id)arg1 inWorkspace:(id)arg2 toSCMWithCompletionBlock:(CDUnknownBlockType)arg3;
@@ -98,8 +93,6 @@
 @property(readonly) NSString *cachedLastUpgradeVersion;
 - (void)updateLastUpgradeVersionToCurrent;
 @property(readonly) NSString *lastUpgradeVersion;
-- (void)setCachedValue:(id)arg1 forName:(id)arg2;
-- (id)cachedValueWithName:(id)arg1;
 - (id)serializedSourceListItem;
 - (id)indexables;
 - (BOOL)installSourcesToPath:(id)arg1;
@@ -110,8 +103,6 @@
 @property(readonly) BOOL lastSwiftMigrationIsCurrent;
 - (void)updateLastSwiftUpdateVersionToCurrent;
 @property(readonly) NSString *lastSwiftUpdateVersion;
-- (void)cacheLastSwiftUpdateCheck;
-@property(readonly) BOOL shouldShowSwiftDeprecationWarning;
 @property(readonly) BOOL shouldLogUpgradeCheck;
 - (void)_runUpgradeChecksIfNecessary;
 - (BOOL)setBaseSDKPlatform:(id)arg1 forConfiguration:(id)arg2;

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -48,6 +48,7 @@
 @property(copy, nonatomic) NSString *fileNamePatternString; // @synthesize fileNamePatternString=_fileNamePatternString;
 // - (void).cxx_destruct;
 - (id)selectedTestsAndTestables;
+- (id)selectedTest;
 - (void)_handleEnterAction;
 - (BOOL)outlineView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (BOOL)_isNavigableItem:(id)arg1 childOfNavigableItems:(id)arg2;
@@ -83,10 +84,8 @@
 - (void)fiterButton_newProject:(id)arg1;
 - (void)_createNewPlaygroundPageWithType:(long long)arg1 inPlayground:(id)arg2 targeting:(id)arg3;
 - (void)filterButton_newPlaygroundPage:(id)arg1;
-- (void)filterButton_newPlayground:(id)arg1;
 - (void)filterButton_newFile:(id)arg1;
 - (void)setFilter:(id)arg1;
-- (void)_synchronizeFilteringWithOutlineView;
 - (id)filterDefinitionIdentifier;
 @property(nonatomic) BOOL scmStatusFilteringEnabled;
 @property(nonatomic) BOOL scmStatusFilteringAllowed;
@@ -118,7 +117,7 @@
 - (id)_folderOfOrContainingReference:(id)arg1;
 - (id)_playgroundForNavItem:(id)arg1 playgroundItem:(id *)arg2;
 - (id)_titleForAddFilesMenuItemUsingContextualMenuSelection:(BOOL)arg1;
-- (id)_titleForNewFileMenuItemUsingContextualMenuSelection:(BOOL)arg1;
+- (id)_titleForNewFileMenuItemUsingContextualMenuSelection:(BOOL)arg1 isMainMenu:(BOOL)arg2;
 - (id)_containerNameForNavigableItem:(id)arg1;
 - (void)contextMenu_addFiles:(id)arg1;
 - (void)addFiles:(id)arg1;

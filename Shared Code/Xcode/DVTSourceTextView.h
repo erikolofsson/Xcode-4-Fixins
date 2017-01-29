@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -296,7 +296,8 @@
 - (void)_showTemporaryLinkForExpressionUnderMouse:(BOOL)arg1 isAlternate:(BOOL)arg2;
 - (void)_didClickOnTemporaryLinkWithEvent:(id)arg1;
 - (void)_updateTemporaryLinkUnderMouseForEvent:(id)arg1;
-- (unsigned long long)_nonBlankCharIndexUnderMouse;
+- (unsigned long long)_nonBlankCharacterIndexUnderMouse;
+- (unsigned long long)_nonBlankCharacterIndexAtPoint:(struct CGPoint)arg1;
 - (void)_clearClickedLinkProgressIndicators;
 - (void)_adjustClickedLinkProgressIndicators;
 - (void)_adjustClickedLinkProgressIndicator:(id)arg1 withRect:(struct CGRect)arg2;
@@ -323,6 +324,7 @@
 - (void)setFoldingHoverRange:(struct _NSRange)arg1;
 - (struct _NSRange)foldingHoverRange;
 - (void)_loadFontsAndColorsFromTheme:(id)arg1;
+- (void)_textStorageDidChangeFontAndColorTheme:(id)arg1;
 - (void)_fontAndColorSettingsChanged:(id)arg1;
 - (void)_scheduleAnnotationLayout;
 - (void)drawRect:(struct CGRect)arg1;

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
 #include "Shared.h"
@@ -47,6 +47,7 @@
     NSMutableSet *_documentEditors;
     NSURL *_ide_representedURL;
     id <DVTCancellable> _closeAfterDelayToken;
+    id <DVTCancellable> _autosaveAfterDelayToken;
     CDUnknownBlockType _filePresenterWriter;
     BOOL _cachedHasRecentChanges;
     BOOL _didDisableAutomaticTermination;

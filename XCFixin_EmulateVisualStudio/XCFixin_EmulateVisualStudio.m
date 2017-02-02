@@ -1004,11 +1004,11 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 								NSString* pClassName = [pSelectedItem className];
 								//XCFixinLog(@"%@ %d", pClassName, [pSelectedItem isLeaf]);
 								bDoNavigation = false;
-								if ([pClassName compare:@"IDEIssueGroupNavigableItem_AnyIDEIssueGroup"] == NSOrderedSame)
+								if ([pClassName compare:@"IDEIssueGroupNavigableItem_IDEIssueGroup_Any"] == NSOrderedSame)
 									continue;
-								else if ([pClassName compare:@"IDEIssueFileGroupNavigableItem_AnyIDEIssueFileGroup"] == NSOrderedSame)
+								else if ([pClassName compare:@"IDEKeyDrivenNavigableItem_IDEIssueTypeGroup_Any"] == NSOrderedSame)
 									continue;
-								else if ([pClassName compare:@"IDEIssueNavigableItem_AnyIDEIssue"] == NSOrderedSame)
+								else if ([pClassName compare:@"IDEIssueNavigableItem_IDEIssue_Any"] == NSOrderedSame)
 								{
 									bDoNavigation = true;
 									if (bExpandNext)
@@ -1017,7 +1017,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 											[m_pActiveView expandItem:pSelectedItem];
 									}
 								}
-								else if ([pClassName compare:@"IDEFileReferenceNavigableItem_AnyXcode3FileReference"] == NSOrderedSame)
+								else if ([pClassName compare:@"IDEFileReferenceNavigableItem_Xcode3FileReference_Any"] == NSOrderedSame)
 								{
 									bDoNavigation = true;
 								}

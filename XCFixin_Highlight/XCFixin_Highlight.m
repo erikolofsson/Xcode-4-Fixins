@@ -1386,7 +1386,7 @@ static void AddDefaultKeywords()
 
 
 
-#if 0
+#if DNever
 	uint32
 #endif
 	pKeywordBulitInTypes = CreateColor(0xFF5966);
@@ -1396,7 +1396,7 @@ static void AddDefaultKeywords()
 	pKeywordBulitInTypeModifiers = pKeywordBulitInTypes;
 	pKeywordBulitInFloatTypes = pKeywordBulitInTypes;
 	
-#if 0
+#if DNever
 	55.6 7
 	t_Test
 	gc_Test ETest_Value mc_Test nullptr true false NULL c_Test
@@ -1421,18 +1421,18 @@ static void AddDefaultKeywords()
 	pFunctionTemplateNonTypeParam = CreateColor(0xFFB7DB);
 	pFunctionTemplateNonTypeParam_Pack = pFunctionTemplateNonTypeParam;
 	
-#if 0
+#if DNever
 	'T'
 #endif
 	pCharacter = CreateColor(0xFF48F0);
 	
-#if 0
+#if DNever
 	NTest
 #endif
 	pNamespace = CreateColor(0xD785FF); // 0xA29CCD
 
 	
-#if 0
+#if DNever
 	t_CTest
 	tf_CTest
 	CTest
@@ -1461,12 +1461,12 @@ static void AddDefaultKeywords()
 	pEnum = pType;
 	pKeywordAuto = CreateColor(0xDBD3FF); // 0xC8C0FF
 	
-#if 0
+#if DNever
 	"Test"
 #endif
 	pString = CreateColor(0x009EFF);
 
-#if 0
+#if DNever
 	_fTest
 	o_fTest
 	fTest
@@ -1486,7 +1486,7 @@ static void AddDefaultKeywords()
 	pMemberVariablePrivate_Functor = CreateColor(0x4fc17e);
 	
 
-#if 0
+#if DNever
 	f_Test
 	fg_Test
 	fp_Test
@@ -1506,7 +1506,7 @@ static void AddDefaultKeywords()
 	pMemberStaticFunctionPrivate = pMemberFunctionPrivate;
 	pMemberStaticFunctionPrivate_Recursive = pMemberStaticFunctionPrivate;
 	
-#if 0
+#if DNever
 	_Test
 	o_Test
 #endif
@@ -1516,12 +1516,12 @@ static void AddDefaultKeywords()
 	pFunctionParameter_Output = CreateColor(0xFFF54B); // 0xE6FF00
 	pFunctionParameter_Output_Pack = pFunctionParameter_Output; // 0xE6FF00
 	
-#if 0
+#if DNever
 	PlainVar
 #endif
 	pPlainText = CreateColor(0xFFD700);
 	
-#if 0
+#if DNever
 	m_Test
 	mp_Test
 #endif
@@ -1529,7 +1529,7 @@ static void AddDefaultKeywords()
 
 	pMemberVariablePrivate = CreateColor(0xC59D53);
 	
-#if 0
+#if DNever
 	DTest
 	d_Test
 #endif
@@ -1537,7 +1537,7 @@ static void AddDefaultKeywords()
 	pMacroParameter = CreateColor(0xFFBC81);
 	
 	
-#if 0
+#if DNever
 	ms_Test
 	g_Test
 	msp_Test
@@ -1557,7 +1557,7 @@ static void AddDefaultKeywords()
 	pMemberStaticVariablePrivate_Functor = pMemberStaticVariablePrivate;
 
 	
-#if 0
+#if DNever
 	= * / +
 	for
 	inline
@@ -2644,7 +2644,7 @@ static void AddDefaultKeywords()
 	AddDefaultKeyword_Cpp(@"str_utf16", pKeywordPropertyModifiers);
 	AddDefaultKeyword_Cpp(@"str_utf32", pKeywordPropertyModifiers);
 
-#if 0
+#if DNever
 	// Let's not pollute the namespace here
 	AddDefaultKeyword_Cpp(@"event_callback", pType_Function);
 	AddDefaultKeyword_Cpp(@"failure", pMemberFunctionPublic);

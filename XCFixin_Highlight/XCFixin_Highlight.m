@@ -846,10 +846,11 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 								{
 									if (i == 1 && [pToFind compare:@"E"] == NSOrderedSame)
 									{
-										if (NodeType == NodeType_IdentifierType)
-											pColor = pEnum;
-										else
+										NSRange underscoreRange = [pIdentifier rangeOfString:@"_"];
+										if (underscoreRange.location != NSNotFound)
 											pColor = pEnumerator;
+										else
+											pColor = pEnum;
 									}
 
 									if (i == 2 && [pToFind compare:@"CF"] == NSOrderedSame)

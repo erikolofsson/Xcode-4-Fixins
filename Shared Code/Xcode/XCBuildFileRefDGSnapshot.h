@@ -29,8 +29,10 @@
     NSSet *_attributes;
     NSSet *_assetTags;
     NSSet *_internalAssetTagSets;
+    NSString *_fileTextEncodingName;
 }
 
+@property(readonly) NSString *fileTextEncodingName; // @synthesize fileTextEncodingName=_fileTextEncodingName;
 // - (void).cxx_destruct;
 - (id)description;
 - (BOOL)linkUsingSearchPath;

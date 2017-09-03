@@ -25,7 +25,7 @@
     unsigned int _defnLevel:8;
     unsigned int _highestDefnLevel:8;
     unsigned int _unused:8;
-    id const*_nextScopeByDefnLevel;
+    id const *_nextScopeByDefnLevel;
 }
 
 + (id)newWithParentScope:(id)arg1 macroDefinitionTables:(id)arg2;

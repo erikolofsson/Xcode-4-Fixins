@@ -14,7 +14,7 @@
 @protocol IDEBlueprint, IDETestable;
 
 @protocol IDETestableProvider <DVTInvalidation, NSObject>
-@property(readonly) NSString *name;
+@property(readonly, copy) NSString *name;
 @property(readonly, copy) NSArray *testables;
 - (id <IDETestable>)testableForBlueprint:(id <IDEBlueprint>)arg1;
 @end

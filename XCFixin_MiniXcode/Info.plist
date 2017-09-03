@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.omz-software.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -20,7 +20,7 @@
 	<string>${CURRENT_PROJECT_VERSION}</string>
 	<key>DVTPlugInCompatibilityUUIDs</key>
 	<array>
-		<string>DFFB3951-EB0A-4C09-9DAC-5F2D28CC839C</string>
+		<string>CA351AD8-3176-41CB-875C-42A05C7CDEC7</string>
 	</array>
 	<key>NSPrincipalClass</key>
 	<string>OMMiniXcode</string>

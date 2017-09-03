@@ -41,6 +41,7 @@
 + (id)editorDocumentExtensionForFileDataType:(id)arg1 editorCategories:(id)arg2;
 + (id)_THREAD_editorDocumentExtensionForType:(id)arg1 withEditorCategories:(id)arg2;
 + (id)_THREAD_bestEditorDocumentExtensionSupportingType:(id)arg1 withEditorCategories:(id)arg2;
++ (BOOL)_isDocumentExtensionPreferred:(id)arg1 over:(id)arg2;
 + (BOOL)_isValidDocumentExtensionIdentifier:(id)arg1 supportingDocumentType:(id)arg2 withEditorCategories:(id)arg3;
 + (void)_enumerateDocumentExtensionsMatchingFileDataType:(id)arg1 withEditorCategories:(id)arg2 matchBlock:(CDUnknownBlockType)arg3;
 + (id)_readableTypesForDocumentClass:(Class)arg1;

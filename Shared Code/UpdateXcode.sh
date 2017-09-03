@@ -20,9 +20,14 @@ for File in $FilesToUpdate; do
 			echo $File 1>&2
 			cp XcodeDump/$File Xcode/$File
 		else
+			if [[ "$File" == "./Shared.h" ]]; then
+				continue
+			fi
+			rm "Xcode/$File"
 			echo -e "\033[31mMISSING:\033[0m XcodeDump/$File"
 		fi
 	fi
 done
+
 
 

@@ -28,6 +28,7 @@
     NSEvent *_schemeForcedSwitchEvent;
     BOOL _bulkChangingBlueprints;
     BOOL _blueprintChangedDuringBulkChanges;
+    BOOL _suppressingAutocreation;
 }
 
 + (BOOL)automaticallyNotifiesObserversOfActiveRunDestination;
@@ -70,6 +71,11 @@
 - (id)_newSchemeWithCustomDataStore:(id)arg1 customDataSpecifier:(id)arg2 orderHint:(unsigned long long)arg3 schemeCreationBlock:(CDUnknownBlockType)arg4;
 - (void)_addContext:(id)arg1 specifierToRunContextMap:(id)arg2;
 - (id)_uniqueSpecifierForSpecifier:(id)arg1 inMap:(id)arg2;
+- (void)_setAutocreationSuppressed:(BOOL)arg1 forBuildables:(id)arg2 returningStoresNeedingSave:(id *)arg3;
+- (void)_setAutocreationSuppressed:(BOOL)arg1 forBuildables:(id)arg2;
+- (void)allowAutocreationForBuildables:(id)arg1;
+- (void)suppressAutocreationForBuildables:(id)arg1;
+- (id)_schemesInvolvingBuildables:(id)arg1 excludingContexts:(id)arg2;
 - (void)_customDataStoresDidUpdate;
 - (void)_finishUpdatingRunContexts;
 - (void)_startUpdatingRunContexts;

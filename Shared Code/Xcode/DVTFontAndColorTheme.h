@@ -12,7 +12,7 @@
 
 #import "DVTPreferenceSet-Protocol.h"
 
-@class DVTCustomDataSpecifier, DVTStackBacktrace, NSColor, NSFont, NSImage, NSPointerArray, NSString, NSURL;
+@class DVTCustomDataSpecifier, DVTStackBacktrace, NSColor, NSFont, NSImage, NSMutableDictionary, NSPointerArray, NSString, NSURL;
 
 @interface DVTFontAndColorTheme : NSObject <DVTPreferenceSet>
 {
@@ -75,11 +75,16 @@
     NSFont *_sourcePlainTextFont;
     NSPointerArray *_syntaxColorsByNodeType;
     NSPointerArray *_syntaxFontsByNodeType;
+    NSMutableDictionary *_markdownNodeToColorDeriverBlock;
+    NSMutableDictionary *_markdownNodeToFontDeriverBlock;
     NSColor *_ghostComplementTextColor;
+    double _lineSpacing;
+    int _cursor;
     BOOL _builtIn;
     BOOL _loadedData;
     BOOL _contentNeedsSaving;
     BOOL _hasMultipleSourceTextFonts;
+    long long _fontSizeModifier;
 }
 
 + (id)_defaultSourceCodeFont;
@@ -100,6 +105,7 @@
 + (id)currentTheme;
 + (id)preferenceSetsManager;
 + (void)initialize;
+@property(nonatomic) long long fontSizeModifier; // @synthesize fontSizeModifier=_fontSizeModifier;
 @property(readonly) BOOL loadedData; // @synthesize loadedData=_loadedData;
 @property(readonly) NSPointerArray *syntaxFontsByNodeType; // @synthesize syntaxFontsByNodeType=_syntaxFontsByNodeType;
 @property(readonly) NSPointerArray *syntaxColorsByNodeType; // @synthesize syntaxColorsByNodeType=_syntaxColorsByNodeType;
@@ -111,10 +117,17 @@
 @property(copy) NSString *name; // @synthesize name=_name;
 // - (void).cxx_destruct;
 - (BOOL)hasLightBackground;
+- (double)additionalLineHeightForBaseLineHeight:(double)arg1;
+- (void)setCursor:(int)arg1;
+@property(readonly) int cursor;
+- (void)setLineSpacing:(double)arg1;
+@property(readonly) double lineSpacing;
 - (void)setFont:(id)arg1 forNodeTypes:(id)arg2;
 - (void)setColor:(id)arg1 forNodeTypes:(id)arg2;
 - (void)_setColorOrFont:(id)arg1 forNodeTypes:(id)arg2;
+- (id)fontIfExistsForNodeType:(short)arg1;
 - (id)fontForNodeType:(short)arg1;
+- (id)colorIfExistsForNodeType:(short)arg1;
 - (id)colorForNodeType:(short)arg1;
 @property(readonly) NSFont *sourcePlainTextFont;
 @property(readonly, copy) NSColor *sourcePlainTextColor;
@@ -208,6 +221,12 @@
 @property(readonly, copy) NSColor *sourceTextSidebarEdgeColor;
 @property(readonly, copy) NSColor *sourceTextSidebarBackgroundColor;
 @property(readonly, copy) NSColor *sourceTextBackgroundColor;
+- (BOOL)canResetFontSize;
+- (BOOL)canDecreaseFontSize;
+- (BOOL)canIncreaseFontSize;
+- (void)resetFontSize;
+- (void)decreaseFontSize;
+- (void)increaseFontSize;
 - (void)postSettingsChangedNotificationIfNeeded;
 - (void)postSettingsChangedNotification;
 - (void)enablePostSettingsChangedNotification;
@@ -217,6 +236,9 @@
 @property(readonly, copy) NSString *localizedName;
 - (void)_updateHasMultipleSourceTextFonts;
 - (void)_updateDerivedColors;
+- (void)_updateFontSizesWithDeltaPointSize:(long long)arg1;
+- (void)_registerMarkdownNode:(id)arg1 nodeNameForColor:(id)arg2 fontName:(id)arg3 fontMultiplier:(double)arg4;
+- (void)_registerDerivedMarkdownNodesAndDeriverBlocks;
 - (BOOL)_loadFontsAndColors;
 - (id)dataRepresentationWithError:(id *)arg1;
 - (void)primitiveInvalidate;

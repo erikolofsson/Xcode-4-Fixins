@@ -12,7 +12,7 @@
 @class DVTSourceLandmarkItem, DVTTextCompletionSession, NSArray, NSDictionary;
 
 @protocol DVTSourceLanguageSyntaxTypeService <NSObject>
-- (void)generateLandmarkItemsForParent:(DVTSourceLandmarkItem *)arg1 matchingType:(BOOL (^)(int))arg2 altParent:(DVTSourceLandmarkItem *)arg3 matchingAltType:(BOOL (^)(int))arg4;
+- (void)generateLandmarkItemsForParent:(DVTSourceLandmarkItem *)arg1 matchingType:(BOOL (^)(unsigned long long))arg2 altParent:(DVTSourceLandmarkItem *)arg3 matchingAltType:(BOOL (^)(unsigned long long))arg4;
 - (struct _NSRange)textCompletionSession:(DVTTextCompletionSession *)arg1 replacementRangeForSuggestedRange:(struct _NSRange)arg2;
 - (NSArray *)scopeLanguageSpecificationIdentifiersAtLocation:(unsigned long long)arg1;
 - (NSArray *)functionAndMethodRanges;

@@ -12,10 +12,11 @@
 
 #import "IDENavigator.h"
 
-@class IDENavigatorOutlineView, NSArray, NSMutableArray;
+
+@class IDENavigatorOutlineView, NSArray, NSMutableArray, NSString;
 @protocol IDEOpenRequest;
 
-@interface IDEOutlineBasedNavigator : IDENavigator
+@interface IDEOutlineBasedNavigator : IDENavigator <NSOutlineViewDelegate>
 {
     NSArray *_selectedObjects;
     IDENavigatorOutlineView *_outlineView;
@@ -31,6 +32,8 @@
 - (void)revertState;
 - (long long)filterProgress;
 - (void)setFilter:(id)arg1;
+- (BOOL)outlineView:(id)arg1 shouldSelectItem:(id)arg2;
+- (id)outlineView:(id)arg1 selectionIndexesForProposedSelection:(id)arg2;
 - (id)contextMenuSelection;
 - (void)willForgetNavigableItems:(id)arg1;
 - (void)primitiveInvalidate;
@@ -49,8 +52,11 @@
 - (void)loadView;
 
 // Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
 @property(readonly) NSMutableArray *mutableSelectedObjects; // @dynamic mutableSelectedObjects;
 @property(retain) NSArray *selectedObjects; // @dynamic selectedObjects;
+@property(readonly) Class superclass;
 
 @end
 

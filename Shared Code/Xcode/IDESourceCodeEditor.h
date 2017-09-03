@@ -15,19 +15,20 @@
 #import "DVTFindBarFindable-Protocol.h"
 #import "DVTSourceTextViewDelegate-Protocol.h"
 #import "DVTSourceTextViewQuickEditDataSource-Protocol.h"
+#import "IDEAnalyzerResultsHostingEditor-Protocol.h"
 #import "IDEComparisonEditorHostContext-Protocol.h"
-#import "IDEOpenQuicklyJumpToSupport-Protocol.h"
-#import "IDERefactoringExpressionSource-Protocol.h"
-#import "IDESourceControlLogDetailDelegate-Protocol.h"
+#import "IDEJumpToLineDestination-Protocol.h"
+#import "IDESingleFileCommandSupportingEditor-Protocol.h"
+#import "IDESourceControlBlameForLineEditorDataSource-Protocol.h"
 #import "IDESourceExpressionSource-Protocol.h"
 #import "IDETestingSelection-Protocol.h"
 #import "IDETextVisualizationHost-Protocol.h"
 #import "NSImmediateActionAnimationController-Protocol.h"
 
-@class DVTDispatchLock, DVTLayoutManager, DVTNotificationToken, DVTObservingToken, DVTOperation, DVTSDK, DVTScopeBarController, DVTSourceExpression, DVTSourceLanguageService, DVTSourceTextView, DVTStackBacktrace, DVTTextDocumentLocation, DVTTextSidebarView, DVTWeakInterposer, IDEAnalyzerResultsExplorer, IDECoverageTextVisualization, IDENoteAnnotationExplorer, IDESchemeActionCodeCoverageFile, IDESelection, IDESingleFileProcessingToolbarController, IDESourceCodeDocument, IDESourceCodeEditorAnnotationProvider, IDESourceCodeEditorContainerView, IDESourceCodeHelpNavigationRequest, IDESourceCodeNavigationRequest, IDESourceCodeSingleLineBlameProvider, IDESourceControlLogDetailViewController, IDESourceLanguageEditorExtension, IDEViewController, IDEWorkspaceTabController, NSArray, NSDictionary, NSImmediateActionGestureRecognizer, NSMutableArray, NSObject, NSOperationQueue, NSPopover, NSProgressIndicator, NSPulseGestureRecognizer, NSScrollView, NSString, NSTimer, NSTouchBar, NSTrackingArea, NSView;
+@class DVTAnnotationProvider, DVTDispatchLock, DVTLayoutManager, DVTNotificationToken, DVTObservingToken, DVTOperation, DVTSDK, DVTScopeBarController, DVTSourceExpression, DVTSourceLanguageService, DVTSourceTextView, DVTStackBacktrace, DVTTextDocumentLocation, DVTTextSidebarView, DVTWeakInterposer, IDEAnalyzerResultsExplorer, IDECoverageTextVisualization, IDEEditorDocument, IDENoteAnnotationExplorer, IDESchemeActionCodeCoverageFile, IDESelection, IDESingleFileProcessingToolbarController, IDESourceCodeDocument, IDESourceCodeEditorContainerView, IDESourceCodeHelpNavigationRequest, IDESourceCodeNavigationRequest, IDESourceLanguageEditorExtension, IDEViewController, IDEWorkspaceTabController, NSArray, NSColor, NSDictionary, NSImmediateActionGestureRecognizer, NSMutableArray, NSObject, NSOperationQueue, NSProgressIndicator, NSPulseGestureRecognizer, NSScrollView, NSString, NSTimer, NSTouchBar, NSTrackingArea, NSView;
 @protocol DVTCancellable, IDESourceEditorViewControllerHost, OS_dispatch_queue;
 
-@interface IDESourceCodeEditor : IDEEditor <NSTouchBarProvider, NSTouchBarDelegate, NSImmediateActionAnimationController, NSTextViewDelegate, NSMenuDelegate, NSPopoverDelegate, DVTSourceTextViewDelegate, DVTSourceTextViewQuickEditDataSource, DVTFindBarFindable, IDESourceExpressionSource, IDERefactoringExpressionSource, IDETextVisualizationHost, IDEOpenQuicklyJumpToSupport, IDEComparisonEditorHostContext, IDESourceControlLogDetailDelegate, IDETestingSelection>
+@interface IDESourceCodeEditor : IDEEditor <NSTouchBarProvider, NSTouchBarDelegate, NSImmediateActionAnimationController, NSTextViewDelegate, NSMenuDelegate, DVTSourceTextViewDelegate, DVTSourceTextViewQuickEditDataSource, DVTFindBarFindable, IDESourceExpressionSource, IDETextVisualizationHost, IDEJumpToLineDestination, IDEComparisonEditorHostContext, IDETestingSelection, IDESourceControlBlameForLineEditorDataSource, IDEAnalyzerResultsHostingEditor, IDESingleFileCommandSupportingEditor>
 {
     NSScrollView *_scrollView;
     DVTSourceTextView *_textView;
@@ -71,9 +72,6 @@
     DVTWeakInterposer *_analyzerResultsScopeBar_dvtWeakInterposer;
     BOOL _hidingAnalyzerExplorer;
     IDENoteAnnotationExplorer *_noteAnnotationExplorer;
-    IDESourceCodeSingleLineBlameProvider *_blameProvider;
-    NSPopover *_blameLogPopover;
-    IDESourceControlLogDetailViewController *_blameDetailController;
     IDESingleFileProcessingToolbarController *_singleFileProcessingToolbarController;
     NSView *_emptyView;
     NSView *_contentGenerationBackgroundView;
@@ -138,15 +136,18 @@
 // - (void).cxx_destruct;
 - (void)_showCoverage:(BOOL)arg1;
 - (double)coverageGutterWidthWhenShowingCounts;
+- (struct CGRect)boundsForLineRange:(struct _NSRange)arg1;
+@property(readonly) NSView *blameForLineView;
+@property(readonly) struct _NSRange selectedLineRange;
 - (BOOL)editorDocumentIsCurrentRevision;
 - (BOOL)editorIsHostedInComparisonEditor;
 - (id)_documentLocationForLineNumber:(long long)arg1;
 - (void)_createFileBreakpointAtLocation:(long long)arg1;
 - (id)_breakpointManager;
 - (long long)_currentOneBasedLineNumber;
-- (id)currentEditorContext;
-- (id)documentLocationForOpenQuicklyQuery:(id)arg1;
-- (void)openQuicklyScoped:(id)arg1;
+- (id)initialQueryForJumpToLine;
+- (id)documentLocationForJumpToLineQuery:(id)arg1;
+- (void)jumpToLine:(id)arg1;
 - (void)debugLogJumpToDefinitionState:(id)arg1;
 - (id)_jumpToDefinitionOfExpression:(id)arg1 fromScreenPoint:(struct CGPoint)arg2 clickCount:(long long)arg3 modifierFlags:(unsigned long long)arg4;
 - (void)_cancelHelpNavigationRequest;
@@ -204,7 +205,7 @@
 - (BOOL)isExpressionFunctionOrMethodDefinition:(id)arg1;
 - (BOOL)isExpressionInPlainCode:(id)arg1;
 - (BOOL)isExpressionWithinComment:(id)arg1;
-- (void)symbolsForExpression:(id)arg1 inQueue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
+- (void)symbolsForExpression:(id)arg1 queue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
 @property(readonly, nonatomic) NSString *selectedText;
 @property(readonly, nonatomic) struct CGRect currentSelectionFrame;
 - (void)_sendDelayedSelectedExpressionDidChangeMessage;
@@ -214,7 +215,6 @@
 @property(readonly) DVTSourceExpression *contextMenuExpression;
 - (BOOL)_expression:(id)arg1 representsTheSameLocationAsExpression:(id)arg2;
 - (id)_expressionAtCharacterIndex:(unsigned long long)arg1;
-- (id)refactoringExpressionUsingContextMenu:(BOOL)arg1;
 - (id)selectedTestsAndTestables;
 - (id)selectedTest;
 - (id)_testFromModelItem:(id)arg1 fromTests:(id)arg2;
@@ -238,12 +238,9 @@
 - (id)fixableDiagnosticAnnotationsInScope;
 - (id)_diagnosticAnnotationsInScopeFixableOnly:(BOOL)arg1;
 - (id)_diagnosticAnnotationsInRange:(struct _NSRange)arg1 fixableOnly:(BOOL)arg2;
-- (void)popoverWillClose:(id)arg1;
-- (id)viewWindow;
-- (BOOL)detailShouldShowOpenBlameView;
-- (void)openBlameView;
-- (void)openComparisonView;
-- (void)blameSelectedLine:(id)arg1;
+- (void)resetFontSize:(id)arg1;
+- (void)decreaseFontSize:(id)arg1;
+- (void)increaseFontSize:(id)arg1;
 - (void)_showDocumentationForSelectedSymbol:(id)arg1;
 - (void)showQuickHelp:(id)arg1;
 - (void)continueToCurrentLine:(id)arg1;
@@ -279,6 +276,17 @@
 - (void)toggleMessageBubbles:(id)arg1;
 - (void)hideAnalyzerExplorerAnimate:(BOOL)arg1;
 - (void)showAnalyzerExplorerForMessage:(id)arg1 animate:(BOOL)arg2;
+- (void)removeAnalyzerStepAnnotation:(id)arg1;
+- (void)addAnalyzerStepAnnotation:(id)arg1;
+- (void)refreshAnalyzerVisualization:(id)arg1;
+- (void)removeAnalyzerVisualization:(id)arg1 fadeOut:(BOOL)arg2 completionBlock:(CDUnknownBlockType)arg3;
+- (void)addAnalyzerVisualization:(id)arg1 fadeIn:(BOOL)arg2 completionBlock:(CDUnknownBlockType)arg3;
+- (void)hideAllMessageBubbleAnnotations;
+- (void)showAllMessageBubbleAnnotationsIfNotExplicitlyHidden;
+@property(readonly) NSColor *backgroundColor;
+@property(readonly) long long textIndentWidth;
+- (id)rectArrayForCharacterRange:(struct _NSRange)arg1;
+- (struct _NSRange)characterRangeFromDocumentLocation:(id)arg1;
 - (void)_startPrefetchingNodeTypesInUpDirection:(BOOL)arg1 initialLineRange:(struct _NSRange)arg2 noProgressIterations:(unsigned long long)arg3;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
@@ -360,7 +368,7 @@
 - (void)_refreshCurrentSelectedItemsIfNeeded;
 - (BOOL)_isCurrentSelectedItemsValid;
 @property __weak IDEViewController<IDESourceEditorViewControllerHost> *hostViewController;
-@property(readonly) IDESourceCodeEditorAnnotationProvider *annotationProvider;
+@property(readonly) DVTAnnotationProvider *annotationProvider;
 - (id)mainScrollView;
 @property(readonly) IDESourceCodeDocument *sourceCodeDocument;
 - (void)loadView;
@@ -400,6 +408,7 @@
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
+@property(readonly) IDEEditorDocument *document;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, copy) IDESelection *outputSelection;
 @property(readonly) DVTSDK *sdk;

@@ -10,9 +10,11 @@
 
 #include "Shared.h"
 
-@class DVTTextAnnotation, NSColor, NSCursor, NSFont, NSTimer, NSTrackingArea;
+#import "DVTTextSidebar-Protocol.h"
 
-@interface DVTTextSidebarView : NSRulerView
+@class DVTTextAnnotation, NSColor, NSCursor, NSFont, NSMutableIndexSet, NSString, NSTimer, NSTrackingArea;
+
+@interface DVTTextSidebarView : NSRulerView <DVTTextSidebar>
 {
     double _sidebarWidth;
     double _foldbarWidth;
@@ -35,6 +37,8 @@
     BOOL _showsFoldbar;
     BOOL _drawsLineNumbers;
     BOOL _clickedAnnotationHasTraveled;
+    NSMutableIndexSet *_annotationToolTipTags;
+    double _annotationToolTipChangeFlag;
 }
 
 @property(readonly) unsigned long long lastLineNumberControlClicked; // @synthesize lastLineNumberControlClicked=_hitLineNumberForContextualMenu;
@@ -64,6 +68,10 @@
 - (BOOL)mouseUpOnAnnotationSidebarMarkerAtPoint:(struct CGPoint)arg1 bounds:(struct CGRect)arg2 event:(id)arg3;
 - (BOOL)dragAnnotationSidebarMarkerAtPoint:(struct CGPoint)arg1 draggableBounds:(struct CGRect)arg2 flipped:(BOOL)arg3 event:(id)arg4;
 - (void)mouseDownOnAnnotation:(id)arg1;
+- (void)getParagraphRect:(struct CGRect *)arg1 firstLineRect:(struct CGRect *)arg2 forLineNumber:(unsigned long long)arg3;
+- (struct CGRect)sidebarMarkerRectForTextAnnotation:(id)arg1;
+- (id)sidebarMarkerParentView;
+- (id)viewForPopover;
 - (void)_foldingHovered;
 - (void)viewDidMoveToWindow;
 - (void)_updateCurrentMouseLineOver:(BOOL)arg1 withEvent:(id)arg2;
@@ -71,7 +79,6 @@
 - (void)_updateCurrentAnnotationRolloverStatusWithEvent:(id)arg1;
 - (void)_beginRolloverOnAnnotation:(id)arg1 event:(id)arg2;
 - (void)_endRolloverOnAnnotation:(id)arg1 event:(id)arg2;
-- (void)getParagraphRect:(struct CGRect *)arg1 firstLineRect:(struct CGRect *)arg2 forLineNumber:(unsigned long long)arg3;
 - (id)lastMarkerControlClicked;
 - (id)menuForEvent:(id)arg1;
 - (id)annotationAtSidebarPoint:(struct CGPoint)arg1;
@@ -91,7 +98,6 @@
 @property double foldbarWidth; // @synthesize foldbarWidth=_foldbarWidth;
 - (void)recalculateSidebarWidthToFit;
 - (void)_updateRulerThickness;
-- (BOOL)displaysTooltips;
 - (BOOL)acceptsFirstResponder;
 - (void)updateTrackingAreas;
 - (void)setOrientation:(unsigned long long)arg1;
@@ -99,6 +105,11 @@
 - (void)dealloc;
 - (id)initWithScrollView:(id)arg1 orientation:(unsigned long long)arg2;
 - (void)_reloadColors;
+
+// Remaining properties
+@property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *description;
+@property(readonly) Class superclass;
 
 @end
 

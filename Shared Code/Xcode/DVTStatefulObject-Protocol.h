@@ -17,5 +17,9 @@
 - (void)commitStateToDictionary:(NSMutableDictionary *)arg1;
 - (void)revertStateWithDictionary:(NSDictionary *)arg1;
 - (void)setStateToken:(DVTStateToken *)arg1;
+- (DVTStateToken *)stateToken;
+
+@optional
+@property(readonly) BOOL canRevertWithEmptyStateDictionary;
 @end
 

@@ -50,6 +50,7 @@ struct _NSCarbonMenuSearchReturn {
 }
 
 + (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2;
++ (struct _NSCarbonMenuSearchReturn)_menuItemWithKeyEquivalentMatchingEventRef:(struct OpaqueEventRef *)arg1 inMenu:(id)arg2 includingDisabledItems:(BOOL)arg3;
 + (id)_currentTrackingInfo;
 + (void)_didChangeHelpMenuFrom:(id)arg1 to:(id)arg2;
 + (int)_globalCarbonCommandProcessEvent:(struct OpaqueEventRef *)arg1 handlerCallRef:(struct OpaqueEventHandlerCallRef *)arg2;

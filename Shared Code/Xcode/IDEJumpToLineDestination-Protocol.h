@@ -9,9 +9,10 @@
 //
 
 
-@class IDEContainer, NSDictionary;
+@class DVTDocumentLocation, NSString;
 
-@protocol IDEBatchFindNameTreeResolver <NSObject>
-- (IDEContainer *)containerForNameTree:(NSDictionary *)arg1;
+@protocol IDEJumpToLineDestination <NSObject>
+- (NSString *)initialQueryForJumpToLine;
+- (DVTDocumentLocation *)documentLocationForJumpToLineQuery:(NSString *)arg1;
 @end
 

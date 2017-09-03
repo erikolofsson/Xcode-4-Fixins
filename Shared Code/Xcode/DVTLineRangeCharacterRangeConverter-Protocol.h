@@ -8,13 +8,8 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-
-@class NSDocument, NSString;
-@protocol DVTTabbedWindowCreation;
-
-@protocol DVTTabbedWindowTabContentControlling <NSObject>
-@property(copy) NSString *userDefinedTabLabel;
-@property(readonly) NSString *tabLabel;
-@property(retain) NSDocument<DVTTabbedWindowCreation> *document;
+@protocol DVTLineRangeCharacterRangeConverter
+- (struct _NSRange)lineRangeForCharacterRange:(struct _NSRange)arg1;
+- (struct _NSRange)characterRangeForLineRange:(struct _NSRange)arg1;
 @end
 

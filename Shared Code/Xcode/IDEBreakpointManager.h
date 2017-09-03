@@ -11,11 +11,11 @@
 #include "Shared.h"
 
 #import "DVTInvalidation-Protocol.h"
-#import "IDEInternalBreakpointDelegate-Protocol.h"
+#import "IDEBreakpointDelegate-Protocol.h"
 
 @class DVTDispatchLock, DVTObservingToken, DVTStackBacktrace, IDEBreakpointBucket, IDEWorkspace, NSArray, NSMapTable, NSMutableArray, NSMutableSet, NSString;
 
-@interface IDEBreakpointManager : NSObject <IDEInternalBreakpointDelegate, DVTInvalidation>
+@interface IDEBreakpointManager : NSObject <IDEBreakpointDelegate, DVTInvalidation>
 {
     DVTObservingToken *_workspaceReferencedContainersToken;
     DVTObservingToken *_currentDebugSessionStateObserverToken;
@@ -48,8 +48,9 @@
 @property(retain, nonatomic) IDEBreakpointBucket *defaultBucket; // @synthesize defaultBucket=_defaultBucket;
 // - (void).cxx_destruct;
 - (void)primitiveInvalidate;
-- (void)internal_breakpointLocationsAdded:(id)arg1 removed:(id)arg2;
-- (void)internal_breakpointEnablementChanged:(id)arg1;
+- (void)breakpointLocationsAdded:(id)arg1 removed:(id)arg2;
+- (BOOL)breakpointShouldBeActivated:(id)arg1;
+- (void)breakpointEnablementChanged:(id)arg1;
 - (void)_notifyObserversOfActivationStateChange;
 - (void)removeBreakpointObserver:(id)arg1;
 - (void)addBreakpointObserver:(id)arg1;

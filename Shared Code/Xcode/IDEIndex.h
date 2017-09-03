@@ -75,7 +75,9 @@
 - (id)symbolDumpForFile:(id)arg1;
 - (id)targetIdentifiersForFile:(id)arg1;
 - (void)mainFilesForFile:(id)arg1 queue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
+- (void)mainFilesForFile:(id)arg1 crossLanguage:(BOOL)arg2 queue:(id)arg3 completionBlock:(CDUnknownBlockType)arg4;
 - (id)mainFilesForFile:(id)arg1;
+- (id)mainFilesForFile:(id)arg1 crossLanguage:(BOOL)arg2;
 - (void)sdkForFile:(id)arg1 queue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (id)sdkForFile:(id)arg1;
 - (id)timestampForFile:(id)arg1;
@@ -126,6 +128,7 @@
 - (long long)purgeCount;
 - (void)purgeFileCaches;
 - (void)primitiveInvalidate;
+- (void)editorDidSaveFile:(id)arg1;
 - (void)editorWillSaveFile:(id)arg1;
 - (void)expediteIndexing;
 - (void)_stopIndexing;
@@ -150,7 +153,6 @@
 @property(readonly) DVTFilePath *headerMapFilePath;
 - (void)setKeyPathObservers:(id)arg1;
 - (BOOL)isCurrentForWorkspace:(id)arg1;
-- (void)beginTextIndexing;
 - (id)initWithFolder:(id)arg1;
 - (id)initWithFolder:(id)arg1 forWorkspace:(id)arg2 withState:(id)arg3;
 - (void)_cleanupOldIndexFoldersForWorkspace:(id)arg1 preservingFolders:(id)arg2;
@@ -162,6 +164,7 @@
 - (BOOL)_reopenDatabaseWithRemoval:(BOOL)arg1;
 - (BOOL)_createDatabaseFolder;
 - (void)_setupObservers;
+- (id)ide_callHeirarchy_callsOfSymbol:(id)arg1;
 - (id)collectTestMethodsPerTestTargets;
 - (id)allAutoImportItemsMatchingKind:(id)arg1 symbolLanguage:(id)arg2;
 - (id)allAutoImportItemsMatchingKind:(id)arg1;
@@ -189,7 +192,12 @@
 - (id)testCaseBaseClasses;
 - (id)allSubClassesForClasses:(id)arg1;
 - (id)allSymbolsMatchingNames:(id)arg1 kind:(id)arg2;
+- (void)allSymbolsMatchingName:(id)arg1 kind:(id)arg2 queue:(id)arg3 completionBlock:(CDUnknownBlockType)arg4;
 - (id)allSymbolsMatchingName:(id)arg1 kind:(id)arg2;
+- (void)allSymbolsMatchingName:(id)arg1 queue:(id)arg2 completionBlock:(CDUnknownBlockType)arg3;
+- (id)allSymbolsMatchingName:(id)arg1;
+- (void)allSymbolNamesQueue:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
+- (id)allSymbolNames;
 - (id)allProtocolsMatchingName:(id)arg1;
 - (id)allClassesMatchingName:(id)arg1;
 - (id)impliedHeadersForModuleImportLocation:(id)arg1 withCurrentFileContentDictionary:(id)arg2;

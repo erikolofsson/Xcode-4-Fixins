@@ -1,6 +1,10 @@
 #import <Cocoa/Cocoa.h>
 #import <objc/runtime.h>
 #import "XCFixin.h"
+
+#import "../Shared Code/Xcode/DVTTextAnnotation.h"
+#import "../Shared Code/Xcode/DVTMessageBubbleView.h"
+
 //#import "DVTKit.h"
 
 static IMP gOriginalnewMessageAttributesForFont = nil;

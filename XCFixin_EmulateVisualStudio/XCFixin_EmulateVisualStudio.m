@@ -23,10 +23,11 @@
 #import "../Shared Code/Xcode/DVTMacroExpansionStringList_NonLiteral.h"
 #import "../Shared Code/Xcode/DVTMacroDefinitionTable.h"
 
+#import "../Shared Code/Xcode/NSCarbonMenuImpl.h"
+
 
 
 #import "../Shared Code/Xcode/IDENavigatorOutlineView.h"
-#import "../Shared Code/Xcode/IDEBatchFindResultsOutlineController.h"
 #import "../Shared Code/Xcode/IDEIssueNavigator.h"
 #import "../Shared Code/Xcode/IDEIssueNavigableItem.h"
 #import "../Shared Code/Xcode/IDESourceCodeEditorContainerView.h"
@@ -43,8 +44,6 @@
 #import "../Shared Code/Xcode/IDEScheme.h"
 #import "../Shared Code/Xcode/IDELaunchSchemeAction.h"
 #import "../Shared Code/Xcode/IDECommandLineArgumentEntry.h"
-#import "../Shared Code/Xcode/IDEBatchFindStrategiesController.h"
-#import "../Shared Code/Xcode/IDEBatchFindNavigator.h"
 #import "../Shared Code/Xcode/IDEBreakpoint.h"
 #import "../Shared Code/Xcode/IDEBreakpointManager.h"
 #import "../Shared Code/Xcode/IDEStructureNavigator.h"
@@ -69,6 +68,8 @@
 
 
 #import "../Shared Code/Xcode/NSCarbonMenuImpl.h"
+
+#define BatchFindEnable false
 
 static IMP original_doCommandBySelector = nil;
 static IMP original_shouldIndentPastedText = nil;
@@ -264,6 +265,7 @@ static bool displayRecentsMenu(NSMenu* _pMenu, NSView* _pView, bool _bPretend)
 	return false;
 }
 
+#if BatchFindEnable
 
 bool findFieldHasFocusInBatchNavigator(IDEBatchFindNavigator* _pNavigator)
 {
@@ -294,6 +296,7 @@ bool replaceFieldHasFocusInBatchNavigator(IDEBatchFindNavigator* _pNavigator)
 	}
 	return false;
 }
+#endif
 
 static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFlags, NSEvent *event)
 {
@@ -386,12 +389,18 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 	
 	DVTFindBar* pFindBar = getFindBar(g_pRespondingPatternFieldEditor);
 
+#if BatchFindEnable
 	IDEBatchFindStrategiesController* pBatchFindController = nil;
 	
 	if (!pFindBar)
 		pBatchFindController = getBatchFindStrategiesController(g_pRespondingPatternFieldEditor);
+#endif
 	
-	if (!pFindBar && !g_pFindBarOptionsCtrl && !pBatchFindController)
+	if (!pFindBar && !g_pFindBarOptionsCtrl
+#if BatchFindEnable
+		&& !pBatchFindController
+#endif
+		)
 		return false;
 	
 	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == 0)
@@ -399,6 +408,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		// Alone key
 		if (keyCode == kVK_Tab)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
@@ -417,7 +427,9 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					}
 				}
 			}
-			else if (pFindBar)
+			else
+#endif
+				if (pFindBar)
 			{
 				if ([pFindBar findFieldHasFocus] && [pFindBar finderMode] == 1)
 				{
@@ -430,6 +442,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_DownArrow)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
@@ -443,7 +456,9 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					}
 				}
 			}
-			else if (pFindBar)
+			else
+#endif
+				if (pFindBar)
 			{
 				if ([pFindBar findFieldHasFocus])
 				{
@@ -454,6 +469,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_Escape)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				if (!event)
@@ -462,6 +478,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				setEditorFocus([event window]);
 				return true;
 			}
+#endif
 		}
 	}
 	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSShiftKeyMask)
@@ -469,6 +486,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		// Shift key
 		if (keyCode == kVK_Tab )
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
@@ -487,7 +505,9 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					}
 				}
 			}
-			else if (pFindBar)
+			else
+#endif
+				if (pFindBar)
 			{
 				if ([pFindBar replaceFieldHasFocus] && [pFindBar finderMode] == 1)
 				{
@@ -512,6 +532,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_ANSI_R)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
@@ -524,7 +545,9 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					return true;
 				}
 			}
-			else if (pFindBar && [pFindBar finderMode] == 1)
+			else
+#endif
+				if (pFindBar && [pFindBar finderMode] == 1)
 			{
 				if (!event)
 					return true;
@@ -534,6 +557,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_ANSI_A)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
@@ -546,7 +570,9 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					return true;
 				}
 			}
-			else if (pFindBar && [pFindBar finderMode] == 1)
+			else
+#endif
+				if (pFindBar && [pFindBar finderMode] == 1)
 			{
 				if (!event)
 					return true;
@@ -554,7 +580,11 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				return true;
 			}
 		}
-		else if (keyCode == kVK_ANSI_O && (pFindBar || pBatchFindController))
+		else if (keyCode == kVK_ANSI_O && (pFindBar
+#if BatchFindEnable
+										   || pBatchFindController
+#endif
+										   ))
 		{
 		 	if (!event)
 				return true;
@@ -564,6 +594,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_ANSI_C)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				if (!event)
@@ -572,6 +603,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				return true;
 			}
 			else
+#endif
 			{
 				DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
 				if (!pOptionsControl)
@@ -587,6 +619,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_ANSI_E)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				if (!event)
@@ -601,6 +634,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				return true;
 			}
 			else
+#endif
 			{
 
 				DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
@@ -620,6 +654,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_ANSI_W)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				if (!event)
@@ -634,6 +669,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				return true;
 			}
 			else
+#endif
 			{
 				DVTFindBarOptionsCtrl* pOptionsControl = g_pFindBarOptionsCtrl;
 				if (!pOptionsControl)
@@ -652,6 +688,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		}
 		else if (keyCode == kVK_ANSI_L)
 		{
+#if BatchFindEnable
 			if (pBatchFindController)
 			{
 				IDEBatchFindNavigator* pNavigator = getBatchFindNavigator(g_pRespondingPatternFieldEditor);
@@ -663,6 +700,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					return true;
 				}
 			}
+#endif
 		}
 	}
 	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == (NSControlKeyMask | NSShiftKeyMask))
@@ -822,6 +860,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 					{
 						NSWindow* pWindow = [m_pActiveView window];
 						bool bSetEditorFocus = false;
+#if BatchFindEnable
 						if (m_pActiveViewControllerBatchFind)
 						{
 							NSArray* pSelected = [m_pActiveView selectedItems];
@@ -893,7 +932,9 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 							bSetEditorFocus = true;
 							bHandled = true;
 						}
-						else if (m_pActiveViewControllerIssues || m_pActiveStructureNavigator)
+						else
+#endif
+							if (m_pActiveViewControllerIssues || m_pActiveStructureNavigator)
 						{
 							unsigned short KeyCode = 0;
 							NSString* pCharacters;
@@ -1127,7 +1168,9 @@ static NSView* findParentViewWithController(NSView* _pView, Class ClassToFind)
 }
 
 IDENavigatorOutlineView* m_pActiveView = nil;
+#if BatchFindEnable
 IDEBatchFindResultsOutlineController* m_pActiveViewControllerBatchFind = nil;
+#endif
 IDEIssueNavigator* m_pActiveViewControllerIssues = nil;
 IDEStructureNavigator *m_pActiveStructureNavigator = nil;
 
@@ -1284,6 +1327,7 @@ static void potentialView(IDENavigatorOutlineView* _pView)
 	if (pViewController && pTabController && pTabController.userWantsNavigatorVisible)
 	{
 		;
+#if BatchFindEnable
 		if ([pViewController isKindOfClass:[IDEBatchFindResultsOutlineController class]])
 		{
 			m_pActiveView = _pView;
@@ -1291,26 +1335,34 @@ static void potentialView(IDENavigatorOutlineView* _pView)
 			m_pActiveViewControllerIssues = nil;
 			m_pActiveStructureNavigator = nil;
 		}
-		else if ([pViewController isKindOfClass:[IDEIssueNavigator class]])
+		else
+#endif
+			if ([pViewController isKindOfClass:[IDEIssueNavigator class]])
 		{
 			m_pActiveView = _pView;
 			m_pActiveViewControllerIssues = (IDEIssueNavigator*)pViewController;
 			m_pActiveStructureNavigator = nil;
+#if BatchFindEnable
 			m_pActiveViewControllerBatchFind = nil;
+#endif
 		}
 		else if ([pViewController isKindOfClass:[IDEStructureNavigator class]])
 		{
 			m_pActiveView = _pView;
 			m_pActiveViewControllerIssues = nil;
 			m_pActiveStructureNavigator = (IDEStructureNavigator*)pViewController;
+#if BatchFindEnable
 			m_pActiveViewControllerBatchFind = nil;
+#endif
 		}
 		else
 		{
 			m_pActiveView = nil;
 			m_pActiveViewControllerIssues = nil;
 			m_pActiveStructureNavigator = nil;
+#if BatchFindEnable
 			m_pActiveViewControllerBatchFind = nil;
+#endif
  		}
 	}
 	else
@@ -1318,7 +1370,9 @@ static void potentialView(IDENavigatorOutlineView* _pView)
 		m_pActiveView = nil;
 		m_pActiveViewControllerIssues = nil;
 		m_pActiveStructureNavigator = nil;
+#if BatchFindEnable
 		m_pActiveViewControllerBatchFind = nil;
+#endif
 	}
 }
 
@@ -1409,9 +1463,12 @@ static BOOL becomeFirstResponder_Search(id self_, SEL _cmd)
 static BOOL becomeFirstResponder_NavigatorOutlineView(IDENavigatorOutlineView* self_, SEL _cmd)
 {
 	potentialView(self_);
+#if BatchFindEnable
 	if (m_pActiveViewControllerBatchFind)
 		g_PreferredNextLocation = EPreferredNextLocation_Search;
-	else if (m_pActiveViewControllerIssues)
+	else
+#endif
+		if (m_pActiveViewControllerIssues)
 		g_PreferredNextLocation = EPreferredNextLocation_Issue;
 	else if (m_pActiveStructureNavigator)
 		g_PreferredNextLocation = EPreferredNextLocation_Structure;
@@ -1451,6 +1508,7 @@ static DVTFindBar* getFindBar(DVTFindPatternFieldEditor* self_)
 	return nil;
 }
 
+#if BatchFindEnable
 static IDEBatchFindStrategiesController* getBatchFindStrategiesController(DVTFindPatternFieldEditor* self_)
 {
 	NSView* pParentView = findParentViewWithClassName(self_, "NSView_ControlledBy_IDEBatchFindNavigator", false);
@@ -1476,7 +1534,7 @@ static IDEBatchFindNavigator* getBatchFindNavigator(DVTFindPatternFieldEditor* s
 	
 	return nil;
 }
-
+#endif
 
 NSLock<NSLocking> *g_LLDBLaunchLock = nil;
 DVTDispatchLock *g_LLDBLifeCycleLock = nil;
@@ -2502,7 +2560,7 @@ CFTimeInterval g_LastPending = 0.0;
 
 //[IDEWorkspaceDocument close];
 //openDocumentWithContentsOfURL:display:completionHandler
-static void updateDispatch();
+static void updateDispatch(void);
 
 static void updatePendingChanges()
 {

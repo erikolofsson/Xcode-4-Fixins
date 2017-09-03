@@ -72,11 +72,11 @@
 @property(retain, nonatomic) NSArray *navigableIssueItems; // @synthesize navigableIssueItems=_navigableIssueItems;
 @property(nonatomic) BOOL showByRuntime; // @synthesize showByRuntime=_showByRuntime;
 // - (void).cxx_destruct;
-- (void)_revealNavigableItems:(id)arg1;
+- (void)revealNavigableItems:(id)arg1;
 - (void)commitStateToDictionary:(id)arg1;
 - (void)configureStateSavingObservers;
 - (void)revertStateWithDictionary:(id)arg1;
-- (void)_clearFilter;
+- (void)clearFilter;
 - (void)setFilter:(id)arg1;
 - (void)_synchronizeFilteringWithOutlineView;
 - (id)filterDefinitionIdentifier;
@@ -113,9 +113,11 @@
 - (id)_stateIdentifierForIssueFileGroup:(id)arg1 parentNavigable:(id)arg2;
 - (id)_stateIdentifierForIssueGroup:(id)arg1;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
+- (void)contextMenu_showDocumentation:(id)arg1;
+- (void)contextMenu_revealInLog:(id)arg1;
+- (id)_firstIssueForContextMenu;
 - (void)contextMenu_viewByType:(id)arg1;
 - (void)contextMenu_viewByFile:(id)arg1;
-- (void)contextMenu_revealInLog:(id)arg1;
 - (void)contextMenu_copy:(id)arg1;
 - (void)copy:(id)arg1;
 - (id)contextMenuSelection;

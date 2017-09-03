@@ -9,10 +9,10 @@
 //
 
 
-@class NSArray;
+@class NSSet;
 
 @protocol DVTAnnotationManagerDelegate <NSObject>
-- (void)didRemoveAnnotations:(NSArray *)arg1;
-- (void)didInsertAnnotations:(NSArray *)arg1;
+- (void)didRemoveAnnotations:(NSSet *)arg1;
+- (void)didInsertAnnotations:(NSSet *)arg1;
 @end
 

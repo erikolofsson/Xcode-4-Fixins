@@ -13,7 +13,7 @@
 #import "DVTInvalidation-Protocol.h"
 #import "DVTTableCellViewLazyProperties-Protocol.h"
 
-@class DVTDocumentLocation, DVTFileDataType, DVTStackBacktrace, IDEFileReference, IDENavigableItemCoordinator, NSArray, NSColor, NSImage, NSMutableArray, NSString;
+@class DVTDocumentLocation, DVTFileDataType, DVTStackBacktrace, IDEFileReference, IDENavigableItemCoordinator, NSArray, NSColor, NSImage, NSMutableArray, NSString, NSURL, _TtC13DVTFoundation9DVTSymbol;
 @protocol IDENavigableItemDebugAreaDelegate, IDENavigableItemDebugBarDelegate;
 
 @interface IDENavigableItem : NSObject <DVTTableCellViewLazyProperties, DVTInvalidation>
@@ -61,6 +61,7 @@
 + (id)_dynamicSubclass_navigableItemExtraInfo;
 + (id)_navigableItemExtraInfo;
 + (void)initialize;
++ (id)keyPathsForValuesAffectingRepresentedURL;
 + (id)imageOfRepresentedObject:(id)arg1;
 + (id)nameOfRepresentedObject:(id)arg1;
 + (id)keyPathsForValuesAffecting_titleStyleForReferencedContentExistance;
@@ -71,10 +72,12 @@
 @property(readonly, nonatomic) IDENavigableItemCoordinator *navigableItemCoordinator; // @synthesize navigableItemCoordinator=_coordinator;
 // - (void).cxx_destruct;
 - (id)_navigableItemForExternalDrag;
-- (id)_navigableItemForNavigation;
+- (id)_navigableItemForNavigationInWorkspace:(id)arg1;
 - (id)contextualValueForProperty:(id)arg1;
 - (void)_setDomainProvider:(Class)arg1;
 - (Class)_domainProvider;
+- (id)_descendantItemForRepresentedObject:(id)arg1 stopAtClass:(Class)arg2;
+- (id)_descendantItemForRepresentedObjects:(id)arg1;
 - (id)descendantItemForRepresentedObject:(id)arg1 stopAtClass:(Class)arg2;
 - (id)descendantItemForRepresentedObject:(id)arg1;
 - (id)childItemsToSearchForFindingDescendant:(id)arg1;
@@ -137,25 +140,28 @@
 - (id)initWithRepresentedObject:(id)arg1;
 @property(readonly, nonatomic) NSArray *additionalFilterMatchingText;
 @property(readonly, nonatomic) NSString *accessibleImageDescription; // @dynamic accessibleImageDescription;
+@property(readonly, nonatomic) NSImage *image; // @dynamic image;
 @property(readonly, nonatomic) NSString *subtitle; // @dynamic subtitle;
 @property(readonly, nonatomic) NSString *toolTip; // @dynamic toolTip;
 - (void)updateChildItemsForChangeKind:(unsigned long long)arg1 atIndexes:(id)arg2;
 - (void)invalidateChildItems;
+@property(readonly, nonatomic) NSColor *textColor;
 - (id)nearestDocumentFileReferenceProvidingAncestor;
 - (id)greatestDocumentAncestor;
+@property(readonly, nonatomic, getter=isVisible) BOOL visible;
+@property(readonly, nonatomic, getter=isEnabled) BOOL enabled;
 @property(readonly, nonatomic) NSString *groupIdentifier;
 @property(readonly, nonatomic) BOOL missingReferencedContentIsImportant;
 @property(readonly, nonatomic) BOOL referencedContentExists;
 @property(readonly, nonatomic) IDEFileReference *fileReference;
-@property(readonly, nonatomic) NSColor *textColor;
-@property(readonly, nonatomic) BOOL shouldNavigateToContentDocumentLocation;
+@property(readonly, nonatomic) _TtC13DVTFoundation9DVTSymbol *representedSymbol;
+@property(readonly, nonatomic) NSURL *representedURL;
 @property(readonly, nonatomic) DVTDocumentLocation *contentDocumentLocation;
 @property(readonly, nonatomic, getter=isMajorGroup) BOOL majorGroup;
 @property(readonly, nonatomic) DVTFileDataType *documentType;
 @property(readonly, nonatomic) BOOL isDocumentNavigableItem;
-- (int)_titleStyleForMissingContent;
-- (int)_titleStyleForReferencedContentExistance;
-- (id)ide_inferredURLFromRepresentedObject;
+- (unsigned long long)_titleStyleForMissingContent;
+- (unsigned long long)_titleStyleForReferencedContentExistance;
 - (BOOL)ide_canStructureEditName;
 - (BOOL)_alwaysBypassFilter;
 - (BOOL)coordinatorFilteringShouldFilterChildItems;
@@ -180,7 +186,6 @@
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;
 @property(readonly, copy) NSString *debugDescription;
-@property(readonly, nonatomic) NSImage *image; // @dynamic image;
 @property(readonly) DVTStackBacktrace *invalidationBacktrace;
 @property(readonly, nonatomic) NSString *name; // @dynamic name;
 @property(readonly) Class superclass;

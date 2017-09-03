@@ -9,10 +9,7 @@
 //
 
 
-@class NSWindowController;
-@protocol DVTTabbedWindowControlling;
-
-@protocol DVTTabbedWindowCreation <NSObject>
-- (NSWindowController<DVTTabbedWindowControlling> *)makeTabbedWindowControllerShowingWindow:(BOOL)arg1;
+@protocol DVTTextInsertionPointLocator <NSObject>
+- (unsigned long long)characterIndexForInsertionAtPoint:(struct CGPoint)arg1;
 @end
 

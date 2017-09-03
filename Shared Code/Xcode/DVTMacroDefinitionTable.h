@@ -11,13 +11,13 @@
 #include "Shared.h"
 
 
-@class NSDictionary, NSSet, NSString;
+@class DVTStackBacktrace, NSDictionary, NSSet, NSString;
 
 @interface DVTMacroDefinitionTable : NSObject <NSCopying, NSMutableCopying>
 {
     struct DVTMacroValueAssignmentMapTable *_mapTable;
     NSString *_label;
-    _Atomic _Bool _cacheLock;
+    struct os_unfair_lock_s _cacheLock;
     NSDictionary *_cachedDictRep;
     NSSet *_cachedMacroNameSet;
     unsigned long long _cachedHash;
@@ -25,6 +25,7 @@
     BOOL _postsChangeNotifications;
     CDUnknownBlockType _willSetValueBlock;
     CDUnknownBlockType _didSetValueBlock;
+    DVTStackBacktrace *_rootBacktrace;
 }
 
 + (id)macroNameRegistry;
@@ -67,6 +68,7 @@
 - (void)dealloc;
 - (id)init;
 - (id)initWithLabel:(id)arg1;
+- (id)initWithLabel:(id)arg1 rootBacktrace:(id)arg2;
 
 @end
 

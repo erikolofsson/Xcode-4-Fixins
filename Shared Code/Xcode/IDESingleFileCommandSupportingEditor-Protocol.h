@@ -8,10 +8,17 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
+@class IDEEditorDocument;
 
-@protocol IDEProgressSearchFieldDelegate <NSObject>
-
-@optional
-- (BOOL)searchFieldShouldShowSuggestionsPanel;
+@protocol IDESingleFileCommandSupportingEditor
+@property(readonly) IDEEditorDocument *document;
+- (void)compileCurrentFile;
+- (BOOL)canCompileFile;
+- (void)analyzeCurrentFile;
+- (BOOL)canAnalyzeFile;
+- (void)preprocessCurrentFile;
+- (BOOL)canPreprocessFile;
+- (void)assembleCurrentFile;
+- (BOOL)canAssembleFile;
 @end
 

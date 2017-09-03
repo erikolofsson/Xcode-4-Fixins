@@ -13,7 +13,7 @@
 #import "DVTInvalidation-Protocol.h"
 #import "DVTXMLUnarchiving-Protocol.h"
 
-@class DVTNotificationToken, DVTStackBacktrace, DVTToolchain, IDEFileReference, IDEProfileOptimizationActionController, IDERunnable, IDEScheme, IDESchemeBuildableReference, NSArray, NSMutableArray, NSString;
+@class DVTNotificationToken, DVTObservingToken, DVTStackBacktrace, DVTToolchain, IDEFileReference, IDERunnable, IDEScheme, IDESchemeBuildableReference, NSArray, NSMapTable, NSMutableArray, NSString;
 
 @interface IDESchemeAction : NSObject <DVTXMLUnarchiving, DVTInvalidation>
 {
@@ -21,6 +21,8 @@
     NSMutableArray *_prePhaseExecutionActions;
     NSMutableArray *_postPhaseExecutionActions;
     DVTNotificationToken *_buildSettingsDidChangeNotificationObservingToken;
+    DVTObservingToken *_activeRunDestinationObservingToken;
+    NSMapTable *_pgoControllersByDevice;
     int _internalDebuggerToolchainSelectionMode;
     int _toolchainState;
     IDEScheme *_runContext;
@@ -28,40 +30,47 @@
     IDESchemeBuildableReference *_buildableReferenceToUseForMacroExpansion;
     NSString *_buildConfiguration;
     IDEFileReference *_notificationPayloadFile;
-    IDEProfileOptimizationActionController *_pgoController;
     NSString *_selectedInternalDebuggerToolchainIdentifier;
     DVTToolchain *_lldbToolchain;
+    DVTToolchain *_llvmProfdataToolchain;
     NSString *_intentQueryString;
 }
 
++ (id)commandLineArgumentsForLanguage:(id)arg1 andRegion:(id)arg2;
 + (id)bundleIdentifierFromBuildableProduct:(id)arg1 withBuildParameters:(id)arg2;
++ (void)setupMainThreadCheckerInEnvironmentVariables:(id)arg1 dylibPath:(id)arg2;
++ (BOOL)addUBSanitizerEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildable:(id)arg3 debugAppExtensions:(BOOL)arg4 debugging:(BOOL)arg5 testingSpecifier:(id)arg6 error:(id *)arg7;
 + (BOOL)addThreadSanitizerEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildable:(id)arg3 debugAppExtensions:(BOOL)arg4 debugging:(BOOL)arg5 testingSpecifier:(id)arg6 error:(id *)arg7;
 + (BOOL)addAddressSanitizerEnvironmentVariables:(id)arg1 buildParameters:(id)arg2 buildable:(id)arg3 debugAppExtensions:(BOOL)arg4 debugging:(BOOL)arg5 testingSpecifier:(id)arg6 error:(id *)arg7;
 + (BOOL)_addSanitizer:(unsigned long long)arg1 environmentVariables:(id)arg2 buildParameters:(id)arg3 buildable:(id)arg4 debugAppExtensions:(BOOL)arg5 debugging:(BOOL)arg6 testingSpecifier:(id)arg7 error:(id *)arg8;
 + (id)keyPathsForValuesAffectingRunnable;
 + (BOOL)shouldAllowCustomPhaseActions;
++ (void)forceUBSanitizerEnabledTo:(BOOL)arg1;
++ (_Bool)schemeActionIsSupportedForDevice:(id)arg1 schemeCommand:(id)arg2 outError:(id *)arg3;
 + (void)forceThreadSanitizerEnabledTo:(BOOL)arg1;
 + (void)forceAddressSanitizerEnabledTo:(BOOL)arg1;
 + (void)initialize;
 @property(retain) NSString *intentQueryString; // @synthesize intentQueryString=_intentQueryString;
+@property(readonly) DVTToolchain *llvmProfdataToolchain; // @synthesize llvmProfdataToolchain=_llvmProfdataToolchain;
 @property(retain) DVTToolchain *lldbToolchain; // @synthesize lldbToolchain=_lldbToolchain;
 @property int toolchainState; // @synthesize toolchainState=_toolchainState;
 @property(retain) NSString *selectedInternalDebuggerToolchainIdentifier; // @synthesize selectedInternalDebuggerToolchainIdentifier=_selectedInternalDebuggerToolchainIdentifier;
 @property(nonatomic) int internalDebuggerToolchainSelectionMode; // @synthesize internalDebuggerToolchainSelectionMode=_internalDebuggerToolchainSelectionMode;
-@property(retain) IDEProfileOptimizationActionController *pgoController; // @synthesize pgoController=_pgoController;
 @property(retain) IDEFileReference *notificationPayloadFile; // @synthesize notificationPayloadFile=_notificationPayloadFile;
 @property(retain) IDESchemeBuildableReference *buildableReferenceToUseForMacroExpansion; // @synthesize buildableReferenceToUseForMacroExpansion=_buildableReferenceToUseForMacroExpansion;
 @property(readonly) IDEScheme *runContext; // @synthesize runContext=_runContext;
 // - (void).cxx_destruct;
 @property(readonly, copy) NSString *description;
 - (id)swiftVersionOfRunnableForSchemeCommand:(id)arg1;
+- (id)llvmProfdataToolchainForSchemeCommand:(id)arg1;
 - (id)bestLLDBToolchainForSchemeCommand:(id)arg1 preferBuildProductToolchain:(BOOL)arg2;
-- (id)swiftLldbToolchainIDSForSchemeCommand:(id)arg1 buildable:(id)arg2 performanceMetric:(id)arg3;
+- (id)swiftLLDBToolchainForSchemeCommand:(id)arg1 buildable:(id)arg2 performanceMetric:(id)arg3;
 - (id)productTypesToIgnoreForSwiftDebuggerToolchain;
-- (id)automaticSwiftLldbToolchainForSchemeCommand:(id)arg1 buildable:(id)arg2 performanceMetric:(id)arg3;
+- (id)_automaticSwiftLLDBToolchainForSchemeCommand:(id)arg1 buildable:(id)arg2 performanceMetric:(id)arg3;
 - (BOOL)useInternalDebuggerToolchainSelectionLogic;
 - (BOOL)runnableUsesInternalSDK;
-- (id)_buildProductToolchainIdentifiersForSchemeCommand:(id)arg1 foundBuildable:(id *)arg2;
+- (id)_buildProductToolchainIdentifiersForSchemeCommand:(id)arg1;
+- (id)_resolvedRunnableBuildableForToolchainDetection;
 - (BOOL)isDeprecatedOption:(id)arg1;
 - (void)updateSearchPathSettingsInEnvironment:(id)arg1 withBuildProducts:(id)arg2 runDestination:(id)arg3;
 - (void)addBuildableProductRunnable:(id)arg1 fromXMLUnarchiver:(id)arg2;
@@ -77,7 +86,6 @@
 - (void)_addIDEDisabledOSActivityDTMode:(id)arg1;
 @property(readonly) NSArray *_postPhaseExecutionActionsProxies;
 @property(readonly) NSArray *_prePhaseExecutionActionsProxies;
-- (id)createAdditionalDiagnosticsDict;
 - (void)schemeObjectGraphSetupComplete;
 @property(readonly) BOOL hasAwoken;
 - (void)replacePostPhaseExecutionActionsAtIndexes:(id)arg1 withPostPhaseExecutionActions:(id)arg2;
@@ -103,11 +111,17 @@
 - (id)stringListForBuildSettings:(id)arg1 forSchemeCommand:(id)arg2 buildable:(id)arg3;
 - (id)adjustedBuildParametersForMacroExpansionBuildableWithBaselineParamters:(id)arg1;
 - (BOOL)mallocStackLightAllowedForRunDestination:(id)arg1;
+- (BOOL)UBSanitizerAllowedForRunnable;
 - (BOOL)threadSanitizerAllowedForRunDestination:(id)arg1;
-- (BOOL)sanitizersAllowedForSwiftVersionForSchemeCommand:(id)arg1;
+- (BOOL)_runDestinationIsX86_64:(id)arg1;
+- (BOOL)mainThreadCheckerEnabledForSchemeCommand:(id)arg1 runDestination:(id)arg2;
+- (BOOL)UBSanitizerEnabledForSchemeCommand:(id)arg1 runDestination:(id)arg2;
 - (BOOL)threadSanitizerEnabledForSchemeCommand:(id)arg1 runDestination:(id)arg2;
 - (BOOL)addressSanitizerEnabledForSchemeCommand:(id)arg1;
+- (id)_sanitizerSchemeActionForSchemeCommand:(id)arg1;
 - (id)setUpActionDependenciesForCorePhaseOperation:(id)arg1 shouldRunPostActionsBlock:(CDUnknownBlockType)arg2 prePhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg3 postPhaseEnvironmentPopulationBlock:(CDUnknownBlockType)arg4 buildParameters:(id)arg5 schemeActionResultOperation:(id)arg6 error:(id *)arg7;
+- (id)pgoControllerForDestination:(id)arg1;
+- (void)addPGOController:(id)arg1 forDevice:(id)arg2;
 - (id)realAppNameForRunnablePath:(id)arg1;
 - (void)updateExtensionInfosOfLaunchParmeters:(id)arg1;
 - (id)filePathsForContainersAndExtensionsForBuildParameters:(id)arg1 runnableProductType:(id)arg2 schemeCommand:(id)arg3;

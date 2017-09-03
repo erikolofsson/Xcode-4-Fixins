@@ -60,6 +60,7 @@
 - (void)_resetTracking;
 - (void)_clearTrackingIfNeeded;
 - (BOOL)textView:(id)arg1 doCommandBySelector:(SEL)arg2;
+- (id)textView:(id)arg1 completions:(id)arg2 forPartialWordRange:(struct _NSRange)arg3 indexOfSelectedItem:(long long *)arg4;
 @property(readonly) DVTSearchFieldCell *cell;
 @property(readonly) NSButtonCell *cancelButtonCell;
 @property(readonly) NSButtonCell *searchButtonCell;

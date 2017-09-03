@@ -27,7 +27,7 @@
 @property(retain) id <DVTAnnotationManagerDelegate> delegate; // @synthesize delegate=_delegate;
 @property(readonly) NSArray *annotationProviders; // @synthesize annotationProviders=_annotationProviders;
 // - (void).cxx_destruct;
-- (void)removeAllAnnotationProviders;
+- (void)_removeAllAnnotationProviders;
 - (void)setupAnnotationProvidersWithContext:(id)arg1;
 - (id)_installObservationBlockForAnnotationProvider:(id)arg1;
 - (void)primitiveInvalidate;

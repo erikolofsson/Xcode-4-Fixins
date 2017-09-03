@@ -28,7 +28,7 @@
 - (id)_uniquePatterns;
 - (id)replacementExpression;
 - (id)regularExpression;
-- (id)findPatternArray;
+- (id)findPatternTokenArray;
 - (BOOL)hasFindPattern;
 - (id)textView:(id)arg1 shouldChangeTypingAttributes:(id)arg2 toAttributes:(id)arg3;
 - (void)textDidChange:(id)arg1;
@@ -44,7 +44,7 @@
 - (void)_uniqueFindPatternsInAttributedStringAttachments:(id)arg1;
 - (void)setStringValue:(id)arg1;
 - (void)_updateFindPatternsWithNewPatterns:(id)arg1;
-- (void)_updateReplacePatternsWithNewPatterns:(id)arg1;
+- (void)_updateReplacePatternsWithNewPatternTokens:(id)arg1;
 - (void)_invalidateLayout;
 - (void)_insertFindPattern:(id)arg1;
 - (void)insertNewFindPattern:(id)arg1;

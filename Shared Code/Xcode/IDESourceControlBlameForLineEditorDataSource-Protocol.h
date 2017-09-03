@@ -8,13 +8,11 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
+@class NSView;
 
-@class IDEBreakpoint, NSArray;
-
-@protocol IDEInternalBreakpointDelegate <NSObject>
-
-@optional
-- (void)internal_breakpointLocationsAdded:(NSArray *)arg1 removed:(NSArray *)arg2;
-- (void)internal_breakpointEnablementChanged:(IDEBreakpoint *)arg1;
+@protocol IDESourceControlBlameForLineEditorDataSource
+@property(readonly) NSView *blameForLineView;
+@property(readonly) struct _NSRange selectedLineRange;
+- (struct CGRect)boundsForLineRange:(struct _NSRange)arg1;
 @end
 

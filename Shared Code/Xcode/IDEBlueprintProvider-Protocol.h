@@ -14,12 +14,16 @@
 @protocol IDEBlueprint, IDETestableProvider;
 
 @protocol IDEBlueprintProvider <DVTInvalidation, NSObject>
-- (id <IDETestableProvider>)testableProvider;
++ (NSArray *)availableSwiftVersions;
+@property(readonly) id <IDETestableProvider> testableProvider;
+@property(readonly, copy) NSString *classPrefix;
+@property(readonly, copy) NSString *organizationName;
+@property(readonly, copy) NSString *name;
+@property(readonly, copy) NSArray *blueprints;
 - (id <IDEBlueprint>)blueprintForName:(NSString *)arg1;
 - (id <IDEBlueprint>)blueprintForIdentifier:(NSString *)arg1;
-- (NSString *)classPrefix;
-- (NSString *)organizationName;
-- (NSString *)name;
-- (NSArray *)blueprints;
+
+@optional
+@property(readonly) NSArray *sourcePackageReferences;
 @end
 

@@ -38,6 +38,7 @@
 - (void)primitiveInvalidate;
 - (void)terminate;
 - (void)start;
+- (void)_messageTrace:(id)arg1;
 - (void)_setupSearchPaths:(id)arg1;
 - (void)_addExtraModules:(id)arg1;
 - (id)_consumeEventAfterConnectToDebugServer:(id)arg1 lldbTarget:(id)arg2 launchParameters:(id)arg3;
@@ -45,9 +46,12 @@
 - (void)_setPlatformForStart:(id)arg1;
 - (id)devicePathSubstitutionPairsString;
 - (id)_tryWithAnotherArchitectureOnBinaryPath:(id)arg1;
+- (void)_reportDiagnosticStatistics:(id)arg1;
 - (id)_doRegularDebugWithTarget:(id)arg1 usingDebugServer:(BOOL)arg2 errTargetString:(id)arg3;
+- (void)_createTargetConsoleAdaptorForPTY:(id)arg1;
 - (void)_reportTarget:(id)arg1 failedToLaunchError:(id)arg2;
 - (id)_doAttachWithTarget:(id)arg1 childPID:(unsigned long long *)arg2;
+- (id)_modifyMessageForDisplay:(id)arg1;
 - (void)_showLaunchErrorForTitle:(id)arg1 message:(id)arg2;
 - (id)parseConsoleOutputFromOriginalOutput:(id)arg1;
 - (id)parseConsoleInputFromOriginalInput:(id)arg1;

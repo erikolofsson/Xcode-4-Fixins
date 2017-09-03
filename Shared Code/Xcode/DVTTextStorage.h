@@ -12,6 +12,8 @@
 
 #import "NSConcreteTextStorage.h"
 
+#import "DVTDiffSessionTextEditBuffer-Protocol.h"
+#import "DVTLineRangeCharacterRangeConverter-Protocol.h"
 #import "DVTSourceBufferProvider-Protocol.h"
 #import "DVTSourceLanguageServiceDelegate-Protocol.h"
 #import "DVTTextDocumentLocationEncodingConverter-Protocol.h"
@@ -19,7 +21,7 @@
 @class DVTFontAndColorTheme, DVTObservingToken, DVTSourceCodeLanguage, DVTSourceLandmarkItem, DVTSourceLanguageService, DVTSourceModel, NSDictionary, NSString, NSTimer, _LazyInvalidationHelper;
 @protocol DVTSourceLanguageSourceModelService, DVTSourceLanguageSyntaxTypeService, DVTTextStorageDelegate;
 
-@interface DVTTextStorage : NSConcreteTextStorage <DVTSourceBufferProvider, DVTSourceLanguageServiceDelegate, DVTTextDocumentLocationEncodingConverter>
+@interface DVTTextStorage : NSConcreteTextStorage <DVTDiffSessionTextEditBuffer, DVTSourceBufferProvider, DVTSourceLanguageServiceDelegate, DVTTextDocumentLocationEncodingConverter, DVTLineRangeCharacterRangeConverter>
 {
     struct _DVTTextLineOffsetTable _lineOffsets;
     unsigned long long _changeCapacity;
@@ -204,6 +206,7 @@
 
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
+@property(readonly, copy) NSString *string;
 @property(readonly) Class superclass;
 
 @end

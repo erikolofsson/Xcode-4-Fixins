@@ -12,7 +12,7 @@
 
 #import "DVTFoldingManagerDelegate-Protocol.h"
 
-@class DVTFoldingManager, DVTObservingToken, DVTTextStorage, NSString;
+@class DVTFoldingManager, DVTNotificationToken, DVTObservingToken, DVTTextStorage, NSString;
 @protocol DVTFoldingLayoutManagerDelegate;
 
 @interface DVTFoldingLayoutManager : NSLayoutManager <DVTFoldingManagerDelegate>
@@ -20,6 +20,7 @@
     DVTObservingToken *_usesColorLiteralObservingToken;
     DVTObservingToken *_usesFileLiteralObservingToken;
     DVTObservingToken *_usesImageLiteralObservingToken;
+    DVTNotificationToken *_textStorageDidEndEditingNotificationToken;
     BOOL _foldsMultiPathTokens;
     BOOL _generatingInlineFolds;
     DVTFoldingManager *_foldingManager;
@@ -41,6 +42,7 @@
 - (void)_invalidateGlyphsInCharacterRange:(struct _NSRange)arg1;
 - (struct _NSRange)_paragraphExtendedCharacterRange:(struct _NSRange)arg1;
 - (void)textStorage:(id)arg1 edited:(unsigned long long)arg2 range:(struct _NSRange)arg3 changeInLength:(long long)arg4 invalidatedRange:(struct _NSRange)arg5;
+- (void)_validateSelectedRange;
 - (void)_invalidateGlyphsForExtendedCharacterRange:(struct _NSRange)arg1 changeInLength:(long long)arg2 includeBlocks:(BOOL)arg3;
 - (struct _NSRange)_extendedCharRangeForInvalidation:(struct _NSRange)arg1 editedCharRange:(struct _NSRange)arg2;
 - (void)generateInlineFoldsForCharacterRange:(struct _NSRange)arg1;

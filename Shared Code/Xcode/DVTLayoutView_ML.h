@@ -41,8 +41,10 @@
 - (void)_autoLayoutViewViewBoundsDidChange:(id)arg1;
 - (void)_invalidateLayoutIfNeededAfterRegisteringRectChange:(struct CGRect)arg1 forView:(id)arg2 table:(id)arg3;
 - (void)stopInvalidatingLayoutWithBoundsChangesToView:(id)arg1;
+- (void)stopInvalidatingLayoutWithFrameChangesToViews:(id)arg1;
 - (void)stopInvalidatingLayoutWithFrameChangesToView:(id)arg1;
 - (void)invalidateLayoutWithBoundsChangesToView:(id)arg1;
+- (void)invalidateLayoutWithFrameChangesToViews:(id)arg1;
 - (void)invalidateLayoutWithFrameChangesToView:(id)arg1;
 - (void)_tearDownObservationForObservedObject:(id)arg1 notificationName:(id)arg2 observationCountTable:(id)arg3 rectChangeStackTable:(id)arg4;
 - (void)_setupObservationForObservedObject:(id)arg1 selector:(SEL)arg2 notificationName:(id)arg3 observationCountTable:(id *)arg4 rectChangeStackTable:(id *)arg5;
@@ -54,6 +56,7 @@
 - (void)layoutTopDown;
 - (void)layoutIfNeeded;
 - (void)didLayoutSubview:(id)arg1;
+- (void)willLayoutSubview:(id)arg1;
 - (id)subviewsOrderedForLayout;
 - (void)viewWillDraw;
 - (void)_reallyLayoutIfNeededBottomUp;

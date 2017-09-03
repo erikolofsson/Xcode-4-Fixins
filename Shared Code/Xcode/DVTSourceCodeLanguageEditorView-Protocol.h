@@ -9,9 +9,9 @@
 //
 
 
-@class DVTSourceExpression;
+@class DVTSourceCodeLanguage;
 
-@protocol IDERefactoringExpressionSource <NSObject>
-- (DVTSourceExpression *)refactoringExpressionUsingContextMenu:(BOOL)arg1;
+@protocol DVTSourceCodeLanguageEditorView <NSObject>
+@property(readonly) DVTSourceCodeLanguage *language;
 @end
 

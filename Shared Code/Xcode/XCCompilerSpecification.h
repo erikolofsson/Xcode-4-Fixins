@@ -37,6 +37,7 @@
 - (id)defaultOutputDirectory;
 - (id)executablePath;
 - (id)outputFilesForInputFilePath:(id)arg1 withMacroExpansionScope:(id)arg2;
+- (id)supportedLanguageVersions;
 - (id)builtinJambaseRuleName;
 - (BOOL)showOnlySelfDefinedPropertiesInBuildSettingsGUI;
 - (BOOL)isAbstract;

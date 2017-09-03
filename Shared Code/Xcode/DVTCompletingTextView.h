@@ -13,11 +13,12 @@
 #import "DVTTextView.h"
 
 #import "DVTLayoutManagerDelegate-Protocol.h"
+#import "DVTTextCompletionSupportingTextView-Protocol.h"
 
-@class DVTLayoutManager, DVTSourceCodeLanguage, DVTTextCompletionController, DVTTextCompletionDataSource, DVTTextStorage, NSCharacterSet, NSColor, NSDictionary, NSIndexSet, NSString;
+@class DVTLayoutManager, DVTSourceCodeLanguage, DVTTextCompletionController, DVTTextCompletionDataSource, DVTTextStorage, NSCharacterSet, NSColor, NSDictionary, NSIndexSet, NSScrollView, NSString, NSUndoManager, NSWindow;
 @protocol DVTCompletingTextViewDelegate;
 
-@interface DVTCompletingTextView : DVTTextView <DVTLayoutManagerDelegate, NSTableViewDelegate>
+@interface DVTCompletingTextView : DVTTextView <DVTLayoutManagerDelegate, DVTTextCompletionSupportingTextView, NSTableViewDelegate>
 {
     DVTTextCompletionController *_completionController;
     DVTTextCompletionDataSource *_completionsDataSource;
@@ -30,13 +31,16 @@
     BOOL _currentlyDoingNonUserEditing;
     BOOL _delegateRespondsToSyntaxColoringContext;
     BOOL _highlightsCurrentLine;
+    BOOL _shouldReplaceTextStorageAndLayoutManager;
     BOOL _hidesInsertionPoint;
 }
 
 + (long long)scrollerKnobStyleForBackgroundColor:(id)arg1;
 + (id)readableTextPasteboardTypes;
++ (void)initialize;
 + (id)_operatorChars;
 + (id)identifierChars;
++ (id)identifierCharacters;
 + (id)_identifierCharsForImportStatements;
 + (BOOL)appSupportsActionMonitoring;
 @property BOOL hidesInsertionPoint; // @synthesize hidesInsertionPoint=_hidesInsertionPoint;
@@ -136,9 +140,16 @@
 - (BOOL)selectFirstPlaceholderInCharacterRange:(struct _NSRange)arg1;
 - (BOOL)handleSelectPreviousPlaceholder;
 - (BOOL)handleSelectNextPlaceholder;
+- (struct _NSRange)textCompletionSession:(id)arg1 replacementRangeForSuggestedRange:(struct _NSRange)arg2;
+- (id)documentLocationForWordStartLocation:(unsigned long long)arg1;
+- (struct _NSRange)performTextCompletionReplacementInRange:(struct _NSRange)arg1 withString:(id)arg2;
+- (struct CGRect)visibleTextRect;
+@property struct _NSRange selectedTextRange;
+- (struct CGRect)frameContainingTextRange:(struct _NSRange)arg1;
+@property(readonly) NSScrollView *textCanvasScrollView;
 - (id)ghostComplementTextColor;
 - (BOOL)shouldAutoCompleteAtLocation:(unsigned long long)arg1;
-- (BOOL)shouldSuppressTextCompletion;
+@property(readonly) BOOL shouldSuppressTextCompletion;
 @property(readonly, copy) NSCharacterSet *autoCompleteChars;
 @property(readonly) double autoCompletionDelay;
 - (id)contextForCompletionStrategiesAtWordStartLocation:(unsigned long long)arg1;
@@ -164,7 +175,10 @@
 // Remaining properties
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
+@property(readonly, copy) NSString *string;
 @property(readonly) Class superclass;
+@property(readonly) NSUndoManager *undoManager; // @dynamic undoManager;
+@property(readonly) NSWindow *window;
 
 @end
 

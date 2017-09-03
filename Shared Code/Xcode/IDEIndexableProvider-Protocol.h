@@ -13,6 +13,6 @@
 @class NSArray;
 
 @protocol IDEIndexableProvider <DVTInvalidation, NSObject>
-- (NSArray *)indexables;
+@property(readonly, copy) NSArray *indexables;
 @end
 

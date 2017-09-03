@@ -15,7 +15,9 @@
 }
 
 + (void)_performBlockInsideReentrantGuard:(CDUnknownBlockType)arg1;
-+ (id)menuCommandTitleAdditionForEventBehavior:(int)arg1 fromPrimaryEditorContext:(BOOL)arg2;
++ (id)menuCommandTitleAdditionForEventBehavior:(int)arg1 fromPrimaryEditorContext:(BOOL)arg2 isWindowFullscreen:(BOOL)arg3;
++ (void)_setUseTabsInsteadOfWindowsInFullscreen:(BOOL)arg1;
++ (BOOL)_useTabsInsteadOfWindowsInFullscreen;
 + (void)_setShouldActivateNewTabsAndWindows:(BOOL)arg1;
 + (BOOL)_shouldActivateNewTabsAndWindows;
 + (int)_defaultTargetForEventBehavior:(int)arg1;
@@ -27,8 +29,10 @@
 + (id)_symbolNameForEditorCoordinatorTakeFocus:(int)arg1;
 + (id)_symbolNameForEditorCoordinatorEventBehavior:(int)arg1;
 + (id)_defaultsKeyForEventBehavior:(int)arg1;
++ (int)_eventBehaviorForEventType:(unsigned long long)arg1 event:(id)arg2;
 + (int)_eventBehaviorForEventType:(unsigned long long)arg1;
 + (void)_openNavigationHUDSelection:(id)arg1 forWorkspaceDocument:(id)arg2 documentURL:(id)arg3 usingBlock:(CDUnknownBlockType)arg4;
++ (void)_openNavigationHUDSelection:(id)arg1 forWorkspaceDocument:(id)arg2 usingBlock:(CDUnknownBlockType)arg3;
 + (void)openEditorHistoryItem:(id)arg1 forEditor:(id)arg2 takeFocus:(int)arg3;
 + (id)openEditorOpenSpecifier:(id)arg1 forEditor:(id)arg2 eventType:(unsigned long long)arg3;
 + (void)_openEditorOpenSpecifierInOptionalEditor:(id)arg1 forWorkspaceTabController:(id)arg2;
@@ -37,6 +41,7 @@
 + (void)_openEditorOpenSpecifierInNewWindow:(id)arg1 forWorkspaceTabController:(id)arg2;
 + (id)_openEditorOpenSpecifier:(id)arg1 forEditor:(id)arg2 eventBehavior:(int)arg3;
 + (id)_openEditorOpenSpecifier:(id)arg1 forWorkspaceTabController:(id)arg2 eventType:(unsigned long long)arg3 completionBlock:(CDUnknownBlockType)arg4;
++ (id)openEditorOpenSpecifier:(id)arg1 forEditor:(id)arg2 event:(id)arg3;
 + (id)openEditorOpenSpecifier:(id)arg1 forWorkspaceTabController:(id)arg2 eventType:(unsigned long long)arg3;
 + (void)_openEditorOpenSpecifier:(id)arg1 forWorkspaceTabController:(id)arg2 target:(int)arg3 takeFocus:(int)arg4;
 + (id)_openEditorOpenSpecifier:(id)arg1 forWorkspaceTabController:(id)arg2 eventType:(unsigned long long)arg3 takeFocus:(int)arg4;

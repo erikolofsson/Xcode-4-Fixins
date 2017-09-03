@@ -8,11 +8,12 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
+#import "DVTInvalidation-Protocol.h"
 
-@class DVTDocumentLocation, NSString;
+@class IDEActivityLogSection;
 
-@protocol IDEOpenQuicklyJumpToSupport <NSObject>
-- (NSString *)currentEditorContext;
-- (DVTDocumentLocation *)documentLocationForOpenQuicklyQuery:(NSString *)arg1;
+@protocol IDEIssueLogDataSource <DVTInvalidation>
+@property(readonly) IDEActivityLogSection *issueLog;
+- (void)analyzeModelForIssues;
 @end
 

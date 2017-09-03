@@ -10,7 +10,7 @@
 
 #import "DVTCompletingTextViewDelegate-Protocol.h"
 
-@class DVTAnnotationContext, DVTMutableRangeArray, DVTSourceTextView, NSArray, NSEvent, NSMenu, NSNotification, NSPasteboard, NSString;
+@class DVTAnnotationContext, DVTMutableRangeArray, DVTSourceTextView, NSArray, NSEvent, NSMenu, NSNotification, NSPasteboard, NSSet, NSString;
 @protocol DVTMediaResourceProvider;
 
 @protocol DVTSourceTextViewDelegate <DVTCompletingTextViewDelegate>
@@ -31,8 +31,8 @@
 - (void)tokenizableRangesWithRange:(struct _NSRange)arg1 completionBlock:(void (^)(NSArray *))arg2;
 - (void)textViewDidFinishAnimatingScroll:(DVTSourceTextView *)arg1;
 - (void)textViewDidLoadAnnotationProviders:(DVTSourceTextView *)arg1;
-- (void)textView:(DVTSourceTextView *)arg1 didRemoveAnnotations:(NSArray *)arg2;
-- (void)textView:(DVTSourceTextView *)arg1 didAddAnnotations:(NSArray *)arg2;
+- (void)textView:(DVTSourceTextView *)arg1 didRemoveAnnotations:(NSSet *)arg2;
+- (void)textView:(DVTSourceTextView *)arg1 didAddAnnotations:(NSSet *)arg2;
 - (DVTAnnotationContext *)annotationContextForTextView:(DVTSourceTextView *)arg1;
 - (void)textViewDidChangeFolding:(NSNotification *)arg1;
 - (void)textViewWillChangeFolding:(NSNotification *)arg1;

@@ -10,14 +10,13 @@
 
 #include "Shared.h"
 
+#import "DVTEmptyContentPlaceholderContainer-Protocol.h"
 #import "DVTProgressIndicatorProvidingView-Protocol.h"
 
-@class NSArray, NSEvent, NSIndexSet, NSMapTable, NSString, NSTextField, NSTextFieldCell, NSTrackingArea;
+@class NSArray, NSEvent, NSFont, NSMapTable, NSString, NSTextFieldCell, NSTrackingArea;
 
-@interface DVTOutlineView : NSOutlineView <DVTProgressIndicatorProvidingView>
+@interface DVTOutlineView : NSOutlineView <DVTProgressIndicatorProvidingView, DVTEmptyContentPlaceholderContainer>
 {
-    NSTextField *_emptyContentLabel;
-    NSTextField *_emptyContentSublabel;
     NSMapTable *_progressIndicatorsByItem;
     NSTrackingArea *_mouseHoverTrackingArea;
     NSTextFieldCell *_dataCellForGroupRow;
@@ -35,6 +34,7 @@
     int _emptyContentStringStyle;
     NSString *_emptyContentString;
     NSString *_emptyContentSubtitle;
+    NSFont *_emptyContentFont;
     NSEvent *_event;
     long long _rowUnderHoveredMouse;
 }
@@ -43,7 +43,8 @@
 @property BOOL wantsMouseEnteredExitedAndMovedEvents; // @synthesize wantsMouseEnteredExitedAndMovedEvents=_wantsMouseEnteredExitedAndMovedEvents;
 @property long long rowUnderHoveredMouse; // @synthesize rowUnderHoveredMouse=_rowUnderHoveredMouse;
 @property(retain) NSEvent *event; // @synthesize event=_event;
-@property int emptyContentStringStyle; // @synthesize emptyContentStringStyle=_emptyContentStringStyle;
+@property(copy, nonatomic) NSFont *emptyContentFont; // @synthesize emptyContentFont=_emptyContentFont;
+@property(nonatomic) int emptyContentStringStyle; // @synthesize emptyContentStringStyle=_emptyContentStringStyle;
 @property(copy, nonatomic) NSString *emptyContentSubtitle; // @synthesize emptyContentSubtitle=_emptyContentSubtitle;
 @property(copy, nonatomic) NSString *emptyContentString; // @synthesize emptyContentString=_emptyContentString;
 // - (void).cxx_destruct;
@@ -69,11 +70,9 @@
 - (void)viewWillMoveToSuperview:(id)arg1;
 - (void)_cleanupWork;
 - (void)viewWillDraw;
+- (void)willHideEmptyContentString;
+- (void)willShowEmptyContentString;
 - (BOOL)_shouldRemoveProgressIndicator:(id)arg1 forItem:(id)arg2 andVisibleRect:(struct CGRect)arg3;
-- (void)_showEmptyContentSublabel;
-- (void)_hideEmptyContentSublabel;
-- (void)_showEmptyContentLabel;
-- (void)_hideEmptyContentLabel;
 - (id)preparedCellAtColumn:(long long)arg1 row:(long long)arg2;
 - (Class)groupRowCellClassForDataCell:(id)arg1;
 - (id)_dataCellForGroupRowWithClass:(Class)arg1;
@@ -83,8 +82,6 @@
 @property(readonly) NSArray *contextMenuSelectedItems;
 @property(retain) NSArray *selectedItems;
 - (id)itemsAtIndexes:(id)arg1;
-@property(readonly) NSIndexSet *contextMenuSelectedRowIndexes;
-@property(readonly) NSIndexSet *clickedRowIndexes;
 - (void)setSortDescriptors:(id)arg1;
 - (struct CGSize)_adjustFrameSizeToFitSuperview:(struct CGSize)arg1;
 @property BOOL allowsSizingShorterThanClipView;
@@ -92,6 +89,7 @@
 - (id)progressIndicatorForItem:(id)arg1 createIfNecessary:(BOOL)arg2 progressIndicatorStyle:(unsigned long long)arg3;
 - (void)setDelegate:(id)arg1;
 - (void)_registerNibWithName:(id)arg1 usingIdentifier:(id)arg2;
+- (void)registerDVTTableCellViewPlaceholderNibUsingIdentifier:(id)arg1;
 - (void)registerDVTTableRowViewNibUsingIdentifier:(id)arg1;
 - (void)registerDVTTableCellViewMultiLineNibUsingIdentifier:(id)arg1;
 - (void)registerDVTTableCellViewOneLineNibUsingIdentifier:(id)arg1;

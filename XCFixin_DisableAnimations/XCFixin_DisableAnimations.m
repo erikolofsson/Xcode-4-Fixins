@@ -2,6 +2,7 @@
 #import <objc/runtime.h>
 
 #import "XCFixin.h"
+#import "../Shared Code/Xcode/DVTTextCompletionListWindowController.h"
 
 static IMP gOriginalInitWithDuration = nil;
 static IMP gOriginalSetDuration = nil;

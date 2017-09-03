@@ -8,12 +8,8 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-#import "DVTInvalidation-Protocol.h"
 
-@class IDEActivityLogSection;
-
-@protocol IDEIntegrityLogDataSource <DVTInvalidation>
-@property(readonly) IDEActivityLogSection *integrityLog;
-- (void)analyzeModelIntegrity;
+@protocol DVTCharacterRangeFrameConverter <NSObject>
+- (struct CGRect)frameForRange:(struct _NSRange)arg1 ignoreWhitespace:(BOOL)arg2;
 @end
 

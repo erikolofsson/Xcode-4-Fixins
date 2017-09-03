@@ -12,7 +12,7 @@
 
 #import "IDENavigableItem.h"
 
-@class DVTObservingToken, NSMutableDictionary;
+@class DVTObservingToken, NSMutableDictionary, NSObject;
 @protocol IDEKeyDrivenNavigableItemRepresentedObject;
 
 @interface IDEKeyDrivenNavigableItem : IDENavigableItem
@@ -29,7 +29,11 @@
 + (void)_customizeNewNavigableItemClass:(Class)arg1 forModelObjectClass:(Class)arg2;
 + (id)_automatic_keyPathsForValuesAffectingMajorGroup;
 + (id)keyPathsForValuesAffecting_filtered;
++ (id)keyPathsForValuesAffectingIsVisible;
++ (id)keyPathsForValuesAffectingIsEnabled;
 + (id)keyPathsForValuesAffectingReferencedContentExists;
++ (id)keyPathsForValuesAffectingRepresentedSymbol;
++ (id)keyPathsForValuesAffectingRepresentedURL;
 + (id)keyPathsForValuesAffectingContentDocumentLocation;
 + (id)keyPathsForValuesAffectingDocumentType;
 + (id)keyPathsForValuesAffectingFileReference;
@@ -61,8 +65,12 @@
 - (BOOL)_automatic_isMajorGroup;
 - (BOOL)isMajorGroup;
 - (void)_setFilterMatch:(BOOL)arg1 forGeneration:(int)arg2;
+- (BOOL)isVisible;
+- (BOOL)isEnabled;
 - (BOOL)missingReferencedContentIsImportant;
 - (BOOL)referencedContentExists;
+- (id)representedSymbol;
+- (id)representedURL;
 - (id)contentDocumentLocation;
 - (id)documentType;
 - (id)fileReference;
@@ -79,7 +87,6 @@
 - (void)_cacheValue:(id)arg1 forProperty:(id)arg2;
 - (id)cachedValueForProperty:(id)arg1 withCreationBlock:(CDUnknownBlockType)arg2;
 - (id)cachedPropertyValues;
-- (id)_cachedPropertyValues;
 - (void)_configurePropertyObservingForKey:(id)arg1;
 - (BOOL)_alwaysBypassFilter;
 - (BOOL)isLeaf;
@@ -106,7 +113,7 @@
 - (long long)progressValue;
 
 // Remaining properties
-@property(retain) id <IDEKeyDrivenNavigableItemRepresentedObject> representedObject; // @dynamic representedObject;
+@property(retain, nonatomic) NSObject<IDEKeyDrivenNavigableItemRepresentedObject> *representedObject; // @dynamic representedObject;
 
 @end
 

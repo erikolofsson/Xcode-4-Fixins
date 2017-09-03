@@ -9,10 +9,9 @@
 //
 
 
-@class DVTPortalProfilePurpose, NSSet;
+@class NSSet;
 
 @protocol IDEProvisionableProvider <NSObject>
-@property(readonly, nonatomic) DVTPortalProfilePurpose *automaticProvisioningPurpose;
 @property(readonly, nonatomic) NSSet *provisionableDevices;
 @property(readonly, nonatomic) NSSet *provisionables;
 @property(readonly, nonatomic) BOOL finishedLoading;

@@ -14,14 +14,14 @@
 
 #import "DVTDirectoryBasedCustomDataStoreDelegate-Protocol.h"
 #import "DVTInvalidation-Protocol.h"
-#import "IDEIntegrityLogDataSource-Protocol.h"
+#import "IDEIssueLogDataSource-Protocol.h"
 #import "IDEReadOnlyItem-Protocol.h"
 #import "IDEUpgradeableItem-Protocol.h"
 
 @class DVTExtension, DVTFilePath, DVTOperation, DVTStackBacktrace, DVTTimeSlicedMainThreadWorkQueue, IDEActivityLogSection, IDEGroup, IDEWorkspace, NSDictionary, NSMapTable, NSMutableDictionary, NSString, NSTimer, NSURL;
 @protocol IDEContainerCore, IDEContainerDelegate;
 
-@interface IDEContainer : DVTModelObject <DVTInvalidation, IDEIntegrityLogDataSource, IDEReadOnlyItem, DVTDirectoryBasedCustomDataStoreDelegate, IDEUpgradeableItem>
+@interface IDEContainer : DVTModelObject <DVTInvalidation, IDEIssueLogDataSource, IDEReadOnlyItem, DVTDirectoryBasedCustomDataStoreDelegate, IDEUpgradeableItem>
 {
     id <IDEContainerCore> _containerCore;
     IDEWorkspace *_workspace;
@@ -32,7 +32,7 @@
     DVTOperation *_willReadOperation;
     DVTOperation *_readOperation;
     DVTOperation *_didReadOperation;
-    DVTTimeSlicedMainThreadWorkQueue *_mainThreadTimeSlicedQueue;
+    DVTTimeSlicedMainThreadWorkQueue *_scmStatusUpdatingQueue;
     DVTTimeSlicedMainThreadWorkQueue *_pendingFileReferenceResolvingQueue;
     int _activity;
     int _transitionActivity;
@@ -50,8 +50,11 @@
     int _readOnlyStatus;
     BOOL _hasTransitionedToIdle;
     BOOL _containerEdited;
+    BOOL _isMajorGroup;
+    BOOL _isFolderLike;
     BOOL _validForSchemeBuildableReferences;
     BOOL _transitioningToNewFilePath;
+    IDEActivityLogSection *_issueLog;
 }
 
 + (BOOL)_shouldTrackReadOnlyStatus;
@@ -103,6 +106,7 @@
 + (id)containerLoadingModelObjectGraph;
 + (void)initialize;
 @property(getter=isTransitioningToNewFilePath) BOOL transitioningToNewFilePath; // @synthesize transitioningToNewFilePath=_transitioningToNewFilePath;
+@property(retain) IDEActivityLogSection *issueLog; // @synthesize issueLog=_issueLog;
 @property int readOnlyStatus; // @synthesize readOnlyStatus=_readOnlyStatus;
 @property(readonly) IDEGroup *rootGroup; // @synthesize rootGroup=_rootGroup;
 @property(copy, nonatomic) DVTFilePath *itemBaseFilePath; // @synthesize itemBaseFilePath=_itemBaseFilePath;
@@ -127,11 +131,10 @@
 - (void)debugPrintStructure;
 - (void)debugPrintInnerStructure;
 @property(readonly, copy) NSString *description;
-- (void)_enqueueWorkItem:(CDUnknownBlockType)arg1;
+- (void)_enqueueSCMUpdateForItem:(id)arg1;
 - (void)collectMessageTracerStatisticsIntoDictionary:(id)arg1;
 - (void)holdOnDiskFilesForICloudDriveIfNecessary;
-@property(readonly) IDEActivityLogSection *integrityLog;
-- (void)analyzeModelIntegrity;
+- (void)analyzeModelForIssues;
 - (void)enumerateUpgradeTasksWithBlock:(CDUnknownBlockType)arg1;
 @property(readonly) BOOL supportsOnDemandResources;
 @property(readonly, getter=isFolderLike) BOOL folderLike;
@@ -207,6 +210,7 @@
 - (void)_removePendingFileReference:(id)arg1;
 - (void)_addPendingFileReference:(id)arg1;
 - (id)_containerInstanceDescription;
+- (id)ide_snapshotGroupName;
 
 // Remaining properties
 @property(retain) DVTStackBacktrace *creationBacktrace;

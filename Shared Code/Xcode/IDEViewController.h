@@ -20,9 +20,9 @@
 
 @interface IDEViewController : DVTViewController <IDESelectionSource, DVTStatefulObject>
 {
-    id <IDEWorkspaceDocumentProvider> _workspaceDocumentProvider;
     IDESelection *_outputSelection;
     DVTStateToken *_stateToken;
+    id <IDEWorkspaceDocumentProvider> _workspaceDocumentProvider;
     IDEWorkspaceTabController *_workspaceTabController;
 }
 
@@ -31,8 +31,9 @@
 + (id)keyPathsForValuesAffectingWorkspace;
 + (id)keyPathsForValuesAffectingWorkspaceDocument;
 @property(retain, nonatomic) IDEWorkspaceTabController *workspaceTabController; // @synthesize workspaceTabController=_workspaceTabController;
-@property(readonly) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
-@property(copy) IDESelection *outputSelection; // @synthesize outputSelection=_outputSelection;
+@property(retain, nonatomic) id <IDEWorkspaceDocumentProvider> workspaceDocumentProvider; // @synthesize workspaceDocumentProvider=_workspaceDocumentProvider;
+@property(readonly, nonatomic) DVTStateToken *stateToken; // @synthesize stateToken=_stateToken;
+@property(copy, nonatomic) IDESelection *outputSelection; // @synthesize outputSelection=_outputSelection;
 // - (void).cxx_destruct;
 - (void)setStateToken:(DVTStateToken *)arg1;
 - (BOOL)_knowsAboutInstalledState;
@@ -41,19 +42,19 @@
 - (void)commitStateToDictionary:(id)arg1;
 - (void)revertStateWithDictionary:(id)arg1;
 - (void)primitiveInvalidate;
-@property(readonly) BOOL automaticallyInvalidatesChildViewControllers;
+@property(readonly, nonatomic) BOOL automaticallyInvalidatesChildViewControllers;
 - (void)_invalidateSubViewControllersForView:(id)arg1;
 - (id)supplementalTargetForAction:(SEL)arg1 sender:(id)arg2;
-@property(readonly, copy) IDESelection *contextMenuSelection;
-@property(readonly) IDEWorkspace *workspace;
-@property(readonly) IDEWorkspaceDocument *workspaceDocument;
-- (id)workspaceDocumentProvider;
+@property(readonly, copy, nonatomic) IDESelection *contextMenuSelection;
+@property(readonly, nonatomic) IDEWorkspace *workspace;
+@property(readonly, nonatomic) IDEWorkspaceDocument *workspaceDocument;
 - (void)_resolveWorkspaceDocumentProvider;
 - (void)_resolveWorkspaceTabController;
 - (void)viewDidInstall;
 - (id)initWithNibName:(id)arg1 bundle:(id)arg2;
 
 // Remaining properties
+@property(readonly) BOOL canRevertWithEmptyStateDictionary;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
 @property(readonly) Class superclass;

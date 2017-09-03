@@ -8,10 +8,9 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
+@class DVTSourceModel;
 
-@class IDEProgressSearchField;
-
-@protocol IDEProgressSearchFieldCommandDelegate <NSObject>
-- (void)searchField:(IDEProgressSearchField *)arg1 receivedCommandSelector:(SEL)arg2;
+@protocol DVTSourceModelProvider
+- (DVTSourceModel *)sourceModel;
 @end
 

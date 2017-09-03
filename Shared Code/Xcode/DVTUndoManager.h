@@ -12,12 +12,12 @@
 
 #import "NSUndoManager.h"
 
-#import "DVTInvalidation-Protocol.h"
+#import "DVTUndo-Protocol.h"
 
 @class DVTStackBacktrace, NSMutableArray, NSString;
 @protocol DVTUndoManagerDelegate;
 
-@interface DVTUndoManager : NSUndoManager <DVTInvalidation>
+@interface DVTUndoManager : NSUndoManager <DVTUndo>
 {
     char *_delegateDescription;
     NSMutableArray *_undoGroupingBacktraces;

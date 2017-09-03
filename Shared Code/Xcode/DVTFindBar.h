@@ -49,8 +49,8 @@
     NSSegmentedControl *_doneSegmentedButtom;
     NSLayoutConstraint *_findSearchFieldLeadingConstraint;
     NSLayoutConstraint *_replaceSegmentControlWidth;
-    NSLayoutConstraint *_findSearchFieldHeight;
-    NSLayoutConstraint *_replaceSearchFieldHeight;
+    NSLayoutConstraint *_findSearchFieldHeightConstraint;
+    NSLayoutConstraint *_replaceSearchFieldHeightConstraint;
     long long _numberOfMatches;
 }
 
@@ -59,8 +59,8 @@
 + (id)keyPathsForValuesAffectingFindString;
 + (void)initialize;
 @property(nonatomic) long long numberOfMatches; // @synthesize numberOfMatches=_numberOfMatches;
-@property __weak NSLayoutConstraint *replaceSearchFieldHeight; // @synthesize replaceSearchFieldHeight=_replaceSearchFieldHeight;
-@property __weak NSLayoutConstraint *findSearchFieldHeight; // @synthesize findSearchFieldHeight=_findSearchFieldHeight;
+@property __weak NSLayoutConstraint *replaceSearchFieldHeightConstraint; // @synthesize replaceSearchFieldHeightConstraint=_replaceSearchFieldHeightConstraint;
+@property __weak NSLayoutConstraint *findSearchFieldHeightConstraint; // @synthesize findSearchFieldHeightConstraint=_findSearchFieldHeightConstraint;
 @property __weak NSLayoutConstraint *replaceSegmentControlWidth; // @synthesize replaceSegmentControlWidth=_replaceSegmentControlWidth;
 @property __weak NSLayoutConstraint *findSearchFieldLeadingConstraint; // @synthesize findSearchFieldLeadingConstraint=_findSearchFieldLeadingConstraint;
 @property __weak NSSegmentedControl *doneSegmentedButtom; // @synthesize doneSegmentedButtom=_doneSegmentedButtom;
@@ -104,7 +104,7 @@
 - (void)_insertFindPattern:(id)arg1;
 - (void)_optionsChanged:(id)arg1;
 - (BOOL)supportsCaseInsensitiveMatch;
-- (BOOL)supportsTextMatchStyle:(int)arg1;
+- (BOOL)supportsTextMatchStyle:(unsigned long long)arg1;
 - (BOOL)supportsFindBarMode:(unsigned long long)arg1;
 - (BOOL)supportsFindBarType:(unsigned long long)arg1;
 - (void)performFindHighlightingFirstResult:(BOOL)arg1 informDelegate:(BOOL)arg2;

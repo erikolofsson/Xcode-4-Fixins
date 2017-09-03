@@ -8,12 +8,12 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
+#import "DVTLineRangeCharacterRangeConverter-Protocol.h"
 
 @class DVTSourceCodeLanguage, DVTSourceModelItem, NSString;
 
-@protocol DVTSourceBufferProvider <NSObject>
+@protocol DVTSourceBufferProvider <NSObject, DVTLineRangeCharacterRangeConverter>
 - (unsigned long long)leadingWhitespacePositionsForLine:(unsigned long long)arg1;
-- (struct _NSRange)lineRangeForCharacterRange:(struct _NSRange)arg1;
 - (unsigned long long)length;
 - (NSString *)string;
 

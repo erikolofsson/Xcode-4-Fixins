@@ -12,8 +12,8 @@
 
 #import "DVTAnnotation.h"
 
-@class DVTMutableRangeArray, DVTSourceLandmarkItem, DVTTextDocumentLocation, NSArray, NSImage, NSMutableArray, NSMutableDictionary;
-@protocol DVTTextAnnotationDelegate;
+@class DVTMutableRangeArray, DVTTextAnnotationAccessibilityProxyItem, DVTTextDocumentLocation, NSArray, NSImage, NSMutableArray, NSMutableDictionary, NSString;
+@protocol DVTSourceLandmarkItemContainer, DVTLineRangeCharacterRangeConverter, DVTSourceLandmarkItemProtocol, DVTTextAnnotationDelegate, DVTTextAnnotationDisplayDelegate;
 
 @interface DVTTextAnnotation : DVTAnnotation
 {
@@ -44,11 +44,17 @@
         unsigned int userRemovable:1;
         unsigned int isParagraphEdited:1;
         unsigned int usesFirstLineFragmentMode:1;
+        unsigned int hasCaretRanges:1;
+        unsigned int hasCaretRangesIsValid:1;
     } _taFlags;
     BOOL _lazyInvalidation;
-    BOOL _hasCaretRanges;
     int _annotationStackPolicy;
+    DVTTextAnnotationAccessibilityProxyItem *_accessibilityProxy;
+    id <DVTTextAnnotationDisplayDelegate> _displayDelegate;
+    NSString *_toolTip;
+    id <DVTSourceLandmarkItemContainer, DVTLineRangeCharacterRangeConverter> _landmarkProvider;
     unsigned long long _scrollbarMarkerType;
+    struct CGRect _lastSidebarMarkerRect;
 }
 
 + (void)drawLineHighlightForAnnotations:(id)arg1 highlightRanges:(BOOL)arg2 textView:(id)arg3 getParaRectBlock:(CDUnknownBlockType)arg4;
@@ -56,13 +62,18 @@
 + (id)logAspect;
 + (void)initialize;
 @property BOOL lazyInvalidation; // @synthesize lazyInvalidation=_lazyInvalidation;
+@property(readonly) struct CGRect lastSidebarMarkerRect; // @synthesize lastSidebarMarkerRect=_lastSidebarMarkerRect;
 @property unsigned long long scrollbarMarkerType; // @synthesize scrollbarMarkerType=_scrollbarMarkerType;
 @property(nonatomic) unsigned long long highlightSidebarStyle; // @synthesize highlightSidebarStyle=_highlightSidebarStyle;
+@property __weak id <DVTSourceLandmarkItemContainer, DVTLineRangeCharacterRangeConverter> landmarkProvider; // @synthesize landmarkProvider=_landmarkProvider;
+@property(copy) NSString *toolTip; // @synthesize toolTip=_toolTip;
 @property(nonatomic) double sidebarMarkerOpacity; // @synthesize sidebarMarkerOpacity=_sidebarMarkerOpacity;
 @property(nonatomic) double sidebarMarkerHorizontalOffset; // @synthesize sidebarMarkerHorizontalOffset=_sidebarMarkerHorizontalOffset;
 @property double sidebarMarkerVerticalPadding; // @synthesize sidebarMarkerVerticalPadding=_sidebarMarkerVerticalPadding;
 @property(retain, nonatomic) NSImage *sidebarMarkerImage; // @synthesize sidebarMarkerImage=_sidebarMarkerImage;
+@property __weak id <DVTTextAnnotationDisplayDelegate> displayDelegate; // @synthesize displayDelegate=_displayDelegate;
 @property(retain) id <DVTTextAnnotationDelegate> delegate; // @synthesize delegate=_delegate;
+@property(retain, nonatomic) DVTTextAnnotationAccessibilityProxyItem *accessibilityProxy; // @synthesize accessibilityProxy=_accessibilityProxy;
 @property int annotationStackPolicy; // @synthesize annotationStackPolicy=_annotationStackPolicy;
 @property unsigned long long severity; // @synthesize severity=_severity;
 @property(readonly) struct _NSRange paragraphRange; // @synthesize paragraphRange=_paragraphRange;
@@ -85,6 +96,7 @@
 - (void)drawSidebarMarkerIconInRect:(struct CGRect)arg1 textView:(id)arg2;
 - (void)annotationWillDrawInTextView:(id)arg1;
 - (long long)compareParagraphRange:(id)arg1;
+- (void)deriveParagraphRangeFromLocation;
 @property(getter=isUserRemovable) BOOL userRemovable;
 @property(getter=isUserDraggable) BOOL userDraggable;
 @property(readonly) BOOL hasCaretRanges;
@@ -100,8 +112,9 @@
 @property(copy) NSArray *highlightedRanges;
 @property(getter=isHighlightedRangesVisible) BOOL highlightedRangesVisible;
 - (id)_highlightedRanges;
+- (BOOL)lineHighlightIncludesLineSpacing;
 @property(getter=isLineHighlightVisible) BOOL lineHighlightVisible;
-@property(readonly) DVTSourceLandmarkItem *enclosingLandmarkItem;
+@property(readonly) id <DVTSourceLandmarkItemProtocol> enclosingLandmarkItem;
 @property BOOL shouldDrawTemplateInverted;
 @property BOOL wantsInvertedLineNumber;
 @property BOOL wantsReplaceLineNumber;
@@ -109,6 +122,7 @@
 - (void)setSidebarMarkerTopMargin:(double)arg1;
 @property unsigned long long sidebarMarkerAlignment;
 @property BOOL drawsSidebarMarker;
+- (id)sidebarMarkerImageForSize:(struct CGSize)arg1;
 - (void)setVisible:(BOOL)arg1;
 - (void)setVisibleWithoutAdditionalLayout:(BOOL)arg1;
 - (void)setTheme:(id)arg1 forState:(id)arg2;

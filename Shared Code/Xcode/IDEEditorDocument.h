@@ -13,8 +13,8 @@
 #import "DVTUndoManagerDelegate-Protocol.h"
 #import "IDEReadOnlyItem-Protocol.h"
 
-@class DVTDispatchLock, DVTExtension, DVTFileDataType, DVTFilePath, DVTNotificationToken, DVTStackBacktrace, DVTUndoManager, NSDictionary, NSMapTable, NSMutableArray, NSMutableSet, NSSet, NSString, NSURL;
-@protocol DVTCancellable;
+@class DVTDispatchLock, DVTExtension, DVTFileDataType, DVTFilePath, DVTNotificationToken, DVTStackBacktrace, NSDictionary, NSMapTable, NSMutableArray, NSMutableSet, NSSet, NSString, NSURL, NSUndoManager;
+@protocol DVTCancellable, DVTUndo;
 
 @interface IDEEditorDocument : NSDocument <IDEReadOnlyItem, DVTUndoManagerDelegate>
 {
@@ -40,7 +40,8 @@
     DVTStackBacktrace *_firstPerformActivityMessageBacktrace;
     DVTStackBacktrace *_invalidationBacktrace;
     DVTStackBacktrace *_lastUndoChangeNotificationBacktrace;
-    DVTUndoManager *_dvtUndoManager;
+    DVTStackBacktrace *_currentSaveToURLBacktrace;
+    NSUndoManager<DVTUndo> *_dvtUndoManager;
     int _readOnlyStatus;
     NSDictionary *_willCloseNotificationUserInfo;
     NSMutableArray *_pendingChanges;
@@ -76,10 +77,11 @@
 + (id)keyPathsForValuesAffectingIde_displayName;
 + (BOOL)documentSupportsInconsistentState;
 + (id)readableTypes;
-+ (BOOL)_shouldShowUtilititesAreaAtLoadForSimpleFilesFocusedWorkspace;
++ (BOOL)shouldShowUtilititesAreaAtLoadForSimpleFilesFocusedWorkspace;
 + (BOOL)shouldTrackFileSystemChanges;
 + (BOOL)shouldUnlockFileURLBeforeMakingChanges;
 + (void)initialize;
++ (long long)topUndoGroupingLevel;
 @property(retain, nonatomic) DVTExtension *extension; // @synthesize extension=_extension;
 @property(retain) DVTStackBacktrace *creationBacktrace; // @synthesize creationBacktrace=_creationBacktrace;
 @property(retain) DVTFilePath *autosavedContentsFilePath; // @synthesize autosavedContentsFilePath=_autosavedContentsFilePath;
@@ -143,7 +145,7 @@
 - (void)_closeToRevert;
 @property(readonly, getter=isClosed) BOOL closed;
 - (void)close;
-- (BOOL)_isClosing;
+- (BOOL)isClosing;
 - (void)closePrivateDocumentSynchronously;
 - (void)tryCloseAsynchronouslyWithCompletionBlock:(CDUnknownBlockType)arg1;
 - (void)_tryCloseAsynchronouslyToRevert:(BOOL)arg1 withCompletionBlock:(CDUnknownBlockType)arg2;
@@ -176,6 +178,7 @@
 - (void)_respondToFileChangeOnDiskWithFilePath:(id)arg1;
 - (void)saveForOperation:(unsigned long long)arg1 withCompletionHandler:(CDUnknownBlockType)arg2;
 - (void)saveToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 completionHandler:(CDUnknownBlockType)arg4;
+- (void)saveDocumentWithDelegate:(id)arg1 didSaveSelector:(SEL)arg2 contextInfo:(void *)arg3;
 - (void)ide_finishSaving:(BOOL)arg1 forSaveOperation:(unsigned long long)arg2 previousPath:(id)arg3;
 - (BOOL)writeSafelyToURL:(id)arg1 ofType:(id)arg2 forSaveOperation:(unsigned long long)arg3 error:(id *)arg4;
 - (id)fileNameExtensionForType:(id)arg1 saveOperation:(unsigned long long)arg2;
@@ -186,7 +189,7 @@
 - (void)undoManagerWillModifyItself:(id)arg1;
 - (id)writableTypesForSaveOperation:(unsigned long long)arg1;
 - (void)setHasUndoManager:(BOOL)arg1;
-@property(retain) DVTUndoManager *undoManager;
+@property(retain) NSUndoManager<DVTUndo> *undoManager;
 - (void)ide_setUndoManager:(id)arg1;
 - (void)teardownUndoManager:(id)arg1;
 - (void)setupUndoManager:(id)arg1;

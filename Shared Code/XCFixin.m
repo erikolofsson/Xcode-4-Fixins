@@ -77,8 +77,10 @@ IMP XCFixinOverrideMethod(Class class0, SEL selector, IMP newImplementation)
     cleanup:
     {
         if (classMethods)
-            free(classMethods),
+        {
+            free(classMethods);
             classMethods = nil;
+        }
     }
     
     return result;
@@ -148,14 +150,14 @@ cleanup:
     return result;
 }
 
-static CGFloat XCFixinAddColor(CGFloat color0, CGFloat color1)
+/*static CGFloat XCFixinAddColor(CGFloat color0, CGFloat color1)
 {
   CGFloat color = color0 + color1;
   if (color > 1.0)
     color = 1.0;
   
   return color;
-}
+}*/
 
 void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
 {

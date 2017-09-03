@@ -9,15 +9,15 @@
 //
 
 
-@class DVTSourceTextScrollView, NSEvent, NSScroller;
+@class NSEvent, NSScrollView, NSScroller;
 
 @protocol DVTSourceTextScrollViewDelegate <NSObject>
 
 @optional
-- (NSScroller *)scrollView:(DVTSourceTextScrollView *)arg1 pointInVisibleScroller:(struct CGPoint)arg2;
-- (void)scrollViewDidSetFrameSize:(DVTSourceTextScrollView *)arg1;
-- (void)scrollViewDidEndLiveResize:(DVTSourceTextScrollView *)arg1;
-- (void)scrollViewWillStartLiveResize:(DVTSourceTextScrollView *)arg1;
-- (BOOL)scrollView:(DVTSourceTextScrollView *)arg1 shouldHandleScrollWheelEvent:(NSEvent *)arg2;
+- (NSScroller *)scrollView:(NSScrollView *)arg1 pointInVisibleScroller:(struct CGPoint)arg2;
+- (void)scrollViewDidSetFrameSize:(NSScrollView *)arg1;
+- (void)scrollViewDidEndLiveResize:(NSScrollView *)arg1;
+- (void)scrollViewWillStartLiveResize:(NSScrollView *)arg1;
+- (BOOL)scrollView:(NSScrollView *)arg1 shouldHandleScrollWheelEvent:(NSEvent *)arg2;
 @end
 

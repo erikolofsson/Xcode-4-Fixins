@@ -8,10 +8,13 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
+@class IDEBreakpoint, NSArray;
 
-@class IDEBatchFindResultGroup;
+@protocol IDEBreakpointDelegate
 
-@protocol IDEBatchFindResultGroupDelegate <NSObject>
-- (void)finishedSymbolQueryForResultsGroupNavItem:(IDEBatchFindResultGroup *)arg1;
+@optional
+- (void)breakpointLocationsAdded:(NSArray *)arg1 removed:(NSArray *)arg2;
+- (BOOL)breakpointShouldBeActivated:(IDEBreakpoint *)arg1;
+- (void)breakpointEnablementChanged:(IDEBreakpoint *)arg1;
 @end
 

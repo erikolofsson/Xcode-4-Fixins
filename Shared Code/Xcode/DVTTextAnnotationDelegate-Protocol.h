@@ -10,10 +10,15 @@
 
 
 @class DVTAnnotation, DVTTextAnnotation, DVTTextSidebarView, NSArray, NSEvent, NSGestureRecognizer, NSSet;
+@protocol DVTTextSidebar;
 
 @protocol DVTTextAnnotationDelegate <NSObject>
 
 @optional
+- (NSArray *)contextMenuItemsForAnnotation:(DVTTextAnnotation *)arg1 inTextSidebar:(id <DVTTextSidebar>)arg2;
+- (void)didRecognizeGestureInAnnotation:(DVTTextAnnotation *)arg1 inTextSidebar:(id <DVTTextSidebar>)arg2 recognizer:(NSGestureRecognizer *)arg3;
+- (void)didDragAnnotation:(DVTAnnotation *)arg1 inTextSidebar:(id <DVTTextSidebar>)arg2 event:(NSEvent *)arg3;
+- (void)didClickAnnotation:(DVTAnnotation *)arg1 inTextSidebar:(id <DVTTextSidebar>)arg2 event:(NSEvent *)arg3;
 - (void)annotation:(DVTTextAnnotation *)arg1 willDrawInTextSidebarView:(DVTTextSidebarView *)arg2 withAnnotationsInSameLine:(NSSet *)arg3;
 - (BOOL)annotation:(DVTTextAnnotation *)arg1 shouldDrawInTextSidebarView:(DVTTextSidebarView *)arg2 withAnnotationsInSameLine:(NSSet *)arg3;
 - (double)sidebarMarkerOpacityForAnnotation:(DVTTextAnnotation *)arg1;

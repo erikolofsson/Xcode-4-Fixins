@@ -20,10 +20,13 @@
     IDEBreakpointIcon *_icon;
     DVTObservingToken *_workspaceDocumentObserver;
     DVTObservingToken *_breakpointShouldBeEnabledObserver;
+    DVTObservingToken *_breakpointModifiedObserver;
     DVTObservingToken *_breakpointLocationOrAddressObserver;
 }
 
 // - (void).cxx_destruct;
+- (id)view:(id)arg1 stringForToolTip:(long long)arg2 point:(struct CGPoint)arg3 userData:(void *)arg4;
+- (id)toolTip;
 - (void)_updateLandmarkItemIfAppropriate;
 - (void)adjustParagraphIndexBy:(long long)arg1 lengthBy:(long long)arg2;
 - (void)resolveLocationIfNeededForLayoutManager:(id)arg1;
@@ -33,6 +36,7 @@
 - (id)_iconForRect:(struct CGRect)arg1;
 - (void)drawSidebarMarkerIconInRect:(struct CGRect)arg1 textView:(id)arg2;
 - (struct CGRect)sidebarMarkerRectForFirstLineRect:(struct CGRect)arg1;
+- (void)setLandmarkProvider:(id)arg1;
 - (void)setLocation:(id)arg1;
 - (void)annotationWillUninstall;
 - (id)_initWithWorkspaceDocument:(id)arg1 breakpoint:(id)arg2;

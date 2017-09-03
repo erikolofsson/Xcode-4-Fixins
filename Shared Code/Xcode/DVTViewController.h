@@ -19,6 +19,7 @@
 {
     NSWindow *_kvoWindow;
     BOOL _isInstalled;
+    BOOL _didInstall;
     BOOL _isViewLoaded;
     DVTExtension *_representedExtension;
 }
@@ -26,6 +27,7 @@
 + (id)keyPathsForValuesAffectingParentWindowController;
 + (id)keyPathsForValuesAffectingMainViewControllerInParentWindow;
 + (unsigned long long)assertionBehaviorAfterEndOfEventForSelector:(SEL)arg1;
++ (id)viewControllerUsingDefaultNib;
 + (id)defaultViewNibBundle;
 + (id)defaultViewNibName;
 + (void)initialize;

@@ -21,6 +21,7 @@
 #import "Xcode3SourceListItemEditing-Protocol.h"
 
 @class DVTModelObjectGraph, DVTObservingToken, DVTStackBacktrace, IDEActivityLogSection, IDEDirectoryBasedCustomDataStore, NSArray, NSMapTable, NSMutableArray, NSString, PBXProject, PBXReference;
+@protocol IDETestableProvider;
 
 @interface Xcode3Project : IDEContainer <IDEBlueprintProvider, IDEIndexableProvider, IDETestableProvider, Xcode3SourceListItemEditing, IDECustomDataStoring, IDEWorkspaceWrappingContainer, IDELocalizedContainer>
 {
@@ -33,7 +34,7 @@
     NSMapTable *_xc3TargetsToTestables;
     NSMutableArray *_localizations;
     BOOL _isBaseLocalized;
-    IDEActivityLogSection *_integrityLog;
+    //IDEActivityLogSection *_issueLog;
     BOOL _integrityCheckingBlockQueued;
     BOOL _hasRunUpgradeCheck;
     DVTObservingToken *_projectObservation_targets;
@@ -42,17 +43,20 @@
     BOOL _pbxProjectEdited;
     BOOL _shouldLogUpgradeCheck;
     NSArray *_customUpgradeTasks;
+    id _activeSchemeObservation;
 }
 
 + (id)keyPathsForValuesAffectingTestables;
 + (id)deserializedSourceListItem:(id)arg1;
 + (id)pasteboardDataType;
 + (id)keyPathsForValuesAffectingIndexables;
++ (id)keyPathsForValuesAffectingSourcePackageReferences;
 + (id)keyPathsForValuesAffectingBlueprints;
 + (id)containerDataFilePathsForFilePath:(id)arg1;
 + (BOOL)_shouldTrackReadOnlyStatus;
 + (BOOL)supportsFilePersistence;
 + (id)keyPathsForValuesAffectingName;
++ (id)availableSwiftVersions;
 + (id)xcode3ProjectCreationErrorHandler;
 + (void)setXcode3ProjectCreationErrorHandler:(Class)arg1;
 + (long long)obsoleteProjectVersion;
@@ -64,7 +68,7 @@
 + (void)initialize;
 @property(nonatomic) BOOL pbxProjectEdited; // @synthesize pbxProjectEdited=_pbxProjectEdited;
 @property BOOL hasRunUpgradeCheck; // @synthesize hasRunUpgradeCheck=_hasRunUpgradeCheck;
-@property(retain) IDEActivityLogSection *integrityLog; // @synthesize integrityLog=_integrityLog;
+@property(retain) IDEActivityLogSection *issueLog; // @synthesize issueLog=_issueLog;
 @property(retain) PBXProject *pbxProject; // @synthesize pbxProject=_project;
 @property(retain) IDEDirectoryBasedCustomDataStore *customDataStore; // @synthesize customDataStore=_customDataStore;
 // - (void).cxx_destruct;
@@ -78,7 +82,7 @@
 - (void)_updateTestablesForTargetProxies:(id)arg1;
 - (id)testableForBlueprint:(id)arg1;
 @property(readonly, copy) NSArray *testables;
-- (id)testableProvider;
+@property(readonly) id <IDETestableProvider> testableProvider;
 - (void)addSpecifier:(id)arg1 inWorkspace:(id)arg2 toSCMWithCompletionBlock:(CDUnknownBlockType)arg3;
 - (void)scmStatusForSpecifier:(id)arg1 completionBlock:(CDUnknownBlockType)arg2;
 - (void)customDataStoreContainerClosing:(id)arg1;
@@ -94,10 +98,10 @@
 - (void)updateLastUpgradeVersionToCurrent;
 @property(readonly) NSString *lastUpgradeVersion;
 - (id)serializedSourceListItem;
-- (id)indexables;
+@property(readonly, copy) NSArray *indexables;
 - (BOOL)installSourcesToPath:(id)arg1;
 - (void)collectMessageTracerStatisticsIntoDictionary:(id)arg1;
-- (void)analyzeModelIntegrity;
+- (void)analyzeModelForIssues;
 - (void)enumerateUpgradeTasksWithBlock:(CDUnknownBlockType)arg1;
 - (void)updateLastSwiftMigrationToCurrent;
 @property(readonly) BOOL lastSwiftMigrationIsCurrent;
@@ -120,7 +124,10 @@
 - (id)blueprintForPBXTarget:(id)arg1;
 - (id)blueprintForIdentifier:(id)arg1;
 - (id)blueprintForName:(id)arg1;
-- (id)blueprints;
+@property(readonly) NSArray *sourcePackageReferences;
+@property(readonly, copy) NSArray *blueprints;
+- (void)_packageReferenceDidChange:(id)arg1;
+- (void)_packageReferenceWillChange:(id)arg1;
 - (void)_projectWillRemoveTarget:(id)arg1;
 - (void)_projectDidAddTarget:(id)arg1;
 - (void)_projectBuildSettingsDidChange:(id)arg1;
@@ -146,13 +153,13 @@
 - (void)syncTargetProxiesWithProjectTargets;
 @property(readonly) NSArray *targetProxies;
 - (BOOL)hasValueSetForBuildSetting:(id)arg1;
-@property(retain) NSString *classPrefix;
-@property(retain) NSString *organizationName;
+@property(copy) NSString *classPrefix;
+@property(copy) NSString *organizationName;
 - (id)localizedDescription;
 - (id)ideModelObjectTypeIdentifier;
 @property unsigned long long preferredProjectFormat;
 @property(readonly) NSString *displayName;
-@property(readonly) NSString *name;
+@property(readonly, copy) NSString *name;
 - (id)supportedSourceListItemEditorClasses;
 
 // Remaining properties

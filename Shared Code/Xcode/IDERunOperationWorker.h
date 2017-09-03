@@ -12,15 +12,18 @@
 
 #import "DVTInvalidation-Protocol.h"
 
-@class DVTStackBacktrace, IDEExecutionRunnableTracker, IDELaunchSession, IDERunOperationWorkerGroup, NSError, NSString;
+@class DVTDispatchLock, DVTStackBacktrace, IDEExecutionRunnableTracker, IDELaunchSession, IDERunOperationWorkerGroup, NSString;
 
 @interface IDERunOperationWorker : NSObject <DVTInvalidation>
 {
     NSString *_extensionIdentifier;
     IDELaunchSession *_launchSession;
     IDERunOperationWorkerGroup *_workerGroup;
-    NSError *_recoverablePreflightError;
+    double _preflightAttemptInterval;
+    BOOL _hasPerformedWorkerAction;
+    DVTDispatchLock *_hasPerformedWorkerActionLock;
     BOOL _isLongTerm;
+    unsigned long long _preflightRetryAttempts;
     IDEExecutionRunnableTracker *_runnableTracker;
 }
 
@@ -37,8 +40,10 @@
 - (void)finishedWithError:(id)arg1;
 - (void)recoveredFromPreflightError;
 - (void)start;
+- (void)_startWithRetrying:(char *)arg1;
+@property(nonatomic) unsigned long long preflightRetryAttempts; // @synthesize preflightRetryAttempts=_preflightRetryAttempts;
 - (void)performWorkerAction;
-- (BOOL)preflightWithError:(id *)arg1 recoverable:(char *)arg2;
+- (BOOL)preflightWithError:(id *)arg1 recoverable:(char *)arg2 shouldRetry:(char *)arg3;
 - (void)startNextWorkerFromCompletedWorker:(id)arg1 error:(id)arg2;
 - (void)setWorkerGroup:(id)arg1;
 - (id)initWithExtensionIdentifier:(id)arg1 launchSession:(id)arg2;

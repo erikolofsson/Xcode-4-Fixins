@@ -50,7 +50,7 @@
 - (void)focusedEditorDidSelectItem:(id)arg1;
 - (id)navigableItemsForArchivedNavigableItems:(id)arg1;
 - (void)revealArchivedNavigableItems:(id)arg1;
-- (void)_revealNavigableItems:(id)arg1;
+- (void)revealNavigableItems:(id)arg1;
 @property(readonly) long long filterProgress;
 @property(readonly) NSString *filterDefinitionIdentifier;
 - (BOOL)canBecomeMainViewController;
@@ -78,6 +78,7 @@
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
 @property(readonly) Class superclass;
+@property(readonly, nonatomic) NSView *view;
 
 @end
 

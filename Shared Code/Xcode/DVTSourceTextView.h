@@ -15,12 +15,14 @@
 #import "DVTColorLiteralQuickEditViewControllerDelegate-Protocol.h"
 #import "DVTFileLiteralQuickEditViewControllerDelegate-Protocol.h"
 #import "DVTImageLiteralQuickEditViewControllerDelegate-Protocol.h"
+#import "DVTSourceCodeComparisonTextView-Protocol.h"
+#import "DVTSourceEditorView-Protocol.h"
 #import "DVTSourceTextScrollViewDelegate-Protocol.h"
 
-@class DVTAnnotationManager, DVTMutableRangeArray, DVTObservingToken, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSColor, NSHashTable, NSMutableArray, NSMutableIndexSet, NSString, NSTimer, NSView, NSWindow;
+@class DVTAnnotationManager, DVTMutableRangeArray, DVTObservingToken, DVTSourceCodeLanguage, DVTTextAnnotationIndicatorAnimation, DVTTextDocumentLocation, DVTTextPageGuideVisualization, NSAnimation, NSArray, NSColor, NSHashTable, NSMutableArray, NSMutableIndexSet, NSString, NSTimer, NSView, NSWindow;
 @protocol DVTCancellable, DVTSourceTextViewDelegate, DVTSourceTextViewQuickEditDataSource;
 
-@interface DVTSourceTextView : DVTCompletingTextView <NSAnimationDelegate, NSLayoutManagerDelegate, DVTSourceTextScrollViewDelegate, DVTColorLiteralQuickEditViewControllerDelegate, DVTFileLiteralQuickEditViewControllerDelegate, DVTImageLiteralQuickEditViewControllerDelegate>
+@interface DVTSourceTextView : DVTCompletingTextView <DVTSourceCodeComparisonTextView, DVTSourceEditorView, NSAnimationDelegate, NSLayoutManagerDelegate, DVTSourceTextScrollViewDelegate, DVTColorLiteralQuickEditViewControllerDelegate, DVTFileLiteralQuickEditViewControllerDelegate, DVTImageLiteralQuickEditViewControllerDelegate>
 {
     unsigned long long _oldFocusLocation;
     NSAnimation *_blockAnimation;
@@ -181,6 +183,17 @@
 - (BOOL)validateUserInterfaceItem:(id)arg1;
 - (void)layoutManager:(id)arg1 didCompleteLayoutForTextContainer:(id)arg2 atEnd:(BOOL)arg3;
 - (id)layoutManager:(id)arg1 shouldUseTemporaryAttributes:(id)arg2 forDrawingToScreen:(BOOL)arg3 atCharacterIndex:(unsigned long long)arg4 effectiveRange:(struct _NSRange *)arg5;
+- (id)accessibilityCustomChoosers;
+- (id)_searchForItemWithPredicate:(id)arg1 ranges:(id)arg2;
+- (BOOL)_accessibilityFilterText:(id)arg1 matchesRange:(struct _NSRange)arg2;
+- (id)_accessibilityGetMarkRangesForLandmark:(id)arg1;
+- (id)_accessibilityGetMethodRangesForLandmark:(id)arg1;
+- (id)_accessibilityGetBreakpoints;
+- (id)_accessibilityGetRangesAndDescriptionsOfTypeError:(BOOL)arg1;
+- (id)_accessibilityPlaceholderAttributedStringForString:(id)arg1 range:(struct _NSRange)arg2;
+- (id)_accessibilitySetCodeStyleAttributesForString:(id)arg1 characterRange:(struct _NSRange)arg2 inLine:(struct _NSRange)arg3;
+- (struct _NSRange)_accessibilityRelativeRangeForCharacterRange:(struct _NSRange)arg1 inLine:(struct _NSRange)arg2;
+- (id)_accessibilityCodeStyleAttributedStringForRange:(struct _NSRange)arg1 attributedString:(id)arg2;
 - (id)accessibilityAXAttributedStringForCharacterRange:(struct _NSRange)arg1 parent:(id)arg2;
 - (BOOL)scrollRectToVisible:(struct CGRect)arg1;
 - (void)scrollPoint:(struct CGPoint)arg1;
@@ -269,6 +282,11 @@
 - (id)foldString;
 - (void)setFoldsFromString:(id)arg1;
 - (struct CGRect)frameForRange:(struct _NSRange)arg1 ignoreWhitespace:(BOOL)arg2;
+- (struct _NSRange)lineRangeForCharacterRange:(struct _NSRange)arg1;
+- (struct _NSRange)characterRangeForLineRange:(struct _NSRange)arg1;
+- (id)sourceLandmarkAtCharacterIndex:(unsigned long long)arg1;
+@property(readonly) DVTSourceCodeLanguage *language;
+- (id)sourceModel;
 - (struct _NSRange)visibleParagraphRange;
 - (long long)_currentLineNumber;
 - (struct _NSRange)rangeOfCenterLine;
@@ -363,7 +381,6 @@
 - (struct _NSRange)lineNumberRangeForBoundingRect:(struct CGRect)arg1;
 - (unsigned long long)lineNumberForPoint:(struct CGPoint)arg1;
 - (id)printJobTitle;
-- (id)language;
 - (BOOL)allowsCodeFolding;
 - (void)setAllowsCodeFolding:(BOOL)arg1;
 - (void)setTextStorage:(id)arg1;
@@ -381,11 +398,14 @@
 - (id)accessibilityAttributeValue:(id)arg1;
 - (id)accessibilityProxyForSelectedRange:(struct _NSRange)arg1;
 - (id)_accessibilityProxiesByRange;
-- (double)fmc_maxY;
+@property(readonly) double defaultLineHeight;
+@property(readonly) unsigned long long numberOfLines;
+- (void)ensureLayoutForCharacterRange:(struct _NSRange)arg1;
 - (double)fmc_startOfLine:(long long)arg1;
 - (long long)fmc_lineNumberForPosition:(double)arg1;
 
 // Remaining properties
+@property(readonly, copy) NSColor *backgroundColor;
 @property(readonly, copy) NSString *debugDescription;
 @property(readonly, copy) NSString *description;
 @property(readonly) Class superclass;

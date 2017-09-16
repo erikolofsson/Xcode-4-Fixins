@@ -187,6 +187,11 @@
 				PRODUCT_NAME = XCFixin_InhibitTabNextPlaceholder;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
+				WARNING_CFLAGS = (
+					"-Wno-incompatible-property-type",
+					"-Wno-nullability-completeness",
+					"-Wno-property-attribute-mismatch",
+				);
 				WRAPPER_EXTENSION = xcplugin;
 			};
 			name = Debug;
@@ -207,6 +212,11 @@
 				PRODUCT_NAME = XCFixin_InhibitTabNextPlaceholder;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
+				WARNING_CFLAGS = (
+					"-Wno-incompatible-property-type",
+					"-Wno-nullability-completeness",
+					"-Wno-property-attribute-mismatch",
+				);
 				WRAPPER_EXTENSION = xcplugin;
 			};
 			name = Release;

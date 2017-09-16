@@ -34,7 +34,6 @@
     NSMapTable *_xc3TargetsToTestables;
     NSMutableArray *_localizations;
     BOOL _isBaseLocalized;
-    //IDEActivityLogSection *_issueLog;
     BOOL _integrityCheckingBlockQueued;
     BOOL _hasRunUpgradeCheck;
     DVTObservingToken *_projectObservation_targets;

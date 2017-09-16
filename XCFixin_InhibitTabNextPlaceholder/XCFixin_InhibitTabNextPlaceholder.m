@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <objc/runtime.h>
 
+#import "../Shared Code/Xcode/DVTCompletingTextView.h"
 #import "XCFixin.h"
 
 static IMP gOriginalMoveToNextPlaceholderFromCharacterIndex = nil;

@@ -12,6 +12,7 @@
 #import "../Shared Code/Xcode/IDESourceCodeEditor.h"
 #import "../Shared Code/Xcode/IDEIndex.h"
 #import "../Shared Code/Xcode/DVTLayoutManager.h"
+#import "../Shared Code/Xcode/IDESourceEditorContentView.h"
 
 @interface XCFixin_Highlight_ViewState : NSObject
 {
@@ -47,6 +48,8 @@
 @end
 
 static IMP original_colorAtCharacterIndex = nil;
+static IMP original_nodeTypeAtCharacterIndex = nil;
+
 static IMP original_IDESourceCodeEditor_doInitialSetup = nil;
 
 @interface XCFixin_Highlight : NSObject
@@ -117,7 +120,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute00";
 //static DVTTextStorage *textStorage;
 //static NSTextView *textView;
 
-static void parseAwayWhitespace(NSString *_pString, NSUInteger _Length, NSRange *_pRange)
+__attribute((unused)) static void parseAwayWhitespace(NSString *_pString, NSUInteger _Length, NSRange *_pRange)
 {
 	// Parse away white space
 	NSUInteger iChar = _pRange->location + _pRange->length;
@@ -155,6 +158,8 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 	DVTTextStorage* textStorage = [_pTextView textStorage];
 	DVTSourceCodeLanguage* pLanguage = [textStorage language];
 	IDESourceCodeEditor* pSourceCodeEditor = (IDESourceCodeEditor*)[_pTextView delegate];
+	id pContext = [pSourceCodeEditor syntaxColoringContextForTextView: _pTextView];
+	NSLog(@"Class: %@", [pContext class]);
 	NSLayoutManager* pLayoutManager = [_pTextView layoutManager];
 	if (pLanguage && pSourceCodeEditor && pLayoutManager)
 	{
@@ -229,14 +234,42 @@ static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_View
 	}
 }
 
+void DumpObjcMethods(Class clz) {
+
+	unsigned int methodCount = 0;
+	Method *methods = class_copyMethodList(clz, &methodCount);
+
+	printf("Found %d methods on '%s'\n", methodCount, class_getName(clz));
+
+	for (unsigned int i = 0; i < methodCount; i++) {
+		Method method = methods[i];
+
+		printf("\t'%s' has method named '%s' of encoding '%s'\n",
+			   class_getName(clz),
+			   sel_getName(method_getName(method)),
+			   method_getTypeEncoding(method));
+
+		/**
+		 *  Or do whatever you need here...
+		 */
+	}
+
+	free(methods);
+}
 - (void) frameChanged:(NSNotification*)notification {
 	if ([notification.object isKindOfClass:[NSClipView class]])
 	{
 		NSClipView *pClipView = (NSClipView *)notification.object;
-		DVTSourceTextView *pTextView = (DVTSourceTextView *)[pClipView documentView];
-		if ([pTextView isKindOfClass: [DVTSourceTextView class]])
+		IDESourceEditorContentView *pContentView = (IDESourceEditorContentView *)[pClipView documentView];
+
+		NSLog(@"pContentView: %@ %@\n", pContentView.class, pContentView.superclass);
+
+		if ([pContentView isKindOfClass: NSClassFromString(@"SourceEditor.SourceEditorContentView")])
 		{
-			updateTextView(pTextView, NULL);
+/*			DumpObjcMethods(pContentView.class);
+			NSLog(@"pContentView: %@ %@\n", pContentView.class, pContentView.class.superclass);
+			DVTSourceTextView *pTextView = pContentView.editor.textView;
+			updateTextView(pTextView, NULL);*/
 		}
 	}
 }
@@ -494,6 +527,13 @@ static void IDESourceCodeEditor_doInitialSetup(IDESourceCodeEditor *self_, SEL _
 	}
 
 }
+
+// - (long long)nodeTypeAtCharacterIndex:(unsigned long long)arg1 effectiveRange:(struct _NSRange *)arg2 context:(id)arg3;
+static long long nodeTypeAtCharacterIndex(id self_, SEL _cmd, unsigned long long _Index, struct _NSRange *_pEffectiveRange, NSDictionary* _pContext)
+{
+	return ((long long (*)(id , SEL , unsigned long long , struct _NSRange *, NSDictionary* ))original_nodeTypeAtCharacterIndex)(self_, _cmd, _Index, _pEffectiveRange, _pContext);
+}
+
 static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _Index, struct _NSRange *_pEffectiveRange, NSDictionary* _pContext)
 {
 	DVTTextStorage* textStorage = self_;
@@ -1207,7 +1247,7 @@ static void AddDefaultKeyword_JS(NSString* _pKeyword, NSColor* _pColor)
 	[pDefaultKeywords_JS setObject:_pColor forKey:_pKeyword];
 }
 
-static void AddDefaultKeyword_CSS(NSString* _pKeyword, NSColor* _pColor)
+__attribute((unused)) static void AddDefaultKeyword_CSS(NSString* _pKeyword, NSColor* _pColor)
 {
 	[pDefaultKeywords_CSS setObject:_pColor forKey:_pKeyword];
 }
@@ -1268,7 +1308,7 @@ static void fs_GenerateHTMLTableEnd()
 //	printf("<br>\n");
 }
 
-static void fs_GenerateHTML()
+__attribute((unused)) static void fs_GenerateHTML()
 {
 	fs_GenerateHTMLTableStart();
 	
@@ -2872,6 +2912,9 @@ static NSMutableDictionary *pDefaultKeywords_CSS = nil;
 	
 	original_colorAtCharacterIndex = XCFixinOverrideMethodString(@"DVTTextStorage", @selector(colorAtCharacterIndex: effectiveRange: context:), (IMP)&colorAtCharacterIndex);
 	XCFixinAssertOrPerform(original_colorAtCharacterIndex, goto failed);
+	
+	original_nodeTypeAtCharacterIndex = XCFixinOverrideMethodString(@"DVTTextStorage", @selector(nodeTypeAtCharacterIndex: effectiveRange: context:), (IMP)&nodeTypeAtCharacterIndex);
+	XCFixinAssertOrPerform(original_nodeTypeAtCharacterIndex, goto failed);
 
 	(void)IDESourceCodeEditor.class;
 	original_IDESourceCodeEditor_doInitialSetup = XCFixinOverrideMethodString(@"IDESourceCodeEditor", @selector(_doInitialSetup), (IMP)&IDESourceCodeEditor_doInitialSetup);

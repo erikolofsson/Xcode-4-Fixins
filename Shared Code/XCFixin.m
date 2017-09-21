@@ -17,8 +17,12 @@ BOOL XCFixinShouldLoad(BOOL _LoadInXcodeBuild)
     NSArray *versionComponents = [[[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"] componentsSeparatedByString: @"."];
         XCFixinConfirmOrPerform(versionComponents && [versionComponents count], return NO);
     NSInteger xcodeMajorVersion = [[versionComponents objectAtIndex: 0] integerValue];
-        XCFixinConfirmOrPerform(xcodeMajorVersion >= 4, return NO);
-    
+    NSInteger xcodeMinorVersion = [[versionComponents objectAtIndex: 1] integerValue];
+
+    // Limit to this Xcode versions
+    XCFixinConfirmOrPerform(xcodeMajorVersion == 9, return NO);
+    XCFixinConfirmOrPerform(xcodeMinorVersion == 0, return NO);
+
     result = YES;
     
     return result;

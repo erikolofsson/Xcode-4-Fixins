@@ -2136,7 +2136,7 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	XCFixinAssertOrPerform(original_shouldIndentPastedText, goto failed);
 
 	//DVTScrollableTabBarView, DVTTabBarView
-	original_didSelectTabViewItem = XCFixinOverrideMethodString(@"DVTBarBackground", @selector(tabView:didSelectTabViewItem:), (IMP)&didSelectTabViewItem);
+	original_didSelectTabViewItem = XCFixinOverrideMethodString(@"IDELocationCategoryPrefsPaneController", @selector(tabView:didSelectTabViewItem:), (IMP)&didSelectTabViewItem);
 	XCFixinAssertOrPerform(original_didSelectTabViewItem, goto failed);
 	
 

@@ -2,10 +2,11 @@
 #import <objc/runtime.h>
 #import "XCFixin.h"
 
-#define GetString(_Value) #_Value
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
 
 static NSMenu 	 * 								 viewMenu = nil;
-static NSString * const kDisableAnimationsClassName = @"XCFixin_DisableAnimations" GetString(XCODE_VERSION_MINOR),
+static NSString * const kDisableAnimationsClassName = @"XCFixin_DisableAnimations" VALUE(XCODE_VERSION_MINOR),
 					 * const        kHideDistractionsKey = @"D";
 
 static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKeyMask);

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
+               BuildableName = "XCFixin_EmulateVisualStudio-0900.xcplugin"
                BlueprintName = "XCFixin_EmulateVisualStudio"
                ReferencedContainer = "container:XCFixin_EmulateVisualStudio.xcodeproj">
             </BuildableReference>
@@ -51,7 +51,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "435E247113A8E4A20052479A"
-            BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
+            BuildableName = "XCFixin_EmulateVisualStudio-0900.xcplugin"
             BlueprintName = "XCFixin_EmulateVisualStudio"
             ReferencedContainer = "container:XCFixin_EmulateVisualStudio.xcodeproj">
          </BuildableReference>

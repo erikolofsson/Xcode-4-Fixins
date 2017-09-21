@@ -25,6 +25,7 @@
 	<key>DVTPlugInCompatibilityUUIDs</key>
 	<array>
 		<string>DFFB3951-EB0A-4C09-9DAC-5F2D28CC839C</string>
+		<string>DF11C142-1584-4A99-87AC-1925D5F5652A</string>
 	</array>
 	<key>NSPrincipalClass</key>
 	<string>XCFixin_Highlight</string>

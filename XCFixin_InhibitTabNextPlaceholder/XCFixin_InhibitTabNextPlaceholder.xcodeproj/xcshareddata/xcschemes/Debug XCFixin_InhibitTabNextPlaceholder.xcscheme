@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_InhibitTabNextPlaceholder.xcplugin"
+               BuildableName = "XCFixin_InhibitTabNextPlaceholder-0900.xcplugin"
                BlueprintName = "XCFixin_InhibitTabNextPlaceholder"
                ReferencedContainer = "container:XCFixin_InhibitTabNextPlaceholder.xcodeproj">
             </BuildableReference>
@@ -50,7 +50,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-            BuildableName = "XCFixin_InhibitTabNextPlaceholder.xcplugin"
+            BuildableName = "XCFixin_InhibitTabNextPlaceholder-0900.xcplugin"
             BlueprintName = "XCFixin_InhibitTabNextPlaceholder"
             ReferencedContainer = "container:XCFixin_InhibitTabNextPlaceholder.xcodeproj">
          </BuildableReference>

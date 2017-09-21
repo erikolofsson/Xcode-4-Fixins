@@ -19,7 +19,7 @@ static IMP gOriginal_defaultMessageFontSize = nil;
 @end
 
 
-@interface XCFixin_CustomizeWarningErrorHighlights : NSObject
+@interface XCFixinXcodeVersioned(XCFixin_CustomizeWarningErrorHighlights) : NSObject
 {
 }
 
@@ -31,7 +31,7 @@ static DVTTextAnnotationTheme * analyzerTheme;
 static DVTTextAnnotationTheme * debuggerTheme;
 static DVTTextAnnotationTheme * grayTheme;
 
-@implementation XCFixin_CustomizeWarningErrorHighlights
+@implementation XCFixinXcodeVersioned(XCFixin_CustomizeWarningErrorHighlights)
 
 static double override_defaultMessageFontSize(SEL _cmd)
 {	

@@ -33,7 +33,7 @@
 		03A1896E1992C68500F87332 /* IDEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEKit.framework; path = ../Frameworks/IDEKit.framework; sourceTree = DEVELOPER_DIR; };
 		03F332F61B891CA30014B200 /* IDEFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEFoundation.framework; path = ../Frameworks/IDEFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		03F6DBC81BC94F6500B97C8B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio-0900.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "XCFixin_EmulateVisualStudio-0900.xcplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio-0900.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "XCFixin_EmulateVisualStudio-0900.xcplugin"; path = "XCFixin_EmulateVisualStudio-0833.xcplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
 		435E248413A8E5A40052479A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = XCFixin_EmulateVisualStudio.m; sourceTree = "<group>"; tabWidth = 4; };
 		437DCBC414D41E700039CB49 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -202,14 +202,17 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_DEBUG,
+					"XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)",
+				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
@@ -245,12 +248,13 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
 					"-Wno-incompatible-property-type",
@@ -278,7 +282,7 @@
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_EmulateVisualStudio-$(XCODE_VERSION_ACTUAL)";
+				PRODUCT_NAME = "XCFixin_EmulateVisualStudio-$(XCODE_VERSION_MINOR)";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};
@@ -303,7 +307,7 @@
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_EmulateVisualStudio-$(XCODE_VERSION_ACTUAL)";
+				PRODUCT_NAME = "XCFixin_EmulateVisualStudio-$(XCODE_VERSION_MINOR)";
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};

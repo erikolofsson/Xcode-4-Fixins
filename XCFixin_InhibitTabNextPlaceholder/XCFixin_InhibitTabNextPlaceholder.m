@@ -6,10 +6,10 @@
 
 static IMP gOriginalMoveToNextPlaceholderFromCharacterIndex = nil;
 
-@interface XCFixin_InhibitTabNextPlaceholder : NSObject
+@interface XCFixinXcodeVersioned(XCFixin_InhibitTabNextPlaceholder) : NSObject
 @end
 
-@implementation XCFixin_InhibitTabNextPlaceholder
+@implementation XCFixinXcodeVersioned(XCFixin_InhibitTabNextPlaceholder)
 
 static BOOL overrideMoveToNextPlaceholderFromCharacterIndex(id self, SEL _cmd, unsigned long long characterIndex, BOOL forward, BOOL onlyIfNearby)
 {

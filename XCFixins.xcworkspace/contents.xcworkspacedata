@@ -11,13 +11,7 @@
       location = "group:XCFixin_EmulateVisualStudio/XCFixin_EmulateVisualStudio.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:XCFixin_DisableAnimations/XCFixin_DisableAnimations.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:XCFixin_FindFix/XCFixin_FindFix.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:XCFixin_HideDistractions/XCFixin_HideDistractions.xcodeproj">
@@ -26,16 +20,7 @@
       location = "group:XCFixin_InhibitTabNextPlaceholder/XCFixin_InhibitTabNextPlaceholder.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:XCFixin_TabAcceptsCompletions/XCFixin_TabAcceptsCompletions.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:XCFixin_UserScripts/XCFixin_UserScripts.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:XCFixin_MiniXcode/XCFixin_MiniXcode.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:XCFixin_P4Checkout/XCFixin_P4Checkout.xcodeproj">

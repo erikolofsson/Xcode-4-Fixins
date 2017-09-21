@@ -65,6 +65,9 @@
     }                                                   \
 })
 
+#define XCFixinXcodeVersionedHelper(_Name, _Version) _Name##_Version
+#define XCFixinXcodeVersioned(_Name) XCFixinXcodeVersionedHelper(_Name, XCODE_VERSION_MINOR)
+
 BOOL XCFixinShouldLoad(BOOL _LoadInXcodeBuild);
 extern const NSUInteger XCFixinMaxLoadAttempts;
 

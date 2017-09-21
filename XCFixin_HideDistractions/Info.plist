@@ -28,7 +28,7 @@
 		<string>DFFB3951-EB0A-4C09-9DAC-5F2D28CC839C</string>
 	</array>
 	<key>NSPrincipalClass</key>
-	<string>XCFixin_HideDistractions</string>
+	<string>XCFixin_HideDistractions$(XCODE_VERSION_MINOR)</string>
 	<key>XC4Compatible</key>
 	<true/>
 	<key>XCGCReady</key>

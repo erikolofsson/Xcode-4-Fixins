@@ -28,7 +28,7 @@
 		<string>DF11C142-1584-4A99-87AC-1925D5F5652A</string>
 	</array>
 	<key>NSPrincipalClass</key>
-	<string>XCFixin_Highlight</string>
+	<string>XCFixin_Highlight$(XCODE_VERSION_MINOR)</string>
 	<key>XC4Compatible</key>
 	<true/>
 	<key>XCGCReady</key>

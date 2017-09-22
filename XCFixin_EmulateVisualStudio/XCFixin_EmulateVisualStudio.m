@@ -300,7 +300,7 @@ bool replaceFieldHasFocusInBatchNavigator(IDEBatchFindNavigator* _pNavigator)
 
 static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFlags, NSEvent *event)
 {
-	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSControlKeyMask)
+	if ((ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption | NSEventModifierFlagShift)) == NSEventModifierFlagControl)
 	{
 		// Control
 		
@@ -403,7 +403,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 		)
 		return false;
 	
-	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == 0)
+	if ((ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption | NSEventModifierFlagShift)) == 0)
 	{
 		// Alone key
 		if (keyCode == kVK_Tab)
@@ -481,7 +481,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 #endif
 		}
 	}
-	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSShiftKeyMask)
+	if ((ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption | NSEventModifierFlagShift)) == NSEventModifierFlagShift)
 	{
 		// Shift key
 		if (keyCode == kVK_Tab )
@@ -519,7 +519,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 			}
 		}
 	}
-	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSControlKeyMask)
+	if ((ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption | NSEventModifierFlagShift)) == NSEventModifierFlagControl)
 	{
 		// Control
 		
@@ -703,7 +703,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 #endif
 		}
 	}
-	if ((ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == (NSControlKeyMask | NSShiftKeyMask))
+	if ((ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption | NSEventModifierFlagShift)) == (NSEventModifierFlagControl | NSEventModifierFlagShift))
 	{
 		// Control + shift
 		if (keyCode == kVK_ANSI_N)
@@ -757,7 +757,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 								   name: NSPopoverWillCloseNotification
 								 object: nil];
 		
-		eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask handler:^NSEvent *(NSEvent *event) 
+		eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown handler:^NSEvent *(NSEvent *event)
 		{
 			unsigned short keyCode = [event keyCode];
 			//XCFixinLog(@"%d %@ %@\n", keyCode, [event characters], [event charactersIgnoringModifiers]);
@@ -770,7 +770,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				if (handleFieldEditorEvent(keyCode, ModifierFlags, event))
 					return nil;
 
-				if ((keyCode == kVK_ANSI_G) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask)) == NSCommandKeyMask) 
+				if ((keyCode == kVK_ANSI_G) && (ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption | NSEventModifierFlagShift)) == NSEventModifierFlagCommand)
 				{
 					// Run
 					
@@ -832,11 +832,11 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 				}
 				else if 
 					(
-						((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == NSCommandKeyMask)
-						|| ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == (NSCommandKeyMask | NSControlKeyMask))
+					 ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption)) == NSEventModifierFlagCommand)
+					 || ((keyCode == kVK_ANSI_N) && (ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption)) == (NSEventModifierFlagCommand | NSEventModifierFlagControl))
 					)
 				{
-					bool bExpandNext = (ModifierFlags & (NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask)) == (NSCommandKeyMask | NSControlKeyMask);
+					bool bExpandNext = (ModifierFlags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption)) == (NSEventModifierFlagCommand | NSEventModifierFlagControl);
 					bool bIsValid = m_pActiveView && [m_pActiveView isValid];
 					if (g_pLastConsoleTextView)
 						g_pLastConsoleTextView = getConsoleTextView([g_pLastConsoleTextView window]);
@@ -853,7 +853,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 						if (g_pLastConsoleTextView)
 						{
 							bHandled = true;
-							navigateToLineInConsoleTextView(g_pLastConsoleTextView, true, ModifierFlags & NSShiftKeyMask);
+							navigateToLineInConsoleTextView(g_pLastConsoleTextView, true, ModifierFlags & NSEventModifierFlagShift);
 						}
 					}
 					else if (bIsValid)
@@ -868,7 +868,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 							if ([pSelected count] > 0)
 								pLastSelected = (IDEKeyDrivenNavigableItem*)pSelected[0];
 								
-							if (ModifierFlags & NSShiftKeyMask)
+							if (ModifierFlags & NSEventModifierFlagShift)
 								[m_pActiveView doCommandBySelector:@selector(moveUp:)];
 							else
 								[m_pActiveView doCommandBySelector:@selector(moveDown:)];
@@ -885,7 +885,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 								{
 									if ([pRootItems count])
 									{
-										if (ModifierFlags & NSShiftKeyMask)
+										if (ModifierFlags & NSEventModifierFlagShift)
 										{
 											IDEKeyDrivenNavigableItem *pObject = [pRootItems lastObject];
 											IDEKeyDrivenNavigableItem *pLastObject = pObject;
@@ -938,7 +938,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 						{
 							unsigned short KeyCode = 0;
 							NSString* pCharacters;
-							if (ModifierFlags & NSShiftKeyMask)
+							if (ModifierFlags & NSEventModifierFlagShift)
 							{
 								if (bExpandNext)
 									return nil; // Does not work
@@ -951,7 +951,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 								pCharacters = @"";
 							}
 							NSEvent* pEvent = [
-								NSEvent keyEventWithType:NSKeyDown 
+								NSEvent keyEventWithType:NSEventTypeKeyDown
 								location:[pWindow mouseLocationOutsideOfEventStream] 
 								modifierFlags:0xa00100
 								timestamp:0.0
@@ -1001,7 +1001,7 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 										{
 											if (bLooped)
 												break;
-											if (ModifierFlags & NSShiftKeyMask)
+											if (ModifierFlags & NSEventModifierFlagShift)
 											{
 												IDEIssueNavigableItem *pObject = [pRootItems lastObject];
 												IDEIssueNavigableItem *pLastObject = pObject;
@@ -1120,6 +1120,7 @@ static NSView* findSubViewWithClassName(NSView* _pView, char const* _pClassName,
 	return NULL;
 }
 
+#if 0
 static NSView* findSubViewWithController(NSView* _pView, Class ClassToFind)
 {
 	NSViewController* pViewController = (NSViewController*)[_pView firstAvailableResponderOfClass:ClassToFind];
@@ -1134,6 +1135,7 @@ static NSView* findSubViewWithController(NSView* _pView, Class ClassToFind)
 	}
 	return NULL;
 }
+#endif
 
 static NSView* findParentViewWithClassName(NSView* _pView, char const* _pClassName, bool _bTrace)
 {
@@ -1152,6 +1154,7 @@ static NSView* findParentViewWithClassName(NSView* _pView, char const* _pClassNa
 	return NULL;
 }
 
+#if 0
 static NSView* findParentViewWithController(NSView* _pView, Class ClassToFind)
 {
 	NSViewController* pViewController = (NSViewController*)[_pView firstAvailableResponderOfClass:ClassToFind];
@@ -1166,6 +1169,7 @@ static NSView* findParentViewWithController(NSView* _pView, Class ClassToFind)
 	}
 	return NULL;
 }
+#endif
 
 IDENavigatorOutlineView* m_pActiveView = nil;
 #if BatchFindEnable
@@ -1580,13 +1584,13 @@ static BOOL menuItemWithKeyEquivalentMatchingEventRef_Shared(struct _NSCarbonMen
 			
 			NSUInteger nsModifiers = 0;
 			if (Modifiers & cmdKey)
-				nsModifiers |= NSCommandKeyMask;
+				nsModifiers |= NSEventModifierFlagCommand;
 			if (Modifiers & controlKey)
-				nsModifiers |= NSControlKeyMask;
+				nsModifiers |= NSEventModifierFlagControl;
 			if (Modifiers & optionKey)
-				nsModifiers |= NSAlternateKeyMask;
+				nsModifiers |= NSEventModifierFlagOption;
 			if (Modifiers & shiftKey)
-				nsModifiers |= NSShiftKeyMask;
+				nsModifiers |= NSEventModifierFlagShift;
 			
 			if (handleFieldEditorEvent(KeyCode, nsModifiers, nil))
 			{
@@ -2059,14 +2063,14 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 				if (codeStartRange.location == NSNotFound)
 					break;
 				
-				int start;
+				unsigned long start;
 				
 				if (selectedRange.location == lineRange.location || selectedRange.location > lineRange.location + codeStartRange.location)
 					start = lineRange.location + codeStartRange.location;
 				else
 					start = lineRange.location;
 				
-				int end;
+				unsigned long end;
 				if (bSelectionModified)
 				{
 					if (originalSelectedRange.location == selectedRange.location)
@@ -2086,7 +2090,7 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 			
 				if (start > end)
 				{
-					int temp = end;
+					unsigned long temp = end;
 					end = start;
 					start = temp;
 				}
@@ -2204,8 +2208,15 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	original_displayIfNeeded = XCFixinOverrideMethodString(@"NSWindow", @selector(displayIfNeeded), (IMP)&displayIfNeeded);
 	XCFixinAssertOrPerform(original_displayIfNeeded, goto failed);
 
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+
 	original_NSScrollingBehaviorLegacy_scrollView = XCFixinOverrideMethodString(@"NSScrollingBehaviorLegacy", @selector(scrollView: scrollWheelWithEvent:), (IMP)&NSScrollingBehaviorLegacy_scrollView);
 	XCFixinAssertOrPerform(original_NSScrollingBehaviorLegacy_scrollView, goto failed);
+
+#pragma clang diagnostic pop
+
 #endif
 
 	original_recalculateSidebarWidthToFit = XCFixinOverrideMethodString(@"DVTTextSidebarView", @selector(recalculateSidebarWidthToFit), (IMP)&recalculateSidebarWidthToFit);
@@ -2217,8 +2228,11 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 	original_adjustedFileTypeForInputFileAtPath = XCFixinOverrideMethodString(@"XCCompilerSpecification", @selector(adjustedFileTypeForInputFileAtPath:originalFileType:withMacroExpansionScope:), (IMP)&adjustedFileTypeForInputFileAtPath);
 	XCFixinAssertOrPerform(original_adjustedFileTypeForInputFileAtPath, goto failed);
 	
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
 	original_compileSourceCodeFileAtPath = XCFixinOverrideMethodString(@"PBXCompilerSpecificationGcc2_95_2", @selector(compileSourceCodeFileAtPath: ofType: toOutputDirectory: withMacroExpansionScope:), (IMP)&compileSourceCodeFileAtPath);
 	XCFixinAssertOrPerform(original_compileSourceCodeFileAtPath, goto failed);
+#pragma clang diagnostic pop
 
 	original_filteredBuildFileReferencesWithMacroExpansionScope = XCFixinOverrideMethodString(@"XCBuildPhaseDGSnapshot", @selector(filteredBuildFileReferencesWithMacroExpansionScope:), (IMP)&filteredBuildFileReferencesWithMacroExpansionScope);
 	XCFixinAssertOrPerform(original_filteredBuildFileReferencesWithMacroExpansionScope, goto failed);
@@ -2757,9 +2771,9 @@ NSWindow* m_MainWindow = nil;
 	NSRect frame = NSMakeRect(0, 0, Width, 110);
 	
 	NSPanel* window  = [[NSPanel alloc] initWithContentRect:frame
-						styleMask:NSClosableWindowMask | NSTitledWindowMask
-						backing:NSBackingStoreBuffered
-						defer:NO];
+												  styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskTitled
+													backing:NSBackingStoreBuffered
+													  defer:NO];
 	
 	m_OptionsWindow = window;
 	m_MainWindow = [NSApp keyWindow];
@@ -2794,15 +2808,19 @@ NSWindow* m_MainWindow = nil;
 	[closeButton setButtonType: NSPushOnPushOffButton];
 	[closeButton setBezelStyle: NSRoundedBezelStyle];
 	[[window contentView] addSubview:closeButton];
-	
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 	[NSApp beginSheet:window
    modalForWindow:m_MainWindow
     modalDelegate:self
    didEndSelector:@selector(optionsDidEndSheet: returnCode: contextInfo:)
       contextInfo:nil];
-	
+
 	[NSApp runModalForWindow: window];
 	
+#pragma clang diagnostic pop
 }
 
 - (void) addItemToApplicationMenu
@@ -2825,7 +2843,7 @@ NSWindow* m_MainWindow = nil;
 			[newItem setAction:@selector( changeOptions: )];
 			[newItem setEnabled:YES];
 			[newItem setKeyEquivalent:@"o"];
-			[newItem setKeyEquivalentModifierMask:NSControlKeyMask];
+			[newItem setKeyEquivalentModifierMask:NSEventModifierFlagControl];
 
 			[editorMenu insertItem:newItem atIndex:[editorMenu numberOfItems]];
 		}

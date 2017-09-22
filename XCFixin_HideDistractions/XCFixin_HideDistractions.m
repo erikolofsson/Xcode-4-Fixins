@@ -9,7 +9,7 @@ static NSMenu 	 * 								 viewMenu = nil;
 static NSString * const kDisableAnimationsClassName = @"XCFixin_DisableAnimations" VALUE(XCODE_VERSION_MINOR),
 					 * const        kHideDistractionsKey = @"D";
 
-static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKeyMask);
+static NSUInteger kHideDistractionsKeyModifiers 	= (NSEventModifierFlagCommand | NSEventModifierFlagShift);
 
 
 @interface 		 XCFixinXcodeVersioned(XCFixin_HideDistractions) : NSObject

@@ -8,9 +8,10 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-@class IDECustomUpgradeTask;
 
-@protocol IDEUpgradeableItem
-- (void)enumerateUpgradeTasksWithBlock:(void (^)(IDECustomUpgradeTask *))arg1;
+@class IDEFindNavigatorLayoutView;
+
+@protocol IDEFindNavigatorLayoutViewDelegate <NSObject>
+- (void)findNavigatorLayoutViewDidLayout:(IDEFindNavigatorLayoutView *)arg1;
 @end
 

@@ -8,9 +8,15 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-@class IDECustomUpgradeTask;
+#include "Shared.h"
 
-@protocol IDEUpgradeableItem
-- (void)enumerateUpgradeTasksWithBlock:(void (^)(IDECustomUpgradeTask *))arg1;
+#import "IDEBatchFindAbstractResult.h"
+
+@interface IDEBatchFindRootResult : IDEBatchFindAbstractResult
+{
+}
+
+- (id)initWithChildOrderingSelector:(SEL)arg1;
+
 @end
 

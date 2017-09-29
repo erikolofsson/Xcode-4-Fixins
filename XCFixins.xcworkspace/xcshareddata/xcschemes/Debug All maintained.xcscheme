@@ -29,37 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_DisableAnimations-0900.xcplugin"
-               BlueprintName = "XCFixin_DisableAnimations"
-               ReferencedContainer = "container:XCFixin_DisableAnimations/XCFixin_DisableAnimations.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
                BuildableName = "XCFixin_HideDistractions-0900.xcplugin"
                BlueprintName = "XCFixin_HideDistractions"
                ReferencedContainer = "container:XCFixin_HideDistractions/XCFixin_HideDistractions.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_InhibitTabNextPlaceholder-0900.xcplugin"
-               BlueprintName = "XCFixin_InhibitTabNextPlaceholder"
-               ReferencedContainer = "container:XCFixin_InhibitTabNextPlaceholder/XCFixin_InhibitTabNextPlaceholder.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -90,20 +62,6 @@
                ReferencedContainer = "container:XCFixin_P4Checkout/XCFixin_P4Checkout.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_Highlight-0900.xcplugin"
-               BlueprintName = "XCFixin_Highlight"
-               ReferencedContainer = "container:XCFixin_Highlight/XCFixin_Highlight.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -118,9 +76,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-            BuildableName = "XCFixin_CurrentLineHighlighter.xcplugin"
-            BlueprintName = "XCFixin_CurrentLineHighlighter"
-            ReferencedContainer = "container:XCFixin_CurrentLineHighlighter/XCFixin_CurrentLineHighlighter.xcodeproj">
+            BuildableName = "XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin"
+            BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
+            ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>

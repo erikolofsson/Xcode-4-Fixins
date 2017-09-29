@@ -11,6 +11,9 @@
       location = "group:XCFixin_HideDistractions/XCFixin_HideDistractions.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:XCFixin_P4Checkout/XCFixin_P4Checkout.xcodeproj">
    </FileRef>
 </Workspace>

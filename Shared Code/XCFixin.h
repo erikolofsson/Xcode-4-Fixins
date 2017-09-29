@@ -69,6 +69,10 @@
 #define XCFixinXcodeVersionedHelper(_Name, _Version) XCFixinXcodeVersionedHelper2(_Name, _Version)
 #define XCFixinXcodeVersioned(_Name) XCFixinXcodeVersionedHelper(_Name, XCODE_VERSION_MINOR)
 
+@class NSView;
+
+void XCFixinTraceViewHierarchy(NSView *_pView, int _Depth);
+void XCFixinDumpClass(Class theClass);
 BOOL XCFixinShouldLoad(BOOL _LoadInXcodeBuild);
 extern const NSUInteger XCFixinMaxLoadAttempts;
 
@@ -80,9 +84,5 @@ extern const NSUInteger XCFixinMaxLoadAttempts;
 IMP XCFixinOverrideMethod(Class class0, SEL selector, IMP newImplementation);
 #define XCFixinOverrideMethodString(className, selector, newImplementation) XCFixinOverrideMethod(NSClassFromString(className), selector, newImplementation)
 
-@class NSTextView;
-NSTextView *XCFixinFindIDETextView(BOOL log);
 IMP XCFixinOverrideStaticMethod(Class class0, SEL selector, IMP newImplementation);
 #define XCFixinOverrideStaticMethodString(className, selector, newImplementation) XCFixinOverrideStaticMethod(NSClassFromString(className), selector, newImplementation)
-@class NSLayoutManager;
-void XCFixinUpdateTempAttributes(NSLayoutManager *layoutManager, NSRange range);

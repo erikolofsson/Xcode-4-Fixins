@@ -8,9 +8,16 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-@class IDECustomUpgradeTask;
+#include "Shared.h"
 
-@protocol IDEUpgradeableItem
-- (void)enumerateUpgradeTasksWithBlock:(void (^)(IDECustomUpgradeTask *))arg1;
+@interface DVTScopeBarButton : NSButton
+{
+}
+
++ (Class)cellClass;
+- (void)_dvt_scopeBarButtonCommonInit;
+- (id)initWithFrame:(struct CGRect)arg1;
+- (id)initWithCoder:(id)arg1;
+
 @end
 

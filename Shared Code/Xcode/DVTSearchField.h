@@ -10,8 +10,6 @@
 
 #include "Shared.h"
 
-#import "NSSearchField.h"
-
 @class DVTSearchFieldCell, NSButtonCell, NSMutableArray, NSNumber, NSProgressIndicator;
 
 @interface DVTSearchField : NSSearchField

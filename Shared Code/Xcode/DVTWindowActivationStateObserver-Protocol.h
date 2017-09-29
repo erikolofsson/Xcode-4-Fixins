@@ -8,9 +8,10 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-@class IDECustomUpgradeTask;
 
-@protocol IDEUpgradeableItem
-- (void)enumerateUpgradeTasksWithBlock:(void (^)(IDECustomUpgradeTask *))arg1;
+@class NSWindow;
+
+@protocol DVTWindowActivationStateObserver <NSObject>
+- (void)window:(NSWindow *)arg1 didChangeActivationState:(long long)arg2;
 @end
 

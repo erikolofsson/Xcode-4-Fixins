@@ -90,48 +90,6 @@ IMP XCFixinOverrideMethod(Class class0, SEL selector, IMP newImplementation)
     return result;
 }
 
-NSTextView *XCFixinFindIDETextView(BOOL log)
-{
-  NSWindow *mainWindow=[[NSApplication sharedApplication] mainWindow];
-  if(!mainWindow)
-  {
-    if(log)
-      NSLog(@"Can't find IDE text view - no main window.\n");
-    
-    return nil;
-  }
-  
-  Class DVTCompletingTextView=objc_getClass("DVTCompletingTextView");
-  if(!DVTCompletingTextView)
-  {
-    if(log)
-      NSLog(@"Can't find IDE text view - DVTCompletingTextView class unavailable.\n");
-    
-    return nil;
-  }
-  
-  id textView=nil;
-  
-  for(NSResponder *responder=[mainWindow firstResponder];responder;responder=[responder nextResponder])
-  {
-    if([responder isKindOfClass:DVTCompletingTextView])
-    {
-      textView=responder;
-      break;
-    }
-  }
-  
-  if(!textView)
-  {
-    if(log)
-      NSLog(@"Can't find IDE text view - no DVTCompletingTextView in the responder chain.\n");
-    
-    return nil;
-  }
-  
-  return textView;
-}
-
 IMP XCFixinOverrideStaticMethod(Class class0, SEL selector, IMP newImplementation)
 {
   IMP result = nil;
@@ -154,83 +112,303 @@ cleanup:
     return result;
 }
 
-/*static CGFloat XCFixinAddColor(CGFloat color0, CGFloat color1)
+static void DumpIvars(Class clz)
 {
-  CGFloat color = color0 + color1;
-  if (color > 1.0)
-    color = 1.0;
-  
-  return color;
-}*/
-
-void XCFixinUpdateTempAttributes(NSLayoutManager* layoutManager, NSRange range)
-{
-  NSUInteger iLocation = range.location;
-  NSUInteger iEndLocation = range.location + range.length;
-  
-  Class nsStringClass = [NSString class];
-  NSString *pBestKey = nil;
-  
-  while (iLocation < iEndLocation)
-  {
-    NSColor* newColor = nil;
-    NSRange effectiveRange;
-    NSRange expectedRange;
-    expectedRange.location = iLocation;
-    expectedRange.length = iEndLocation - iLocation;
-    NSDictionary *pCurrentAttributes = [layoutManager temporaryAttributesAtCharacterIndex:iLocation longestEffectiveRange:&effectiveRange inRange:expectedRange];
-    NSEnumerator *keyEnumerator = [pCurrentAttributes keyEnumerator];
-    for (id key = [keyEnumerator nextObject]; key != nil; key = [keyEnumerator nextObject])
+    unsigned int count;
+    Ivar* ivars=class_copyIvarList(clz, &count);
+    for(int i=0; i<count; i++)
     {
-      if ([key isKindOfClass: nsStringClass])
-      {
-        if ([((NSString *)key) hasPrefix:@"XCFixinTempAttribute"])
-        {
-          NSColor *pColor = [pCurrentAttributes objectForKey:key];
-          if (newColor == nil || [((NSString *)key) compare:pBestKey] > 0)
-          {
-            pBestKey = ((NSString *)key);
-            newColor = pColor;
-          }
-          /*
-          else
-          {
-            
-            CGFloat Red;
-            CGFloat Green;
-            CGFloat Blue;
-            CGFloat Alpha;
-            [newColor getRed:&Red green:&Green blue:&Blue alpha:&Alpha];
+        Ivar ivar= ivars[i];
+        printf("\t%s %s\n", ivar_getTypeEncoding(ivar), ivar_getName(ivar));
 
-            CGFloat NewRed;
-            CGFloat NewGreen;
-            CGFloat NewBlue;
-            CGFloat NewAlpha;
-            [pColor getRed:&NewRed green:&NewGreen blue:&NewBlue alpha:&NewAlpha];
-             
-            Red = XCFixinAddColor(Red * Alpha, NewRed * NewAlpha);
-            Green = XCFixinAddColor(Green * Alpha, NewGreen * NewAlpha);
-            Blue = XCFixinAddColor(Blue * Alpha, NewBlue * NewAlpha);
-            Alpha = XCFixinAddColor(Alpha, NewAlpha);
-            
-            
-            newColor = [NSColor colorWithCalibratedRed:Red green:Green blue:Blue alpha:Alpha];
-            //newColor = [newColor blendedColorWithFraction:Alpha*NewAlpha ofColor:pColor];
-          }*/
-        }
-      }
     }
-    
-    if (newColor != nil)
-      [layoutManager addTemporaryAttribute: NSBackgroundColorAttributeName value: newColor forCharacterRange: effectiveRange];
-    else
-      [layoutManager removeTemporaryAttribute: NSBackgroundColorAttributeName forCharacterRange: effectiveRange];
-    
-    iLocation = effectiveRange.location + effectiveRange.length;
-  }
-
-  dispatch_async(dispatch_get_main_queue(),  ^(void){
-    [layoutManager invalidateDisplayForCharacterRange: range];
-  });
+    free(ivars);
 }
 
+static NSArray *ParseTypeString (NSString *rawTypeString);
+
+static NSString *ReadableTypeString (NSString *typestring) {
+    NSArray *chunks = ParseTypeString (typestring);
+    NSString *result = [chunks componentsJoinedByString: @", "];
+    return result;
+} // ReadableTypeString
+
+static void DumpObjcMethods(Class clz, bool isInstance)
+{
+    unsigned int methodCount = 0;
+    Method *methods = class_copyMethodList(clz, &methodCount);
+
+    printf("Found %d methods on '%s'\n", methodCount, class_getName(clz));
+
+    if (isInstance)
+    DumpIvars(clz);
+    for (unsigned int i = 0; i < methodCount; i++)
+    {
+        Method method = methods[i];
+
+        char buffer[100];
+
+        buffer[0] = '\0';
+        method_getReturnType (method, buffer, sizeof(buffer));
+        NSString *returnTypeString = ReadableTypeString (@(buffer));
+
+        unsigned int argumentCount = method_getNumberOfArguments (method);
+        NSMutableArray *arguments = [NSMutableArray arrayWithCapacity: argumentCount];
+        // Skip over self and selector.
+        for (int i = 2; i < argumentCount; i++) {
+            method_getArgumentType (method, i, buffer, sizeof(buffer));
+            [arguments addObject: ReadableTypeString (@(buffer))];
+        }
+
+        NSString *argumentString = @"nothing";
+        if (arguments.count > 0) {
+            argumentString = [arguments componentsJoinedByString: @", "];
+        }
+
+        printf("\t'%s' has method named '%s (%s) %s' with args '%s' of encoding '%s'\n",
+               class_getName(clz),
+               (isInstance) ? "-" : "+",
+               returnTypeString.UTF8String,
+               sel_getName(method_getName(method)),
+               argumentString.UTF8String,
+               method_getTypeEncoding(method)
+               )
+        ;
+    }
+
+    free(methods);
+}
+
+static NSString *getClassHierarchyNames(Class theClass)
+{
+    NSString *pClasses = @"";
+    Class pClass = theClass;
+    while (pClass)
+    {
+        pClasses = [NSString stringWithFormat: @"%@ %s", pClasses, object_getClassName(pClass)];
+        pClass = class_getSuperclass(pClass);
+    }
+    return pClasses;
+}
+
+void XCFixinTraceViewHierarchy(NSView* _pView, int _Depth)
+{
+  if (_Depth >= 0)
+      NSLog(@"%@%@", [@"" stringByPaddingToLength:_Depth*3 withString: @" " startingAtIndex:0], getClassHierarchyNames([_pView class]));
+
+  for (NSView * pView in [_pView subviews])
+      XCFixinTraceViewHierarchy(pView, _Depth + 1);
+}
+
+void XCFixinDumpClass(Class theClass)
+{
+    char const *pClassName = class_getName(theClass);
+    if (strstr(pClassName, "NS") == pClassName)
+    {
+        printf("%s\n", class_getName(theClass));
+    }
+    else
+    {
+        DumpObjcMethods(theClass, true);
+        DumpObjcMethods(object_getClass(theClass), false);
+    }
+    Class pClass = class_getSuperclass(theClass);
+    if (pClass)
+        XCFixinDumpClass(pClass);
+}
+
+
+// From https://gist.github.com/markd2/5961219
+
+static NSString *StructEncoding (char **typeScan);
+
+// Remove all numbers from the string.  Some type encoding strings include
+// offsets and/or sizes, and they're often wrong.  yay?
+
+static NSString *ScrubNumbers (NSString *string) {
+    NSCharacterSet *numbers = [NSCharacterSet decimalDigitCharacterSet];
+    NSString *numberFree = [[string componentsSeparatedByCharactersInSet: numbers]
+                               componentsJoinedByString: @""];
+    return numberFree;
+
+} // ScrubNumbers
+
+
+// Convert simple types.
+// |typeScan| is scooted over to account for any consumed characters
+static NSString *SimpleEncoding (char **typeScan) {
+    typedef struct TypeMap {
+        unichar discriminator;
+        char *name;
+    } TypeMap;
+
+    static TypeMap s_typeMap[] = {
+        { 'c', "char" },
+        { 'i', "int" },
+        { 's', "short" },
+        { 'l', "long" },
+        { 'q', "longlong" },
+        { 'C', "unsigned char" },
+        { 'I', "unsigned int" },
+        { 'S', "unsigned short" },
+        { 'L', "unsiged long" },
+        { 'Q', "unsigned long long" },
+        { 'f', "float" },
+        { 'd', "double" },
+        { 'B', "bool" },
+        { 'v', "void" },
+        { '*', "char*" },
+        { '#', "class" },
+        { ':', "selector" },
+        { '?', "unknown" },
+    };
+
+    NSString *result = nil;
+
+    TypeMap *scan = s_typeMap;
+    TypeMap *stop = scan + sizeof(s_typeMap) / sizeof(*s_typeMap);
+
+    while (scan < stop) {
+        if (scan->discriminator == **typeScan) {
+            result = @( scan->name );
+            (*typeScan)++;
+            break;
+        }
+        scan++;
+    }
+
+    return result;
+
+} // SimpleEncoding
+
+
+// Process object/id/block types.  Some type strings include the class name in "quotes"
+// |typeScan| is scooted over to account for any consumed characters.
+static NSString *ObjectEncoding (char **typeScan) {
+    assert (**typeScan == '@');
+    (*typeScan)++; // eat the '@'
+
+    NSString *result = @"id";
+
+    if (**typeScan == '"') {
+        (*typeScan)++; // eat the double-quote
+        char *closeQuote = *typeScan;
+        while (*closeQuote && *closeQuote != '"') {
+            closeQuote++;
+        }
+        *closeQuote = '\000';
+        result = [NSString stringWithUTF8String: *typeScan];
+        *closeQuote = '\"';
+        *typeScan = closeQuote;
+
+    } else if (**typeScan == '?') {
+        result = @"block";
+        (*typeScan)++;
+    }
+
+    return result;
+
+} // ObjectEncoding
+
+
+// Process pointer types.  Recursive since pointers are people too.
+// |typeScan| is scooted over to account for any consumed characters
+static NSString *PointerEncoding (char **typeScan) {
+    assert (**typeScan == '^');
+    (*typeScan)++; // eat the '^'
+
+    NSString *result = @"";
+
+    if (**typeScan == '^') {
+        result = PointerEncoding (typeScan);
+
+    } else if (**typeScan == '{') {
+        result = StructEncoding (typeScan);
+    } else {
+        result = SimpleEncoding (typeScan);
+    }
+
+    result = [result stringByAppendingString: @"*"];
+    return result;
+
+} // PointerEncoding
+
+
+// Process structure types.  Pull out the name of the first structure encountered
+// and not worry about any embedded structures.
+// |typeScan| is scooted over to account for any consumed characters
+static NSString *StructEncoding (char **typeScan) {
+    assert (**typeScan == '{');
+    (*typeScan)++; // eat the '{'
+
+    NSString *result = @"";
+
+    // find the equal sign after the struct name
+    char *equalSign = *typeScan;
+    while (*equalSign && *equalSign != '=') {
+        equalSign++;
+    }
+    *equalSign = '\000';
+    result = [NSString stringWithUTF8String: *typeScan];
+    *equalSign = '=';
+
+
+    // Eat the rest of the potentially nested structures.
+    int openCount = 1;
+    while (**typeScan && openCount) {
+        if (**typeScan == '{') openCount++;
+        if (**typeScan == '}') openCount--;
+        (*typeScan)++;
+    }
+
+    return result;
+
+} // StructEncoding
+
+
+// Given an Objective-C type encoding string, return an array of human-readable
+// strings that describe each of the types.
+static NSArray *ParseTypeString (NSString *rawTypeString) {
+    NSString *typeString = ScrubNumbers (rawTypeString);
+    char *base = strdup ([typeString UTF8String]);
+    char *scan = base;
+
+    NSMutableArray *chunks = [NSMutableArray array];
+
+    while (*scan) {
+        NSString *stuff = SimpleEncoding (&scan);
+
+        if (stuff) {
+            [chunks addObject: stuff];
+            continue;
+        }
+
+        if (*scan == '@') {
+            stuff = ObjectEncoding (&scan);
+            [chunks addObject: stuff];
+            continue;
+        }
+
+        if (*scan == '^') {
+            stuff = PointerEncoding (&scan);
+            if (stuff)
+                [chunks addObject: stuff];
+            continue;
+        }
+
+        if (*scan == '{') {
+            stuff = StructEncoding (&scan);
+            [chunks addObject: stuff];
+            continue;
+        }
+
+        // If we hit this, more work needs to be done.
+        stuff = [NSString stringWithFormat: @"(that was unexpected: %c)", *scan];
+        scan++;
+    }
+
+    free (base);
+
+    return chunks;
+
+} // ParseTypeString

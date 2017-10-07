@@ -847,10 +847,10 @@ static bool handleFieldEditorEvent(unsigned short keyCode, NSUInteger ModifierFl
 							break;
 						}
 
-						if (window.activeIssueNavigator && bDoNavigation)
-						{
-							IDEIssue *pIssue = (IDEIssue *)pLastSelected.representedObject;
+						IDEIssue *pIssue = (IDEIssue *)pLastSelected.representedObject;
 
+						if (window.activeIssueNavigator && bDoNavigation && pIssue.primaryDocumentLocation)
+						{
 							NSResponder *pFirst = [[window.activeNavigatorOutlineView window] firstResponder];
 
 							if (!pFirst || [[pFirst className] compare:@"_IDEDiagnosticFixItTableView"] != NSOrderedSame)

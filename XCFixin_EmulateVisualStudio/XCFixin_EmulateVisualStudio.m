@@ -3,86 +3,12 @@
 #import <objc/runtime.h>
 #include "../Shared Code/XCFixin.h"
 
-#import "../Shared Code/Xcode/DVTDocumentLocation.h"
-#import "../Shared Code/Xcode/DVTTextDocumentLocation.h"
-#import "../Shared Code/Xcode/DVTFindPatternFieldEditor.h"
-#import "../Shared Code/Xcode/DVTFindBarOptionsCtrl.h"
-#import "../Shared Code/Xcode/DVTAnnotationManager.h"
-#import "../Shared Code/Xcode/DVTAnnotationProvider.h"
-#import "../Shared Code/Xcode/DBGBreakpointAnnotationProvider.h"
-#import "../Shared Code/Xcode/DVTAnnotation.h"
-#import "../Shared Code/Xcode/DBGBreakpointAnnotation.h"
-#import "../Shared Code/Xcode/DVTTextStorage.h"
-#import "../Shared Code/Xcode/DVTAnnotationManager.h"
-#import "../Shared Code/Xcode/DVTFilePath.h"
-#import "../Shared Code/Xcode/DVTTextSidebarView.h"
-#import "../Shared Code/Xcode/DVTMacroExpansionScope.h"
-#import "../Shared Code/Xcode/DVTMacroExpansionStringList_NonLiteral.h"
-#import "../Shared Code/Xcode/DVTMacroDefinitionTable.h"
+#import "XCFixin_EmulateVisualStudio_0900-Swift.h"
 
-#import "../Shared Code/Xcode/IDENavigatorOutlineView.h"
-#import "../Shared Code/Xcode/IDEIssueNavigator.h"
-#import "../Shared Code/Xcode/IDEIssueNavigableItem.h"
-#import "../Shared Code/Xcode/IDEConsoleTextView.h"
-#import "../Shared Code/Xcode/IDEEditorCoordinator.h"
-#import "../Shared Code/Xcode/IDEEditorOpenSpecifier.h"
-#import "../Shared Code/Xcode/IDEWorkspaceWindow.h"
-#import "../Shared Code/Xcode/IDEWorkspaceWindowController.h"
-#import "../Shared Code/Xcode/IDEWorkspaceTabController.h"
-#import "../Shared Code/Xcode/IDEWorkspaceDocument.h"
-#import "../Shared Code/Xcode/IDEWorkspace.h"
-#import "../Shared Code/Xcode/IDERunContextManager.h"
-#import "../Shared Code/Xcode/IDEScheme.h"
-#import "../Shared Code/Xcode/IDELaunchSchemeAction.h"
-#import "../Shared Code/Xcode/IDECommandLineArgumentEntry.h"
-#import "../Shared Code/Xcode/IDEBreakpoint.h"
-#import "../Shared Code/Xcode/IDEBreakpointManager.h"
-#import "../Shared Code/Xcode/IDEStructureNavigator.h"
-#import "../Shared Code/Xcode/IDEContainer.h"
-#import "../Shared Code/Xcode/Xcode3Project.h"
-#import "../Shared Code/Xcode/IDEContainerReloadingDelegate-Protocol.h"
-#import "../Shared Code/Xcode/IDEDocumentController.h"
-#import "../Shared Code/Xcode/IDEExecutionEnvironment.h"
-#import "../Shared Code/Xcode/IDEBuildOperationQueueSet.h"
-#import "../Shared Code/Xcode/IDETabbedWindow.h"
-#import "../Shared Code/Xcode/IDENavigatorArea.h"
-#import "../Shared Code/Xcode/IDEFindNavigator.h"
-#import "../Shared Code/Xcode/IDEFindNavigatorOutlineView.h"
-#import "../Shared Code/Xcode/IDEFindNavigatorQueryResultsController.h"
-#import "../Shared Code/Xcode/IDEBatchFindAbstractResult.h"
-#import "../Shared Code/Xcode/IDEBatchFindCallHierarchyResult.h"
-#import "../Shared Code/Xcode/IDEBatchFindAbstractMatchResult.h"
-#import "../Shared Code/Xcode/IDEBatchFindRootResult.h"
-#import "../Shared Code/Xcode/IDEBatchFindFileResult.h"
-#import "../Shared Code/Xcode/IDEEditorArea.h"
-#import "../Shared Code/Xcode/IDEEditorContext.h"
-#import "../Shared Code/Xcode/IDEEditor.h"
-#import "../Shared Code/Xcode/IDEIssue.h"
-#import "../Shared Code/Xcode/IDEFindNavigatorQueryParametersController.h"
-#import "../Shared Code/Xcode/IDEProgressSearchField.h"
-#import "../Shared Code/Xcode/_IDEProgressSearchFieldCell.h"
-#import "../Shared Code/Xcode/IDEFindNavigatorPathControl.h"
-#import "../Shared Code/Xcode/IDEFindNavigatorScopeChooserController.h"
-#import "../Shared Code/Xcode/DVTScopeBarButton.h"
-#import "../Shared Code/Xcode/IDEBatchFindNamedScope.h"
+#import "XCFixin_EmulateVisualStudio.h"
 
+#include <dlfcn.h>
 
-
-
-
-#import "../Shared Code/Xcode/XCCompilerSpecification.h"
-#import "../Shared Code/Xcode/XCBuildPhaseDGSnapshot.h"
-#import "../Shared Code/Xcode/XCMacroExpansionScope.h"
-#import "../Shared Code/Xcode/XCBuildFileRefArrayDGSnapshot.h"
-#import "../Shared Code/Xcode/XCBuildFileRefDGSnapshot.h"
-
-#import "../Shared Code/Xcode/DBGLLDBDebugLocalService.h"
-#import "../Shared Code/Xcode/DBGLLDBLauncher.h"
-
-#import "../Shared Code/Xcode/PBXFileType.h"
-
-
-#import "../Shared Code/Xcode/NSCarbonMenuImpl.h"
 
 #define LLDBFixesEnable false
 
@@ -100,6 +26,13 @@ typedef NSEvent* __nullable (^CNavigationHandler)(NSEvent*);
 static IMP original_IDEFindNavigatorScopeChooserController_viewDidInstall = nil;
 static IMP original_SourceEditor_SourceEditorView_pasteAndPreserveFormatting = nil;
 static IMP original_SourceEditor_SourceEditorView_paste = nil;
+static IMP original_SourceEditor_SourceEditorView_moveWordForward = nil;
+static IMP original_SourceEditor_SourceEditorView_moveWordForwardAndModifySelection = nil;
+static IMP original_SourceEditor_SourceEditorView_moveWordBackward = nil;
+static IMP original_SourceEditor_SourceEditorView_moveWordBackwardAndModifySelection = nil;
+static IMP original_SourceEditor_SourceEditorView_deleteWordForward = nil;
+static IMP original_SourceEditor_SourceEditorView_deleteWordBackward = nil;
+
 
 static IMP original_didSelectTabViewItem = nil;
 static IMP original_mouseDownInConsole = nil;
@@ -345,6 +278,10 @@ static void * EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence = &Em
 - (NSString *)_subtreeDescription;
 
 @end
+
+/*@interface SwiftReflector
+- (void)reflect: (id) object;
+@end*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -636,6 +573,7 @@ static XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio) *singleton = nil;
 #include "XCFixin_EmulateVisualStudio_ProjectReload.h"
 #include "XCFixin_EmulateVisualStudio_Options.h"
 #include "XCFixin_EmulateVisualStudio_PasteNoFormat.h"
+#include "XCFixin_EmulateVisualStudio_MoveWord.h"
 
 Class g_SourceEditorViewClass = nil;
 
@@ -645,6 +583,12 @@ Class g_SourceEditorViewClass = nil;
 
 	original_SourceEditor_SourceEditorView_pasteAndPreserveFormatting = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(pasteAndPreserveFormatting:), (IMP)&SourceEditor_SourceEditorView_pasteAndPreserveFormatting);
 	original_SourceEditor_SourceEditorView_paste = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(paste:), (IMP)&SourceEditor_SourceEditorView_paste);
+	original_SourceEditor_SourceEditorView_moveWordForward = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(moveWordForward:), (IMP)&SourceEditor_SourceEditorView_moveWordForward);
+	original_SourceEditor_SourceEditorView_moveWordForwardAndModifySelection = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(moveWordForwardAndModifySelection:), (IMP)&SourceEditor_SourceEditorView_moveWordForwardAndModifySelection);
+	original_SourceEditor_SourceEditorView_moveWordBackward = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(moveWordBackward:), (IMP)&SourceEditor_SourceEditorView_moveWordBackward);
+	original_SourceEditor_SourceEditorView_moveWordBackwardAndModifySelection = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(moveWordBackwardAndModifySelection:), (IMP)&SourceEditor_SourceEditorView_moveWordBackwardAndModifySelection);
+	original_SourceEditor_SourceEditorView_deleteWordForward = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(deleteWordForward:), (IMP)&SourceEditor_SourceEditorView_deleteWordForward);
+	original_SourceEditor_SourceEditorView_deleteWordBackward = XCFixinOverrideMethodString(@"SourceEditor.SourceEditorView", @selector(deleteWordBackward:), (IMP)&SourceEditor_SourceEditorView_deleteWordBackward);
 }
 
 - (id) init {
@@ -678,7 +622,7 @@ Class g_SourceEditorViewClass = nil;
 								   name: NSWindowDidBecomeKeyNotification
 								 object: nil];
 
-		[notificationCenter addObserver: self
+/*		[notificationCenter addObserver: self
 							   selector: @selector( popoverDidShowNotification: )
 								   name: NSPopoverDidShowNotification
 								 object: nil];
@@ -686,7 +630,7 @@ Class g_SourceEditorViewClass = nil;
 		[notificationCenter addObserver: self
 							   selector: @selector( popoverWillCloseNotification: )
 								   name: NSPopoverWillCloseNotification
-								 object: nil];
+								 object: nil];*/
 
 		eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown handler: [self registerNavigationHandler]];
 	}

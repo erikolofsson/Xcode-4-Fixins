@@ -112,19 +112,6 @@ cleanup:
     return result;
 }
 
-static void DumpIvars(Class clz)
-{
-    unsigned int count;
-    Ivar* ivars=class_copyIvarList(clz, &count);
-    for(int i=0; i<count; i++)
-    {
-        Ivar ivar= ivars[i];
-        printf("\t%s %s\n", ivar_getTypeEncoding(ivar), ivar_getName(ivar));
-
-    }
-    free(ivars);
-}
-
 static NSArray *ParseTypeString (NSString *rawTypeString);
 
 static NSString *ReadableTypeString (NSString *typestring) {
@@ -132,6 +119,24 @@ static NSString *ReadableTypeString (NSString *typestring) {
     NSString *result = [chunks componentsJoinedByString: @", "];
     return result;
 } // ReadableTypeString
+
+static void DumpIvars(Class clz)
+{
+    unsigned int count;
+    Ivar* ivars=class_copyIvarList(clz, &count);
+    ptrdiff_t Last = 0;
+    for(int i=0; i<count; i++)
+    {
+        Ivar ivar= ivars[i];
+        int Size = 0;
+        if (i + 1<count)
+            Size = (int)(ivar_getOffset(ivars[i+1]) - ivar_getOffset(ivar));
+        printf("\t%s %s   Offset %p   Size %d\n", [ReadableTypeString([NSString stringWithUTF8String: ivar_getTypeEncoding(ivar)]) UTF8String], ivar_getName(ivar), (void *)ivar_getOffset(ivar), Size);
+        Last = ivar_getOffset(ivar);
+
+    }
+    free(ivars);
+}
 
 static void DumpObjcMethods(Class clz, bool isInstance)
 {
@@ -412,3 +417,90 @@ static NSArray *ParseTypeString (NSString *rawTypeString) {
     return chunks;
 
 } // ParseTypeString
+
+@implementation NSString(RegularExpression)
+
+- (NSString *)replacingWithPattern:(NSString *)pattern withTemplate:(NSString *)withTemplate error:(NSError **)error {
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:error];
+    return [regex stringByReplacingMatchesInString:self
+                                           options:0
+                                             range:NSMakeRange(0, self.length)
+                                      withTemplate:withTemplate];
+}
+
+@end
+
+NSString *fg_ExtractInType(NSString *_inType) {
+    NSError *error;
+    _inType = [_inType replacingWithPattern: @"(.*)\\(([0-9A-Za-z_]+) in [0-9A-Fa-f_]+\\)(.*)" withTemplate: @"$1$2$3" error:&error];
+    _inType = [_inType replacingWithPattern: @"(.*)\\(([0-9A-Za-z_]+) in [0-9A-Fa-f_]+\\)(.*)" withTemplate: @"$1$2$3" error:&error];
+    _inType = [_inType replacingWithPattern: @"(.*)\\(([0-9A-Za-z_]+) in [0-9A-Fa-f_]+\\)(.*)" withTemplate: @"$1$2$3" error:&error];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"__ObjC." withString: @""];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"__C." withString: @""];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSKVONotifying_." withString: @""];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"Swift." withString: @""];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSColorSpaceColor" withString: @"NSColor"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSCalibratedRGBColor" withString: @"NSColor"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSDeviceRGBColor" withString: @"NSColor"];
+
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSKVONotifying_" withString: @""];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSTimer" withString: @"Timer"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"__NSConcreteUUID" withString: @"NSUUID"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"__NSCFString" withString: @"NSString"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSImmediateActionGestureRecognizer" withString: @"NSGestureRecognizer"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"DVTInvalidation_NSObject" withString: @"NSObject"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"__NSCFType" withString: @"NSString"];
+    _inType = [_inType stringByReplacingOccurrencesOfString: @"NSUndoManager" withString: @"UndoManager"];
+
+    return _inType;
+}
+
+NSString *fg_FixVariableName(NSString *_pName)
+{
+//    _pName = [_pName stringByReplacingOccurrencesOfString: @".storage" withString: @""];
+    return _pName;
+}
+
+BOOL fg_IsBuiltinType(NSString *_pString)
+{
+    if ([_pString hasPrefix: @"NS"])
+        return true;
+    if ([_pString hasPrefix: @"__NS"])
+        return true;
+    if ([_pString hasPrefix: @"DVT"])
+        return true;
+    if ([_pString hasPrefix: @"CountableRange"])
+        return true;
+
+    if
+        (
+             [_pString isEqualToString: @"_StringCore"]
+             || [_pString isEqualToString: @"SwiftObject"]
+             || [_pString isEqualToString: @"CoreGraphics"]
+             || [_pString isEqualToString: @"CALayer"]
+             || [_pString isEqualToString: @"Double"]
+             || [_pString isEqualToString: @"Int"]
+             || [_pString isEqualToString: @"Int8"]
+             || [_pString isEqualToString: @"Int16"]
+             || [_pString isEqualToString: @"Int32"]
+             || [_pString isEqualToString: @"Int64"]
+             || [_pString isEqualToString: @"UInt"]
+             || [_pString isEqualToString: @"UInt8"]
+             || [_pString isEqualToString: @"UInt16"]
+             || [_pString isEqualToString: @"UInt32"]
+             || [_pString isEqualToString: @"UInt64"]
+             || [_pString isEqualToString: @"CGRect"]
+             || [_pString isEqualToString: @"ObjectIdentifier"]
+             || [_pString isEqualToString: @"UnsafeMutableRawPointer"]
+             || [_pString isEqualToString: @"Bool"]
+             || [_pString isEqualToString: @"String"]
+             || [_pString isEqualToString: @"Foundation"]
+             || [_pString isEqualToString: @"Dispatch"]
+             || [_pString isEqualToString: @"OpaquePointer"]
+        )
+        return true;
+
+    return false;
+}

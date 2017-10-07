@@ -86,3 +86,9 @@ IMP XCFixinOverrideMethod(Class class0, SEL selector, IMP newImplementation);
 
 IMP XCFixinOverrideStaticMethod(Class class0, SEL selector, IMP newImplementation);
 #define XCFixinOverrideStaticMethodString(className, selector, newImplementation) XCFixinOverrideStaticMethod(NSClassFromString(className), selector, newImplementation)
+
+NSString *fg_ExtractInType(NSString *_inType);
+BOOL fg_IsBuiltinType(NSString *_inType);
+NSString *fg_FixVariableName(NSString *_inType);
+NSArray<NSString *> *fg_SplitString(NSString *_pString, NSString *_pSeparator);
+

@@ -22,7 +22,7 @@
 		03318ED81937BC2C00132304 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		0372C85619378EA900364146 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		0372C85719378EA900364146 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
-		435E247213A8E4A20052479A /* XCFixin_P4Checkout-0900.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "XCFixin_P4Checkout-0900.xcplugin"; path = "XCFixin_P4Checkout-0833.xcplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		435E247213A8E4A20052479A /* XCFixin_P4Checkout.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_P4Checkout.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		435E248413A8E5A40052479A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		437DCBC414D41E700039CB49 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -53,7 +53,7 @@
 		435E247313A8E4A20052479A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				435E247213A8E4A20052479A /* XCFixin_P4Checkout-0900.xcplugin */,
+				435E247213A8E4A20052479A /* XCFixin_P4Checkout.xcplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -88,7 +88,7 @@
 			);
 			name = XCFixin_P4Checkout;
 			productName = XCode4_P4Unlock;
-			productReference = 435E247213A8E4A20052479A /* XCFixin_P4Checkout-0900.xcplugin */;
+			productReference = 435E247213A8E4A20052479A /* XCFixin_P4Checkout.xcplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -160,16 +160,14 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					_DEBUG,
-					"XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wno-incompatible-property-type";
+				XCODE_DOTTED_VERSION = 8.3;
 			};
 			name = Debug;
 		};
@@ -179,12 +177,13 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wno-incompatible-property-type";
+				XCODE_DOTTED_VERSION = 8.3;
 			};
 			name = Release;
 		};
@@ -202,10 +201,10 @@
 					"$(DEVELOPER_DIR)/../SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.malterlib.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_P4Checkout-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_P4Checkout;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};
@@ -226,10 +225,10 @@
 					"$(DEVELOPER_DIR)/../SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.malterlib.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_P4Checkout-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_P4Checkout;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};

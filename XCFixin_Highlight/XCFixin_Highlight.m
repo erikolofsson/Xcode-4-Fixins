@@ -13,7 +13,7 @@
 #import "../Shared Code/Xcode/IDEIndex.h"
 #import "../Shared Code/Xcode/DVTLayoutManager.h"
 
-@interface XCFixinXcodeVersioned(XCFixin_Highlight_ViewState) : NSObject
+@interface XCFixin_Highlight_ViewState : NSObject
 {
 	NSMutableIndexSet* _m_pIndexSet;
 	NSRange _m_CachedVisibleRange;
@@ -25,7 +25,7 @@
 - (NSMutableIndexSet*)getIndexSet;
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_Highlight_ViewState)
+@implementation XCFixin_Highlight_ViewState
 - (id) init
 {
   self = [super init];
@@ -49,20 +49,20 @@
 static IMP original_colorAtCharacterIndex = nil;
 static IMP original_IDESourceCodeEditor_doInitialSetup = nil;
 
-@interface XCFixinXcodeVersioned(XCFixin_Highlight) : NSObject
+@interface XCFixin_Highlight : NSObject
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_Highlight)
+@implementation XCFixin_Highlight
 
 #include <objc/runtime.h>
 
-static XCFixinXcodeVersioned(XCFixin_Highlight_ViewState)* GetViewState(NSLayoutManager* _pLayoutManager)
+static XCFixin_Highlight_ViewState* GetViewState(NSLayoutManager* _pLayoutManager)
 {
 	char const* pKey = "XCFixinHighlightViewState";
 	id pViewState = objc_getAssociatedObject(_pLayoutManager, pKey);
 	if (pViewState)
 		return pViewState;
-	XCFixinXcodeVersioned(XCFixin_Highlight_ViewState) *pNewViewState = [[XCFixinXcodeVersioned(XCFixin_Highlight_ViewState) alloc] init];
+	XCFixin_Highlight_ViewState *pNewViewState = [[XCFixin_Highlight_ViewState alloc] init];
 	objc_setAssociatedObject(_pLayoutManager, pKey, pNewViewState, OBJC_ASSOCIATION_RETAIN);
 	return pNewViewState;
 }
@@ -104,7 +104,7 @@ static NSString* pAttributeName = @"XCFixinTempAttribute00";
 		if ([pLayoutManagers count] < 1)
 			return;
 		NSLayoutManager* pLayoutManager = (NSLayoutManager *)pLayoutManagers[0];
-		XCFixinXcodeVersioned(XCFixin_Highlight_ViewState)* pViewState = GetViewState(pLayoutManager);
+		XCFixin_Highlight_ViewState* pViewState = GetViewState(pLayoutManager);
 		pViewState.m_CachedValid = false;
 	}
 }
@@ -150,7 +150,7 @@ static void parseAwayWhitespace(NSString *_pString, NSUInteger _Length, NSRange 
 		_pRange->length = iChar - _pRange->location;
 }
 
-static void updateTextView(DVTSourceTextView *_pTextView, XCFixinXcodeVersioned(XCFixin_Highlight_ViewState)* _pViewState)
+static void updateTextView(DVTSourceTextView *_pTextView, XCFixin_Highlight_ViewState* _pViewState)
 {
 	DVTTextStorage* textStorage = [_pTextView textStorage];
 	DVTSourceCodeLanguage* pLanguage = [textStorage language];
@@ -294,7 +294,7 @@ static BOOL MatchOtherPrefix(NSString* _pIdentifier, NSString* _pToMatch, size_t
 	return false;
 }
 
-static NSColor* FixupCommentBackground2(DVTSourceTextView* _pTextView, NSColor* _pColor, NSRange _Range, bool _bComment, XCFixinXcodeVersioned(XCFixin_Highlight_ViewState)* _pViewState)
+static NSColor* FixupCommentBackground2(DVTSourceTextView* _pTextView, NSColor* _pColor, NSRange _Range, bool _bComment, XCFixin_Highlight_ViewState* _pViewState)
 {
 	if (_Range.length == 0)
 		return _pColor;
@@ -358,7 +358,7 @@ static bool MakeSureOfAttributes(NSLayoutManager* _pLayoutManager, NSRange _Rang
 	return bChanged;
 }
 
-static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment, bool *_pChanged, XCFixinXcodeVersioned(XCFixin_Highlight_ViewState)* _pViewState)
+static NSColor* FixupCommentBackground(NSLayoutManager* _pLayoutManager, NSColor* _pColor, NSRange _Range, bool _bComment, bool *_pChanged, XCFixin_Highlight_ViewState* _pViewState)
 {
 	NSMutableIndexSet* pIndexSet = [_pViewState getIndexSet];
 	if (_bComment)
@@ -589,7 +589,7 @@ static NSColor* colorAtCharacterIndex(id self_, SEL _cmd, unsigned long long _In
 		}
 		
 		NSLayoutManager* pLayoutManager = [pTextView layoutManager];
-		XCFixinXcodeVersioned(XCFixin_Highlight_ViewState)* pViewState = GetViewState(pLayoutManager);
+		XCFixin_Highlight_ViewState* pViewState = GetViewState(pLayoutManager);
 		if (!pViewState.m_CachedValid)
 		{
 			pViewState.m_CachedVisibleRange = [pTextView visibleCharacterRange];
@@ -2863,7 +2863,7 @@ static NSMutableDictionary *pDefaultKeywords_CSS = nil;
 	
 	AddDefaultKeywords();
 
-	highlighter = [[XCFixinXcodeVersioned(XCFixin_Highlight) alloc] init];
+	highlighter = [[XCFixin_Highlight alloc] init];
 
 	if (!highlighter)
 	{

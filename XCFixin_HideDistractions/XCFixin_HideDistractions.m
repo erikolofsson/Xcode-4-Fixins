@@ -12,12 +12,12 @@ static NSString * const kDisableAnimationsClassName = @"XCFixin_DisableAnimation
 static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKeyMask);
 
 
-@interface 		 XCFixinXcodeVersioned(XCFixin_HideDistractions) : NSObject
+@interface 		 XCFixin_HideDistractions : NSObject
 @property (strong, nonatomic) NSMenuItem * hideDistractionsMenuItem;
 @property 									BOOL   isShowingDistractions;
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_HideDistractions)
+@implementation XCFixin_HideDistractions
 @synthesize  	 hideDistractionsMenuItem,
 					 isShowingDistractions;
 
@@ -33,7 +33,7 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSCommandKeyMask | NSShiftKe
 	}
 	XCFixinPostflight();
 }
-+ (instancetype) sharedPlugin {	static XCFixinXcodeVersioned(XCFixin_HideDistractions) * sharedPlugin = nil;
++ (instancetype) sharedPlugin {	static XCFixin_HideDistractions * sharedPlugin = nil;
 											static 			 dispatch_once_t   onceToken;
 
 	dispatch_once(&onceToken, ^{ sharedPlugin = self.new;

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_Highlight-0830.xcplugin"
+               BuildableName = "XCFixin_Highlight.xcplugin"
                BlueprintName = "XCFixin_Highlight"
                ReferencedContainer = "container:XCFixin_Highlight.xcodeproj">
             </BuildableReference>
@@ -51,7 +51,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "435E247113A8E4A20052479A"
-            BuildableName = "XCFixin_Highlight-0830.xcplugin"
+            BuildableName = "XCFixin_Highlight.xcplugin"
             BlueprintName = "XCFixin_Highlight"
             ReferencedContainer = "container:XCFixin_Highlight.xcodeproj">
          </BuildableReference>

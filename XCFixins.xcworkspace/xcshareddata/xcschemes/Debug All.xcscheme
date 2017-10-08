@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_CustomizeWarningErrorHighlights-0830.xcplugin"
+               BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
                BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
                ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_DisableAnimations-0830.xcplugin"
+               BuildableName = "XCFixin_DisableAnimations.xcplugin"
                BlueprintName = "XCFixin_DisableAnimations"
                ReferencedContainer = "container:XCFixin_DisableAnimations/XCFixin_DisableAnimations.xcodeproj">
             </BuildableReference>
@@ -57,7 +57,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_HideDistractions-0830.xcplugin"
+               BuildableName = "XCFixin_HideDistractions.xcplugin"
                BlueprintName = "XCFixin_HideDistractions"
                ReferencedContainer = "container:XCFixin_HideDistractions/XCFixin_HideDistractions.xcodeproj">
             </BuildableReference>
@@ -71,7 +71,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_InhibitTabNextPlaceholder-0830.xcplugin"
+               BuildableName = "XCFixin_InhibitTabNextPlaceholder.xcplugin"
                BlueprintName = "XCFixin_InhibitTabNextPlaceholder"
                ReferencedContainer = "container:XCFixin_InhibitTabNextPlaceholder/XCFixin_InhibitTabNextPlaceholder.xcodeproj">
             </BuildableReference>
@@ -85,7 +85,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_EmulateVisualStudio-0830.xcplugin"
+               BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
                BlueprintName = "XCFixin_EmulateVisualStudio"
                ReferencedContainer = "container:XCFixin_EmulateVisualStudio/XCFixin_EmulateVisualStudio.xcodeproj">
             </BuildableReference>
@@ -155,7 +155,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_P4Checkout-0830.xcplugin"
+               BuildableName = "XCFixin_P4Checkout.xcplugin"
                BlueprintName = "XCFixin_P4Checkout"
                ReferencedContainer = "container:XCFixin_P4Checkout/XCFixin_P4Checkout.xcodeproj">
             </BuildableReference>
@@ -169,7 +169,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_Highlight-0830.xcplugin"
+               BuildableName = "XCFixin_Highlight.xcplugin"
                BlueprintName = "XCFixin_Highlight"
                ReferencedContainer = "container:XCFixin_Highlight/XCFixin_Highlight.xcodeproj">
             </BuildableReference>

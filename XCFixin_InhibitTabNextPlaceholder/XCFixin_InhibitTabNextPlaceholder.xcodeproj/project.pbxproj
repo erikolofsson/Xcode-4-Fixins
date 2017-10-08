@@ -19,7 +19,7 @@
 		5514A4051506CBA200A8AD77 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		5595EEF3150067D600A30634 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		55C015D112B7BC2500354E5C /* XCFixin_InhibitTabNextPlaceholder.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = XCFixin_InhibitTabNextPlaceholder.m; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
-		8D5B49B6048680CD000E48DA /* XCFixin_InhibitTabNextPlaceholder-0900.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "XCFixin_InhibitTabNextPlaceholder-0900.xcplugin"; path = "XCFixin_InhibitTabNextPlaceholder-0833.xcplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D5B49B6048680CD000E48DA /* XCFixin_InhibitTabNextPlaceholder.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_InhibitTabNextPlaceholder.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,7 +76,7 @@
 		19C28FB8FE9D52D311CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D5B49B6048680CD000E48DA /* XCFixin_InhibitTabNextPlaceholder-0900.xcplugin */,
+				8D5B49B6048680CD000E48DA /* XCFixin_InhibitTabNextPlaceholder.xcplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -99,7 +99,7 @@
 			name = XCFixin_InhibitTabNextPlaceholder;
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = XCFixin_InhibitTabNextPlaceholder;
-			productReference = 8D5B49B6048680CD000E48DA /* XCFixin_InhibitTabNextPlaceholder-0900.xcplugin */;
+			productReference = 8D5B49B6048680CD000E48DA /* XCFixin_InhibitTabNextPlaceholder.xcplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -173,10 +173,10 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = "$(HOME)";
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.themha.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_InhibitTabNextPlaceholder-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_InhibitTabNextPlaceholder;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
 				WRAPPER_EXTENSION = xcplugin;
@@ -193,10 +193,10 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = "$(HOME)";
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.themha.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_InhibitTabNextPlaceholder-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_InhibitTabNextPlaceholder;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
 				WRAPPER_EXTENSION = xcplugin;
@@ -211,15 +211,13 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					_DEBUG,
-					"XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				XCODE_DOTTED_VERSION = 8.3;
 			};
 			name = Debug;
 		};
@@ -229,11 +227,12 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PREPROCESSOR_DEFINITIONS = "XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				SDKROOT = macosx;
+				XCODE_DOTTED_VERSION = 8.3;
 			};
 			name = Release;
 		};

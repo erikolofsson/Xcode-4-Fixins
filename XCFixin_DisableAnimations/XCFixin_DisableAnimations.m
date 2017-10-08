@@ -8,10 +8,10 @@ static IMP gOriginalSetDuration = nil;
 static IMP gOriginalSetAlphaValue = nil;
 static IMP gOriginalShowWindowForTextFrameExplicitAnimation = nil;
 
-@interface XCFixinXcodeVersioned(XCFixin_DisableAnimations) : NSObject
+@interface XCFixin_DisableAnimations : NSObject
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_DisableAnimations)
+@implementation XCFixin_DisableAnimations
 
 static id overrideInitWithDuration(id self, SEL _cmd, NSTimeInterval arg1, NSAnimationCurve arg2)
 {

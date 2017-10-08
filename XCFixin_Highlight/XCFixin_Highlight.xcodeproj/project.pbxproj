@@ -28,7 +28,7 @@
 		0372C85419378E9400364146 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		038959F419943FD3000941CA /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		03BA4BA71F6D88E8005EC632 /* XcodeDump */ = {isa = PBXFileReference; lastKnownFileType = folder; name = XcodeDump; path = "../Shared Code/XcodeDump"; sourceTree = "<group>"; };
-		435E247213A8E4A20052479A /* XCFixin_Highlight-0900.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "XCFixin_Highlight-0900.xcplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		435E247213A8E4A20052479A /* XCFixin_Highlight.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_Highlight.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		435E248413A8E5A40052479A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		435E248513A8E5A40052479A /* XCFixin_Highlight.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = XCFixin_Highlight.m; sourceTree = "<group>"; tabWidth = 4; };
 		437DCBC414D41E700039CB49 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -85,7 +85,7 @@
 		435E247313A8E4A20052479A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				435E247213A8E4A20052479A /* XCFixin_Highlight-0900.xcplugin */,
+				435E247213A8E4A20052479A /* XCFixin_Highlight.xcplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,7 +120,7 @@
 			);
 			name = XCFixin_Highlight;
 			productName = XCode4_beginning_of_line;
-			productReference = 435E247213A8E4A20052479A /* XCFixin_Highlight-0900.xcplugin */;
+			productReference = 435E247213A8E4A20052479A /* XCFixin_Highlight.xcplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -209,10 +209,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					_DEBUG,
-					"XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -225,6 +222,7 @@
 					"-Wno-nullability-completeness",
 					"-Wno-property-attribute-mismatch",
 				);
+				XCODE_DOTTED_VERSION = 8.3;
 			};
 			name = Debug;
 		};
@@ -236,7 +234,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -248,6 +246,7 @@
 					"-Wno-nullability-completeness",
 					"-Wno-property-attribute-mismatch",
 				);
+				XCODE_DOTTED_VERSION = 8.3;
 			};
 			name = Release;
 		};
@@ -267,11 +266,11 @@
 					"$(DEVELOPER_DIR)/../Plugins/",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				OTHER_LDFLAGS = "$(DEVELOPER_DIR)/../Plugins/IDESourceEditor.ideplugin/Contents/MacOS/IDESourceEditor";
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_Highlight-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_Highlight;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};
@@ -294,11 +293,11 @@
 					"$(DEVELOPER_DIR)/../Plugins/",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				OTHER_LDFLAGS = "$(DEVELOPER_DIR)/../Plugins/IDESourceEditor.ideplugin/Contents/MacOS/IDESourceEditor";
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_Highlight-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_Highlight;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};

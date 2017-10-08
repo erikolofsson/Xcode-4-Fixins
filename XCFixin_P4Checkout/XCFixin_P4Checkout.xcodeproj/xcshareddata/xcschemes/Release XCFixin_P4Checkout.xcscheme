@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_P4Checkout-0830.xcplugin"
+               BuildableName = "XCFixin_P4Checkout.xcplugin"
                BlueprintName = "XCFixin_P4Checkout"
                ReferencedContainer = "container:XCFixin_P4Checkout.xcodeproj">
             </BuildableReference>
@@ -50,7 +50,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "435E247113A8E4A20052479A"
-            BuildableName = "XCFixin_P4Checkout-0830.xcplugin"
+            BuildableName = "XCFixin_P4Checkout.xcplugin"
             BlueprintName = "XCFixin_P4Checkout"
             ReferencedContainer = "container:XCFixin_P4Checkout.xcodeproj">
          </BuildableReference>

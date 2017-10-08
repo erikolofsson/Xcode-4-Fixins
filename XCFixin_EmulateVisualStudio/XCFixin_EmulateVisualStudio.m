@@ -210,13 +210,13 @@ enum EPreferredNextLocation
 }
 @end
 
-@interface XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio) : NSObject<IDEContainerReloadingDelegate>
+@interface XCFixin_EmulateVisualStudio : NSObject<IDEContainerReloadingDelegate>
 {
 	id eventMonitor;
 }
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio)
+@implementation XCFixin_EmulateVisualStudio
 
 static void setEditorFocus(NSWindow* _pWindow)
 {
@@ -2048,7 +2048,7 @@ static void doCommandBySelector( id self_, SEL _cmd, SEL selector )
 	return;
 }
 
-static XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio) *singleton = nil;
+static XCFixin_EmulateVisualStudio *singleton = nil;
 
 NSRegularExpression *g_pSourceLocationColumnRegex;
 
@@ -2059,7 +2059,7 @@ NSRegularExpression *g_pSourceLocationColumnRegex;
 		return;
 	XCFixinPreflight(true);
 
-	singleton = [[XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio) alloc] init];
+	singleton = [[XCFixin_EmulateVisualStudio alloc] init];
 
 	if (!singleton)
 	{

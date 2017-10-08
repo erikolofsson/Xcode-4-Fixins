@@ -2,22 +2,19 @@
 #import <objc/runtime.h>
 #import "XCFixin.h"
 
-#define VALUE_TO_STRING(x) #x
-#define VALUE(x) VALUE_TO_STRING(x)
-
 static NSMenu 	 * 								 viewMenu = nil;
-static NSString * const kDisableAnimationsClassName = @"XCFixin_DisableAnimations" VALUE(XCODE_VERSION_MINOR),
+static NSString * const kDisableAnimationsClassName = @"XCFixin_DisableAnimations",
 					 * const        kHideDistractionsKey = @"D";
 
 static NSUInteger kHideDistractionsKeyModifiers 	= (NSEventModifierFlagCommand | NSEventModifierFlagShift);
 
 
-@interface 		 XCFixinXcodeVersioned(XCFixin_HideDistractions) : NSObject
+@interface 		 XCFixin_HideDistractions : NSObject
 @property (strong, nonatomic) NSMenuItem * hideDistractionsMenuItem;
 @property 									BOOL   isShowingDistractions;
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_HideDistractions)
+@implementation XCFixin_HideDistractions
 @synthesize  	 hideDistractionsMenuItem,
 					 isShowingDistractions;
 
@@ -33,7 +30,7 @@ static NSUInteger kHideDistractionsKeyModifiers 	= (NSEventModifierFlagCommand |
 	}
 	XCFixinPostflight();
 }
-+ (instancetype) sharedPlugin {	static XCFixinXcodeVersioned(XCFixin_HideDistractions) * sharedPlugin = nil;
++ (instancetype) sharedPlugin {	static XCFixin_HideDistractions * sharedPlugin = nil;
 											static 			 dispatch_once_t   onceToken;
 
 	dispatch_once(&onceToken, ^{ sharedPlugin = self.new;

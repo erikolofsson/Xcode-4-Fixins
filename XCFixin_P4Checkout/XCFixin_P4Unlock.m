@@ -7,10 +7,10 @@
 static IMP original__unlockIfNeededCompletionBlock = nil;
 static Class g_EditorDocumentClass;
 
-@interface XCFixinXcodeVersioned(XCFixin_P4Checkout) : NSObject
+@interface XCFixin_P4Checkout : NSObject
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_P4Checkout)
+@implementation XCFixin_P4Checkout
 
 #define DYNAMIC_CAST(x, cls)	\
 	({	\

@@ -3,7 +3,7 @@
 #import <objc/runtime.h>
 #include "../Shared Code/XCFixin.h"
 
-#import "XCFixin_EmulateVisualStudio_0900-Swift.h"
+#import "XCFixin_EmulateVisualStudio-Swift.h"
 
 #import "XCFixin_EmulateVisualStudio.h"
 
@@ -312,7 +312,7 @@ static void * EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence = &Em
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-@protocol XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio)
+@protocol XCFixin_EmulateVisualStudio
 - (CNavigationHandler) registerNavigationHandler;
 @end
 
@@ -321,7 +321,7 @@ static void * EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence = &Em
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-@interface XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio) : NSObject<IDEContainerReloadingDelegate>
+@interface XCFixin_EmulateVisualStudio : NSObject<IDEContainerReloadingDelegate>
 {
 	id eventMonitor;
 }
@@ -529,7 +529,7 @@ static void * EmulateVisualStudioNSObjectKey_displayCycleObserver_sequence = &Em
 	- (id) replaceField;
 @end
 
-@implementation XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio)
+@implementation XCFixin_EmulateVisualStudio
 
 static IDEPegasusSourceEditor_SourceCodeEditor *getEditor(NSWindow* _pWindow)
 {
@@ -560,7 +560,7 @@ static void setEditorFocus(NSWindow* _pWindow)
 	[editor takeFocus];
 }
 
-static XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio) *singleton = nil;
+static XCFixin_EmulateVisualStudio *singleton = nil;
 
 #include "XCFixin_EmulateVisualStudio_Navigation.h"
 #if LLDBFixesEnable
@@ -648,7 +648,7 @@ Class g_SourceEditorViewClass = nil;
 		return;
 	XCFixinPreflight(true);
 
-	singleton = [[XCFixinXcodeVersioned(XCFixin_EmulateVisualStudio) alloc] init];
+	singleton = [[XCFixin_EmulateVisualStudio alloc] init];
 
 	if (!singleton)
 	{

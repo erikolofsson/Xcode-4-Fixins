@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin"
+               BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
                BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
                ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
             </BuildableReference>
@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-               BuildableName = "XCFixin_HideDistractions-0900.xcplugin"
+               BuildableName = "XCFixin_HideDistractions.xcplugin"
                BlueprintName = "XCFixin_HideDistractions"
                ReferencedContainer = "container:XCFixin_HideDistractions/XCFixin_HideDistractions.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_EmulateVisualStudio-0900.xcplugin"
+               BuildableName = "XCFixin_EmulateVisualStudio.xcplugin"
                BlueprintName = "XCFixin_EmulateVisualStudio"
                ReferencedContainer = "container:XCFixin_EmulateVisualStudio/XCFixin_EmulateVisualStudio.xcodeproj">
             </BuildableReference>
@@ -57,7 +57,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "435E247113A8E4A20052479A"
-               BuildableName = "XCFixin_P4Checkout-0900.xcplugin"
+               BuildableName = "XCFixin_P4Checkout.xcplugin"
                BlueprintName = "XCFixin_P4Checkout"
                ReferencedContainer = "container:XCFixin_P4Checkout/XCFixin_P4Checkout.xcodeproj">
             </BuildableReference>
@@ -76,7 +76,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-            BuildableName = "XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin"
+            BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
             BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
             ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
          </BuildableReference>
@@ -104,7 +104,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-            BuildableName = "XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin"
+            BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
             BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
             ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
          </BuildableReference>
@@ -122,7 +122,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D5B49AC048680CD000E48DA"
-            BuildableName = "XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin"
+            BuildableName = "XCFixin_CustomizeWarningErrorHighlights.xcplugin"
             BlueprintName = "XCFixin_CustomizeWarningErrorHighlights"
             ReferencedContainer = "container:XCFixin_CustomizeWarningErrorHighlights/XCFixin_CustomizeWarningErrorHighlights.xcodeproj">
          </BuildableReference>

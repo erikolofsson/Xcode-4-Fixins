@@ -10,17 +10,16 @@
 		0306EE5A1F81848B00850443 /* XCFixin.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0306EE591F81848B00850443 /* XCFixin.mm */; };
 		032D81D31B89238B005B67C4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 032D81D21B89238B005B67C4 /* QuartzCore.framework */; };
 		03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03318EDA1937BC3B00132304 /* Cocoa.framework */; };
+		0339B7C91F8A516900820150 /* IDEFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03F332F61B891CA30014B200 /* IDEFoundation.framework */; };
+		0339B7CA1F8A516900820150 /* DVTFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C7521994131400DEF003 /* DVTFoundation.framework */; };
+		0339B7CB1F8A516900820150 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C750199412CB00DEF003 /* DVTKit.framework */; };
+		0339B7CC1F8A516900820150 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A1896E1992C68500F87332 /* IDEKit.framework */; };
 		0372C85519378E9400364146 /* XCFixin.m in Sources */ = {isa = PBXBuildFile; fileRef = 0372C85419378E9400364146 /* XCFixin.m */; };
 		0382BA6D199516B500E48ED4 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382BA6C199516B500E48ED4 /* Carbon.framework */; };
-		0382C751199412CB00DEF003 /* DVTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C750199412CB00DEF003 /* DVTKit.framework */; };
-		0382C7531994131400DEF003 /* DVTFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0382C7521994131400DEF003 /* DVTFoundation.framework */; };
-		039125C61F8A1FFE00994632 /* SourceEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 039125C51F8A1FFE00994632 /* SourceEditor.framework */; };
 		03916CB71F7EDF010033DF98 /* XCFixin_EmulateVisualStudio_MoveWord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03916CB61F7EDF010033DF98 /* XCFixin_EmulateVisualStudio_MoveWord.swift */; };
 		0398642A1F7F819B004C5D66 /* XCFixin_EmulateVisualStudio_LocalSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 039864291F7F819B004C5D66 /* XCFixin_EmulateVisualStudio_LocalSymbol.cpp */; };
-		03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A1896E1992C68500F87332 /* IDEKit.framework */; };
 		03D3949B1F8A40A1007B9283 /* XCFixin_EmulateVisualStudio_Xcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AC25E41F8011A80064AADD /* XCFixin_EmulateVisualStudio_Xcode.swift */; };
 		03DAA8851F7F0AB900617869 /* XCFixin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DAA8841F7F0AB900617869 /* XCFixin.swift */; };
-		03F332F71B891CA30014B200 /* IDEFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03F332F61B891CA30014B200 /* IDEFoundation.framework */; };
 		03FDB0CE1F7FFCC000B6CD73 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03FDB0CD1F7FFCC000B6CD73 /* CoreFoundation.framework */; };
 		435E248813A8E5A40052479A /* XCFixin_EmulateVisualStudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */; };
 		437DCBC514D41E700039CB49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 437DCBC314D41E700039CB49 /* InfoPlist.strings */; };
@@ -36,7 +35,6 @@
 		0382BA6C199516B500E48ED4 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		0382C750199412CB00DEF003 /* DVTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTKit.framework; path = ../SharedFrameworks/DVTKit.framework; sourceTree = DEVELOPER_DIR; };
 		0382C7521994131400DEF003 /* DVTFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DVTFoundation.framework; path = ../SharedFrameworks/DVTFoundation.framework; sourceTree = DEVELOPER_DIR; };
-		039125C51F8A1FFE00994632 /* SourceEditor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SourceEditor.framework; path = ../SharedFrameworks/SourceEditor.framework; sourceTree = DEVELOPER_DIR; };
 		039128061F8A244300994632 /* Xcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Xcode.h; sourceTree = "<group>"; };
 		03916CB51F7EA0B60033DF98 /* XCFixin_EmulateVisualStudio_MoveWord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCFixin_EmulateVisualStudio_MoveWord.h; sourceTree = "<group>"; };
 		03916CB61F7EDF010033DF98 /* XCFixin_EmulateVisualStudio_MoveWord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCFixin_EmulateVisualStudio_MoveWord.swift; sourceTree = "<group>"; };
@@ -56,7 +54,7 @@
 		03E69FF91F7A735F00D0A690 /* XCFixin_EmulateVisualStudio_DebugOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCFixin_EmulateVisualStudio_DebugOptions.h; sourceTree = "<group>"; };
 		03F332F61B891CA30014B200 /* IDEFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IDEFoundation.framework; path = ../Frameworks/IDEFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		03FDB0CD1F7FFCC000B6CD73 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio-0910.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "XCFixin_EmulateVisualStudio-0910.xcplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_EmulateVisualStudio.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		435E248413A8E5A40052479A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		435E248513A8E5A40052479A /* XCFixin_EmulateVisualStudio.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = XCFixin_EmulateVisualStudio.m; sourceTree = "<group>"; tabWidth = 4; };
 		437DCBC414D41E700039CB49 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -67,15 +65,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				039125C61F8A1FFE00994632 /* SourceEditor.framework in Frameworks */,
 				03FDB0CE1F7FFCC000B6CD73 /* CoreFoundation.framework in Frameworks */,
 				032D81D31B89238B005B67C4 /* QuartzCore.framework in Frameworks */,
-				03F332F71B891CA30014B200 /* IDEFoundation.framework in Frameworks */,
 				0382BA6D199516B500E48ED4 /* Carbon.framework in Frameworks */,
-				0382C7531994131400DEF003 /* DVTFoundation.framework in Frameworks */,
-				03A1896F1992C68500F87332 /* IDEKit.framework in Frameworks */,
 				03318EDB1937BC3B00132304 /* Cocoa.framework in Frameworks */,
-				0382C751199412CB00DEF003 /* DVTKit.framework in Frameworks */,
+				0339B7C91F8A516900820150 /* IDEFoundation.framework in Frameworks */,
+				0339B7CC1F8A516900820150 /* IDEKit.framework in Frameworks */,
+				0339B7CA1F8A516900820150 /* DVTFoundation.framework in Frameworks */,
+				0339B7CB1F8A516900820150 /* DVTKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,7 +82,6 @@
 		03DAA87B1F7EE6ED00617869 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				039125C51F8A1FFE00994632 /* SourceEditor.framework */,
 				03FDB0CD1F7FFCC000B6CD73 /* CoreFoundation.framework */,
 			);
 			name = Frameworks;
@@ -114,7 +110,7 @@
 		435E247313A8E4A20052479A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio-0900.xcplugin */,
+				435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio.xcplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,7 +158,7 @@
 			);
 			name = XCFixin_EmulateVisualStudio;
 			productName = XCode4_beginning_of_line;
-			productReference = 435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio-0900.xcplugin */;
+			productReference = 435E247213A8E4A20052479A /* XCFixin_EmulateVisualStudio.xcplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -263,7 +259,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					_DEBUG,
-					"XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)",
 					"$(inherited)",
 				);
 				GCC_VERSION = "";
@@ -288,6 +283,7 @@
 					"-Wno-nullability-completeness",
 					"-Wno-property-attribute-mismatch",
 				);
+				XCODE_DOTTED_VERSION = 9.0;
 			};
 			name = Debug;
 		};
@@ -318,7 +314,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -339,6 +335,7 @@
 					"-Wno-nullability-completeness",
 					"-Wno-property-attribute-mismatch",
 				);
+				XCODE_DOTTED_VERSION = 9.0;
 			};
 			name = Release;
 		};
@@ -357,14 +354,14 @@
 					"$(DEVELOPER_DIR)/../SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/Swift",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_EmulateVisualStudio-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_EmulateVisualStudio;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};
@@ -386,14 +383,14 @@
 					"$(DEVELOPER_DIR)/../SharedFrameworks",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/Swift",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "info.olofsson.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_EmulateVisualStudio-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_EmulateVisualStudio;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WRAPPER_EXTENSION = xcplugin;
 			};

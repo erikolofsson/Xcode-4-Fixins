@@ -25,7 +25,7 @@
 		5514A3F91506CB8F00A8AD77 /* XCFixin.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; name = XCFixin.m; path = "../Shared Code/XCFixin.m"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		5595EEEB150067CB00A30634 /* XCFixin.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; name = XCFixin.h; path = "../Shared Code/XCFixin.h"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		55C015D112B7BC2500354E5C /* XCFixin_CustomizeWarningErrorHighlights.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = XCFixin_CustomizeWarningErrorHighlights.m; sourceTree = "<group>"; tabWidth = 2; usesTabs = 1; };
-		8D5B49B6048680CD000E48DA /* XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin"; path = "XCFixin_CustomizeWarningErrorHighlights-0833.xcplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D5B49B6048680CD000E48DA /* XCFixin_CustomizeWarningErrorHighlights.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XCFixin_CustomizeWarningErrorHighlights.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -96,7 +96,7 @@
 		19C28FB8FE9D52D311CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D5B49B6048680CD000E48DA /* XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin */,
+				8D5B49B6048680CD000E48DA /* XCFixin_CustomizeWarningErrorHighlights.xcplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -119,7 +119,7 @@
 			name = XCFixin_CustomizeWarningErrorHighlights;
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = XCFixin_DisableAnimations;
-			productReference = 8D5B49B6048680CD000E48DA /* XCFixin_CustomizeWarningErrorHighlights-0900.xcplugin */;
+			productReference = 8D5B49B6048680CD000E48DA /* XCFixin_CustomizeWarningErrorHighlights.xcplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -199,10 +199,10 @@
 					"\"$(SRCROOT)\"",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.themha.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_CustomizeWarningErrorHighlights-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_CustomizeWarningErrorHighlights;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
 				WRAPPER_EXTENSION = xcplugin;
@@ -224,10 +224,10 @@
 					"\"$(SRCROOT)\"",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				INSTALL_PATH = "/Library/Application Support/Developer/$(XCODE_DOTTED_VERSION)/Xcode/Plug-ins";
 				LD_RUNPATH_SEARCH_PATHS = /Developer;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.themha.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "XCFixin_CustomizeWarningErrorHighlights-$(XCODE_VERSION_MINOR)";
+				PRODUCT_NAME = XCFixin_CustomizeWarningErrorHighlights;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
 				WRAPPER_EXTENSION = xcplugin;
@@ -260,10 +260,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					_DEBUG,
-					"XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -277,6 +274,7 @@
 					"-t",
 				);
 				SDKROOT = macosx;
+				XCODE_DOTTED_VERSION = 9.0;
 			};
 			name = Debug;
 		};
@@ -304,8 +302,8 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = "XCODE_VERSION_MINOR=$(XCODE_VERSION_MINOR)";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -317,6 +315,7 @@
 					"-t",
 				);
 				SDKROOT = macosx;
+				XCODE_DOTTED_VERSION = 9.0;
 			};
 			name = Release;
 		};

@@ -12,6 +12,6 @@
 @class NSView;
 
 @protocol IDEComparisonEditorScrollerAreaView <NSObject>
-@property(readonly) NSView *viewToInstallScrollerIn;
+@property(nonatomic, readonly) NSView *viewToInstallScrollerIn;
 @end
 

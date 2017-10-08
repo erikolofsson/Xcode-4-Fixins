@@ -33,6 +33,7 @@
     unsigned long long _hitCount;
     NSString *_condition;
     NSString *_customStopReasonString;
+    NSSet *_actionClassesToIgnoreAsModified;
 }
 
 + (id)keyPathsForValuesAffectingModifiedDescription;
@@ -40,6 +41,7 @@
 + (id)propertiesAffectingPersistenceState;
 + (BOOL)supportsInvalidationPrevention;
 + (void)initialize;
+@property(readonly) NSSet *actionClassesToIgnoreAsModified; // @synthesize actionClassesToIgnoreAsModified=_actionClassesToIgnoreAsModified;
 @property(retain) NSString *customStopReasonString; // @synthesize customStopReasonString=_customStopReasonString;
 @property int breakpointStackSelectionBehavior; // @synthesize breakpointStackSelectionBehavior=_breakpointStackSelectionBehavior;
 @property BOOL textInFilterableTextFieldModified; // @synthesize textInFilterableTextFieldModified=_textInFilterableTextFieldModified;
@@ -69,7 +71,6 @@
 @property(readonly, nonatomic) NSString *accessibilityDescription;
 @property(readonly, nonatomic) NSString *modifiedDescription;
 @property(readonly, nonatomic) BOOL modified;
-@property(readonly) NSSet *actionClassesToIgnoreAsModified;
 - (void)locationWasRemoved:(id)arg1;
 - (void)_updateLocation:(id)arg1 fromLocation:(id)arg2;
 - (void)_locationWasResolved:(id)arg1;

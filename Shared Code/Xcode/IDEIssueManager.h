@@ -84,7 +84,7 @@
 - (void)_retractIssues:(id)arg1;
 - (void)_vendIssues:(id)arg1 container:(id)arg2 blueprint:(id)arg3 runtimeGroupingObject:(id)arg4 issueToGroupingObjectMap:(id)arg5 session:(id)arg6;
 - (void)_setNumBuildtimeIssues:(unsigned long long)arg1 numRuntimeIssues:(unsigned long long)arg2;
-- (id)_similarExistingIssueForIssue:(id)arg1;
+- (id)similarExistingIssueForIssue:(id)arg1;
 - (id)_similarExistingIssueForIssue:(id)arg1 container:(id)arg2 blueprint:(id)arg3;
 - (_Bool)_doesIssue:(id)arg1 fromContainer:(id)arg2 andBlueprint:(id)arg3 coalesceWithIssue:(id)arg4;
 - (_Bool)_doesIssue:(id)arg1 coalesceWithIssue:(id)arg2;

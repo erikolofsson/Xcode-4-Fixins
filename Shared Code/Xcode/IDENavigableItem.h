@@ -117,6 +117,9 @@
 - (id)childRepresentedObjects;
 @property(readonly, nonatomic, getter=isLeaf) BOOL leaf; // @dynamic leaf;
 - (void)_validateChildItems;
+- (id)_parentChildItemsKeyPath;
+- (id)_parentRepresentedObjectClassName;
+- (Class)_parentClass;
 - (void)_setParentItem:(id)arg1;
 - (BOOL)_isWrappingDocumentFileReference;
 - (void)setName:(NSString *)arg1;

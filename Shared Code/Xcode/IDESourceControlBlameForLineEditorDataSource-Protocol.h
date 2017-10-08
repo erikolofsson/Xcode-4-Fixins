@@ -11,8 +11,8 @@
 @class NSView;
 
 @protocol IDESourceControlBlameForLineEditorDataSource
-@property(readonly) NSView *blameForLineView;
-@property(readonly) struct _NSRange selectedLineRange;
 - (struct CGRect)boundsForLineRange:(struct _NSRange)arg1;
+@property(nonatomic, readonly) NSView *blameForLineView;
+@property(nonatomic, readonly) struct _NSRange selectedLineRange;
 @end
 

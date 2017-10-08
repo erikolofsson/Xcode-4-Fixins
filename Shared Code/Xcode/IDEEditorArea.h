@@ -42,7 +42,6 @@
     DVTObservingToken *_themeObserver;
     IDEWorkspaceTabControllerLayoutTree *_layoutTreeForNavigationHUD;
     IDEWorkspaceTabControllerLayoutTree *_oldLayoutTreeFromStateSaving;
-    //BOOL _didInstall;
     BOOL _needsToRefreshContexts;
     BOOL _didRestoreState;
     BOOL _userWantsEditorVisible;

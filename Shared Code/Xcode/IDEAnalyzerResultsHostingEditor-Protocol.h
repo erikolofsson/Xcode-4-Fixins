@@ -8,23 +8,23 @@
 // SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
 //
 
-@class DVTTextDocumentLocation, IDEActivityLogAnalyzerResultMessage, IDEAnalyzerResultsExplorer, IDEAnalyzerResultsVisualization, IDEBuildIssueStaticAnalyzerEventStepAnnotation, NSArray, NSColor, NSView;
+#import "IDELocalAnnotationHostingEditor-Protocol.h"
 
-@protocol IDEAnalyzerResultsHostingEditor
-@property(readonly) IDEAnalyzerResultsExplorer *analyzerResultsExplorer;
-@property(readonly) long long textIndentWidth;
-@property(readonly) NSColor *backgroundColor;
-@property(readonly) NSView *textView;
+@class DVTTextDocumentLocation, IDEActivityLogAnalyzerResultMessage, IDEAnalyzerResultsExplorer, IDEAnalyzerResultsVisualization, NSArray, NSColor, NSView;
+
+@protocol IDEAnalyzerResultsHostingEditor <IDELocalAnnotationHostingEditor>
 - (void)hideAnalyzerExplorerAnimate:(BOOL)arg1;
 - (void)showAnalyzerExplorerForMessage:(IDEActivityLogAnalyzerResultMessage *)arg1 animate:(BOOL)arg2;
+@property(nonatomic, readonly) IDEAnalyzerResultsExplorer *analyzerResultsExplorer;
 - (void)hideAllMessageBubbleAnnotations;
 - (void)showAllMessageBubbleAnnotationsIfNotExplicitlyHidden;
-- (void)removeAnalyzerStepAnnotation:(IDEBuildIssueStaticAnalyzerEventStepAnnotation *)arg1;
-- (void)addAnalyzerStepAnnotation:(IDEBuildIssueStaticAnalyzerEventStepAnnotation *)arg1;
 - (void)refreshAnalyzerVisualization:(IDEAnalyzerResultsVisualization *)arg1;
 - (void)removeAnalyzerVisualization:(IDEAnalyzerResultsVisualization *)arg1 fadeOut:(BOOL)arg2 completionBlock:(void (^)(void))arg3;
 - (void)addAnalyzerVisualization:(IDEAnalyzerResultsVisualization *)arg1 fadeIn:(BOOL)arg2 completionBlock:(void (^)(void))arg3;
 - (struct _NSRange)characterRangeFromDocumentLocation:(DVTTextDocumentLocation *)arg1;
+@property(nonatomic, readonly) long long textIndentWidth;
+@property(nonatomic, readonly) NSColor *backgroundColor;
 - (NSArray *)rectArrayForCharacterRange:(struct _NSRange)arg1;
+@property(nonatomic, readonly) NSView *textView;
 @end
 

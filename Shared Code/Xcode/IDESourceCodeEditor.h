@@ -276,8 +276,8 @@
 - (void)toggleMessageBubbles:(id)arg1;
 - (void)hideAnalyzerExplorerAnimate:(BOOL)arg1;
 - (void)showAnalyzerExplorerForMessage:(id)arg1 animate:(BOOL)arg2;
-- (void)removeAnalyzerStepAnnotation:(id)arg1;
-- (void)addAnalyzerStepAnnotation:(id)arg1;
+- (void)removeLocalAnnotation:(id)arg1;
+- (void)addLocalAnnotation:(id)arg1;
 - (void)refreshAnalyzerVisualization:(id)arg1;
 - (void)removeAnalyzerVisualization:(id)arg1 fadeOut:(BOOL)arg2 completionBlock:(CDUnknownBlockType)arg3;
 - (void)addAnalyzerVisualization:(id)arg1 fadeIn:(BOOL)arg2 completionBlock:(CDUnknownBlockType)arg3;

@@ -5,6 +5,8 @@
 #import "../Shared Code/Xcode/DVTTextAnnotation.h"
 #import "../Shared Code/Xcode/DVTMessageBubbleView.h"
 #import "../Shared Code/Xcode/DVTTextAnnotationTheme.h"
+#import "../Shared Code/Xcode/IDEBuildIssueErrorAnnotation.h"
+
 
 
 //#import "DVTKit.h"
@@ -38,7 +40,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 {
 	const char* className = class_getName([self class]);
 	DVTTextAnnotationTheme * newTheme  = arg1;
-	
+
 	if ( strcmp(className, "IDEBuildIssueStaticAnalyzerResultAnnotation") == 0 ||
 		 strcmp(className, "IDEBuildIssueStaticAnalyzerEventStepAnnotation") == 0 ){	// apply our own theme for Warning Messages	
 		newTheme = analyzerTheme;
@@ -73,16 +75,14 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
     ((void (*)(id, SEL, DVTTextAnnotationTheme*, id))gOriginalnewMessageAttributesForFont)(self, _cmd , newTheme, arg2);
 }
 
-
-
 + (void)pluginDidLoad: (NSBundle *)plugin{
 	
 	XCFixinPreflight(false);
-	float lineAlpha = 0.50;	//whole line
-	float topAlpha = 0.8;	//the right-hand label
+	float lineAlpha = 0.4;	//whole line
+	float topAlpha = 0.4;	//the right-hand label
 
 	//define gradient for warning text highlight
-	NSColor * warningColor = [NSColor colorWithDeviceRed:0.5 green:0.5 blue:0 alpha: lineAlpha];
+	NSColor * warningColor = [NSColor colorWithDeviceRed:0.75 green:0.75 blue:0.25 alpha: lineAlpha];
 	//define warning text highlight theme
 	warningTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: warningColor 
@@ -100,10 +100,10 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 
 
 	//define gradient for error text highlight
-	NSColor * errorColor = [NSColor colorWithDeviceRed:0.5 green:0 blue:0 alpha: lineAlpha];
+	NSColor * errorColor = [NSColor colorWithDeviceRed:0.75 green:0.25 blue:0.25 alpha: lineAlpha];
 	//define error text highlight theme
 	errorTheme = 
-	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: errorColor 
+	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: errorColor
 											borderTopColor: [NSColor clearColor]
 										 borderBottomColor: [NSColor clearColor]
 											 overlayGradient: nil
@@ -117,7 +117,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	errorTheme.darkVariant = errorTheme;
 
 	//define gradient for static Analyzer text highlight
-	NSColor * analyzerColor = [NSColor colorWithDeviceRed:0.25 green:0.25 blue:0.5 alpha: lineAlpha];
+	NSColor * analyzerColor = [NSColor colorWithDeviceRed:0.45 green:0.45 blue:0.95 alpha: lineAlpha];
 	//define static Analyzer text highlight theme
 	analyzerTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: analyzerColor 
@@ -134,7 +134,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	analyzerTheme.darkVariant = analyzerTheme;
 
 	//define gradient for debugger text highlight
-	NSColor * debuggerColor = [NSColor colorWithDeviceRed:0.4 green:0.5 blue:0.4 alpha: 0.6];
+	NSColor * debuggerColor = [NSColor colorWithDeviceRed:0.35 green:0.75 blue:0.35 alpha: lineAlpha];
 	//define static debugger text highlight theme
 	debuggerTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: debuggerColor 
@@ -151,7 +151,7 @@ static void overridenewMessageAttributesForFont(id self, SEL _cmd, DVTTextAnnota
 	debuggerTheme.darkVariant = debuggerTheme;
 
 	//define gradient for Notice text highlight
-	NSColor * noticeColor = [NSColor colorWithDeviceRed:0.15 green:0.15 blue:0.15 alpha: lineAlpha];
+	NSColor * noticeColor = [NSColor colorWithDeviceRed:0.65 green:0.65 blue:0.65 alpha: lineAlpha];
 	//define Notice text highlight theme
 	grayTheme = 
 	[[DVTTextAnnotationTheme alloc] initWithHighlightColor: noticeColor 

@@ -324,7 +324,7 @@
 - (void)_setEmptyRootNavigableItem;
 - (void)_clearWorkspaceloadingObservation;
 - (void)_primitiveSetNavBarRootNavigableItem:(id)arg1 selectedNavigableItem:(id)arg2;
-- (void)setNavBarNavigableItem:(IDENavigableItem *)arg1;
+- (void)setNavBarNavigableItem:(IDENavigableItem *)navBarNavigableItem;
 - (id)currentHistoryItemWithImageOfCurrentEditor;
 - (id)currentHistoryItem;
 - (id)_currentSelectedDocumentLocations;

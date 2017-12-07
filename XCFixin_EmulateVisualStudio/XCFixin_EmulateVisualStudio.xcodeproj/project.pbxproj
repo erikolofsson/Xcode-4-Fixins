@@ -167,7 +167,7 @@
 		435E246713A8E4510052479A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0920;
 			};
 			buildConfigurationList = 435E246A13A8E4510052479A /* Build configuration list for PBXProject "XCFixin_EmulateVisualStudio" */;
 			compatibilityVersion = "Xcode 8.0";
@@ -283,7 +283,7 @@
 					"-Wno-nullability-completeness",
 					"-Wno-property-attribute-mismatch",
 				);
-				XCODE_DOTTED_VERSION = 9.1;
+				XCODE_DOTTED_VERSION = 9.2;
 			};
 			name = Debug;
 		};
@@ -335,7 +335,7 @@
 					"-Wno-nullability-completeness",
 					"-Wno-property-attribute-mismatch",
 				);
-				XCODE_DOTTED_VERSION = 9.1;
+				XCODE_DOTTED_VERSION = 9.2;
 			};
 			name = Release;
 		};

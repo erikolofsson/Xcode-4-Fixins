@@ -5,14 +5,14 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk.sdk
 //
 
 @class NSView;
 
 @protocol IDESourceControlBlameForLineEditorDataSource
+@property(readonly) NSView *blameForLineView;
+@property(readonly) struct _NSRange selectedLineRange;
 - (struct CGRect)boundsForLineRange:(struct _NSRange)arg1;
-@property(nonatomic, readonly) NSView *blameForLineView;
-@property(nonatomic, readonly) struct _NSRange selectedLineRange;
 @end
 

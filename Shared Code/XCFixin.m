@@ -21,7 +21,7 @@ BOOL XCFixinShouldLoad(BOOL _LoadInXcodeBuild)
 
     // Limit to this Xcode versions
     XCFixinConfirmOrPerform(xcodeMajorVersion == 9, return NO);
-    XCFixinConfirmOrPerform(xcodeMinorVersion == 1, return NO);
+    XCFixinConfirmOrPerform(xcodeMinorVersion == 2, return NO);
 
     result = YES;
     

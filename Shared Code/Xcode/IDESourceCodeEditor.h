@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk.sdk
 //
 
 #include "Shared.h"
@@ -234,9 +234,8 @@
 - (void)toggleIssueShown:(id)arg1;
 - (void)_enumerateDiagnosticAnnotationsInSelection:(CDUnknownBlockType)arg1;
 - (id)_jumpToAnnotationWithSelectedRange:(struct _NSRange)arg1 fixIt:(BOOL)arg2 backwards:(BOOL)arg3;
-- (void)fixAllInScope:(id)arg1;
-- (id)fixableDiagnosticAnnotationsInScope;
-- (id)_diagnosticAnnotationsInScopeFixableOnly:(BOOL)arg1;
+- (void)fixAllIssues:(id)arg1;
+- (id)fixableDiagnosticAnnotations;
 - (id)_diagnosticAnnotationsInRange:(struct _NSRange)arg1 fixableOnly:(BOOL)arg2;
 - (void)resetFontSize:(id)arg1;
 - (void)decreaseFontSize:(id)arg1;

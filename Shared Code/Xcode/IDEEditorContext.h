@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk.sdk
 //
 
 #include "Shared.h"
@@ -324,7 +324,7 @@
 - (void)_setEmptyRootNavigableItem;
 - (void)_clearWorkspaceloadingObservation;
 - (void)_primitiveSetNavBarRootNavigableItem:(id)arg1 selectedNavigableItem:(id)arg2;
-- (void)setNavBarNavigableItem:(IDENavigableItem *)navBarNavigableItem;
+- (void)setNavBarNavigableItem:(IDENavigableItem *)arg1;
 - (id)currentHistoryItemWithImageOfCurrentEditor;
 - (id)currentHistoryItem;
 - (id)_currentSelectedDocumentLocations;

@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk.sdk
 //
 
 #include "Shared.h"
@@ -23,6 +23,10 @@
     NSButton *_scopeByRuntimeButton;
     NSMenuItem *_viewByFileMenuItem;
     NSMenuItem *_viewByTypeMenuItem;
+    NSMutableSet *_collapsedGroupsForStateSaving;
+    NSMutableSet *_collapsedFilesForStateSaving;
+    NSMutableSet *_collapsedTypesForStateSaving;
+    NSMutableSet *_expandedModelObjectsForStateSaving;
     NSSet *_collapsedGroupsBeforeFiltering;
     NSSet *_collapsedFilesBeforeFiltering;
     NSSet *_collapsedTypesBeforeFiltering;
@@ -97,7 +101,7 @@
 - (void)outlineViewItemDidCollapse:(id)arg1;
 - (void)outlineViewItemDidExpand:(id)arg1;
 - (void)outlineViewItemWillExpand:(id)arg1;
-- (void)_ensureNavigableItem:(id)arg1 expansionStateIsExpanded:(BOOL)arg2;
+- (void)_recordNavigableItem:(id)arg1 expanded:(BOOL)arg2;
 - (id)_itemsMatchingState:(id)arg1;
 - (id)_leafIssueNavigableInIssuePath:(id)arg1 parentNavigable:(id)arg2 idToNavigableDict:(id)arg3;
 - (id)_issueNavigableItemForIdentifierDictionary:(id)arg1 parentNavigable:(id)arg2 idToNavigableDict:(id)arg3;

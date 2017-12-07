@@ -5,7 +5,7 @@
 //
 
 //
-// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk.sdk
+// SDK Root: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk.sdk
 //
 
 #include "Shared.h"
@@ -59,6 +59,7 @@
 - (BOOL)outlineView:(id)arg1 doCommandBySelector:(SEL)arg2;
 - (id)filterItem:(id)arg1 filter:(id)arg2 ancestorPassedFilter:(BOOL)arg3 descendantPassedFilter:(char *)arg4;
 - (id)generateWorkspaceItem;
+- (void)initiateItemExplorationQueue:(id)arg1;
 - (id)generateSavedScopesItem;
 - (id)generateRootItem;
 - (BOOL)validateUserInterfaceItem:(id)arg1;
@@ -66,6 +67,7 @@
 - (void)createScopeFromSelection:(id)arg1;
 - (id)scopesForDuplicating;
 - (id)namedScopeForPromotingToNamedScope;
+- (id)contextMenuSelectedItems;
 - (void)popoverDidClose:(id)arg1;
 - (void)singleClickedOutline:(id)arg1;
 - (void)addNamedScope:(id)arg1;
